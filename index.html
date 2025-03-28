@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osmos Clone - Final Vibrancy/Lock Logic</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000510; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        canvas { display: block; cursor: default; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // --- Game Settings ---
+        let canvasWidth = window.innerWidth; let canvasHeight = window.innerHeight;
+        canvas.width = canvasWidth; canvas.height = canvasHeight;
+
+        // Orb/Physics Settings (Constants)
+        const MIN_PLAYER_RADIUS = 5; const EJECTION_MASS_RATIO = 0.025; const EJECTION_SPEED_MULTIPLIER = 200; const INITIAL_ORBS = 40; const MAX_ORB_RADIUS = 45; const MIN_ORB_RADIUS = 2; const SAFE_ZONE_RADIUS = 30; const MASS_ABSORPTION_RATIO = 1.01; const PROPULSION_COOLDOWN = 80; const PLAYER_PULSE_FREQ_HZ = 0.33; const PLAYER_PULSE_AMPLITUDE = 0.2; const BASE_ABSORPTION_RATE_PER_SECOND = 100; const MAX_OVERLAP_SPEED_FACTOR = 4; const VELOCITY_ABSORPTION_FACTOR = 60; const MIN_ABSORB_COMPLETE_RADIUS = 0.5; const FIXED_TIMESTEP_MS = 1000 / 120; const FIXED_TIMESTEP_S = FIXED_TIMESTEP_MS / 1000.0; const MAX_ACCUMULATED_TIME_MS = 100; const INITIAL_ORB_MAX_SPEED = 3;
+
+        // --- Game State ---
+        let player = null; let orbs = []; let animationFrameId = null; let isMouseDown = false;
+        let isDraggingVibrancySlider = false; let isDraggingHueSlider = false; let isDraggingSvBox = false; let isEyedropperActive = false; let lastMouseX = 0; let lastMouseY = 0; let lastPropulsionTime = 0; let lastTimestamp = 0; let timeAccumulator = 0; let activeAbsorptions = new Map(); let orbsToRemove = new Set(); let isPlayerColorConstant = false;
+
+        // --- Vibrancy Slider Settings ---
+        const MIN_VIBRANCY = 0.0; const MAX_VIBRANCY = 1.0;
+        const DEFAULT_VIBRANCY = 0.8; let globalVibrancySetting = DEFAULT_VIBRANCY;
+        const MAX_SATURATION_TARGET = 1.0;
+        const FULL_DESATURATION_TARGET = 0.0; // Saturation at min vibrancy
+
+        let vibrancySliderRect = { x: 0, y: 0, width: 0, height: 10 }; let vibrancySliderHandleRect = { x: 0, y: 0, width: 8, height: 16 };
+
+        // --- Color Menu & Picker Settings & State ---
+        let isColorMenuOpen = false; const COLOR_MENU_TOGGLE_SIZE = 40; const COLOR_MENU_TOGGLE_PADDING = 15; let colorMenuToggleRect = { x: 0, y: 0, width: COLOR_MENU_TOGGLE_SIZE, height: COLOR_MENU_TOGGLE_SIZE }; const COLOR_MENU_INTERNAL_PADDING = 10; let colorMenuRect = { x: 0, y: 0, width: 0, height: 0 };
+        let pickerHue = 205; let pickerSaturation = 0.8; let pickerLightness = 0.6; const PICKER_BOX_SIZE = 120; const HUE_SLIDER_WIDTH = 20; const PICKER_PREVIEW_HEIGHT = 30; const PICKER_HANDLE_RADIUS = 5; const HUE_HANDLE_HEIGHT = 4; const EYEDROPPER_SIZE = 24;
+        let isPlayerPickerPopupVisible = false; let playerPickerPopupRect = { x: 0, y: 0, width: 0, height: 0 }; let playerColorTogglePreviewRect = { x: 0, y: 0, width: 40, height: 20 };
+        let svBoxRect = { x: 0, y: 0, width: PICKER_BOX_SIZE, height: PICKER_BOX_SIZE }; let hueSliderRect = { x: 0, y: 0, width: HUE_SLIDER_WIDTH, height: PICKER_BOX_SIZE }; let svBoxHandlePos = { x: 0, y: 0 }; let hueSliderHandleY = 0; let colorPreviewRect = { x: 0, y: 0, width: 0, height: PICKER_PREVIEW_HEIGHT };
+        let eyedropperRect = { x: 0, y: 0, width: EYEDROPPER_SIZE, height: EYEDROPPER_SIZE }; let constantColorCheckboxRect = { x: 0, y: 0, width: 0, height: 0 };
+        const CHECKBOX_SIZE = 14; const CHECKBOX_LABEL_SPACING = 5;
+
+        // --- Eyedropper Icon & Cursor ---
+        const eyedropperSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.06 2.94a1.5 1.5 0 0 0-2.12 0L3.88 15.00a1.5 1.5 0 0 0 0 2.12l2.83 2.83a1.5 1.5 0 0 0 2.12 0L21.12 7.88a1.5 1.5 0 0 0 0-2.12L18.06 2.94z"/><path d="M8.5 15.5l-5 5"/></svg>`;
+        const eyedropperCursorURI = `url('data:image/svg+xml;base64,${btoa(eyedropperSvg)}') 4 20, crosshair`;
+        let eyedropperIcon = new Image(); eyedropperIcon.src = `data:image/svg+xml;base64,${btoa(eyedropperSvg)}`;
+
+        // --- Helper Functions ---
+        function getRandomColor(minSat = 0.6, maxSat = 1.0, minLight = 0.5, maxLight = 0.7, alphaMin = 0.6, alphaMax = 0.9) { const h = Math.random() * 360; const s = minSat + Math.random() * (maxSat - minSat); const l = minLight + Math.random() * (maxLight - minLight); const rgb = hslToRgb(h, s, l); const a = (alphaMin + Math.random() * (alphaMax - alphaMin)).toFixed(2); return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${a})`; }
+        function parseRGBA(rgbaString) { if (!rgbaString) return { r: 128, g: 128, b: 128, a: 0.8 }; const match = rgbaString.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/); if (match) { return { r: parseInt(match[1], 10), g: parseInt(match[2], 10), b: parseInt(match[3], 10), a: match[4] !== undefined ? parseFloat(match[4]) : 1.0 }; } console.warn("Could not parse RGBA string:", rgbaString); return { r: 128, g: 128, b: 128, a: 0.8 }; }
+        function wrappedDistance(x1, y1, x2, y2, width, height) { let dx = Math.abs(x1 - x2); let dy = Math.abs(y1 - y2); if (dx > width / 2) { dx = width - dx; } if (dy > height / 2) { dy = height - dy; } return Math.sqrt(dx * dx + dy * dy); }
+        function getWrappedVector(x1, y1, x2, y2, width, height) { let dx = x2 - x1; let dy = y2 - y1; if (Math.abs(dx) > width / 2) { dx = dx > 0 ? dx - width : dx + width; } if (Math.abs(dy) > height / 2) { dy = dy > 0 ? dy - height : dy + height; } return { dx, dy }; }
+        function isPointInRect(x, y, rect) { return rect && x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height; }
+        function mapRange(value, inMin, inMax, outMin, outMax) { return outMin + (outMax - outMin) * (value - inMin) / (inMax - inMin); }
+        function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
+        function rgbToHsl(r, g, b) { r /= 255; g /= 255; b /= 255; const max = Math.max(r, g, b), min = Math.min(r, g, b); let h = 0, s = 0, l = (max + min) / 2; if (max === min) { h = s = 0; } else { const d = max - min; s = l > 0.5 ? d / (2 - max - min) : d / (max + min); switch (max) { case r: h = (g - b) / d + (g < b ? 6 : 0); break; case g: h = (b - r) / d + 2; break; case b: h = (r - g) / d + 4; break; } h /= 6; } return { h: h * 360, s: s, l: l }; }
+        function hslToRgb(h, s, l) { let r, g, b; h /= 360; if (s === 0) { r = g = b = l; } else { const hue2rgb = (p, q, t) => { if (t < 0) t += 1; if (t > 1) t -= 1; if (t < 1 / 6) return p + (q - p) * 6 * t; if (t < 1 / 2) return q; if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6; return p; }; const q = l < 0.5 ? l * (1 + s) : l + s - l * s; const p = 2 * l - q; r = hue2rgb(p, q, h + 1 / 3); g = hue2rgb(p, q, h); b = hue2rgb(p, q, h - 1 / 3); } return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) }; }
+        function adjustColorVibrancy(rgbaString, vibrancyFactor) {
+            const { r, g, b, a } = parseRGBA(rgbaString);
+            if (r === undefined) return rgbaString;
+            const hsl = rgbToHsl(r, g, b);
+            if (hsl.s > 0.01) {
+                const targetSaturation = mapRange( vibrancyFactor, MIN_VIBRANCY, MAX_VIBRANCY, FULL_DESATURATION_TARGET, MAX_SATURATION_TARGET );
+                hsl.s = clamp(targetSaturation, 0, 1);
+            }
+            const newRgb = hslToRgb(hsl.h, hsl.s, hsl.l);
+            return `rgba(${newRgb.r}, ${newRgb.g}, ${newRgb.b}, ${a})`;
+        }
+
+        // Orb Functions
+        function createOrb(x, y, radius, dx = 0, dy = 0, color = getRandomColor(), isEjected = false) {
+            const validRadius = Math.max(MIN_ABSORB_COMPLETE_RADIUS, radius);
+            const mass = validRadius * validRadius;
+            return { id: Math.random().toString(36).substring(2, 9) + Date.now(), x, y, radius: validRadius, dx, dy, color, mass: mass, isPlayer: false, isEjected: isEjected };
+        }
+
+        // --- REVERTED drawOrbWithWrapping (Vibrancy applies when UNLOCKED) ---
+        function drawOrbWithWrapping(orb, drawOffsetX, drawOffsetY) {
+            if (!orb || orb.radius < MIN_ABSORB_COMPLETE_RADIUS || orbsToRemove.has(orb.id)) return;
+
+            const drawX = orb.x - drawOffsetX;
+            const drawY = orb.y - drawOffsetY;
+            const drawRadius = orb.radius;
+            const baseOrbColor = orb.color; // The orb's stored color
+            let finalDrawColor;        // Color used for fill
+            let shadowBaseColor;       // Color used for shadow base (before alpha adjust)
+            let colorToPulseFrom;      // Temporary holder for player pulse base
+
+            if (orb.isPlayer) {
+                // --- Player Orb ---
+                if (isPlayerColorConstant) {
+                    // Locked: Use exact stored color, no pulsing, no vibrancy
+                    finalDrawColor = baseOrbColor;
+                    shadowBaseColor = baseOrbColor;
+                } else {
+                    // Not Locked: Apply vibrancy, then pulse
+                    colorToPulseFrom = adjustColorVibrancy(baseOrbColor, globalVibrancySetting); // Apply vibrancy first
+                    shadowBaseColor = colorToPulseFrom; // Shadow base is the vibrant color
+
+                    // Pulse based on the vibrancy-adjusted color
+                    const pulseBaseRgba = parseRGBA(colorToPulseFrom);
+                    const originalAlpha = parseRGBA(baseOrbColor).a; // Keep original alpha
+                    const timeSeconds = Date.now() / 1000;
+                    const pulseFactor = 1.0 + PLAYER_PULSE_AMPLITUDE * Math.sin(2 * Math.PI * PLAYER_PULSE_FREQ_HZ * timeSeconds);
+                    const newR = Math.max(0, Math.min(255, Math.round(pulseBaseRgba.r * pulseFactor)));
+                    const newG = Math.max(0, Math.min(255, Math.round(pulseBaseRgba.g * pulseFactor)));
+                    const newB = Math.max(0, Math.min(255, Math.round(pulseBaseRgba.b * pulseFactor)));
+                    finalDrawColor = `rgba(${newR}, ${newG}, ${newB}, ${originalAlpha})`; // Final pulsed color
+                }
+            } else if (orb.isEjected) {
+                 // --- Ejected Mote ---
+                 if (isPlayerColorConstant) {
+                     // Locked: Use exact stored color, no vibrancy
+                     finalDrawColor = baseOrbColor;
+                     shadowBaseColor = baseOrbColor;
+                 } else {
+                     // Not Locked: Apply vibrancy
+                     finalDrawColor = adjustColorVibrancy(baseOrbColor, globalVibrancySetting);
+                     shadowBaseColor = finalDrawColor;
+                 }
+            } else {
+                // --- Normal Mote ---
+                // Always apply vibrancy
+                finalDrawColor = adjustColorVibrancy(baseOrbColor, globalVibrancySetting);
+                shadowBaseColor = finalDrawColor;
+            }
+
+            // --- Common Shadow Calculation & Drawing Logic ---
+            const glowAmount = Math.min(drawRadius * 0.7, 15);
+            const shadowBlur = glowAmount > 1 ? glowAmount : 0;
+            const shadowRgba = parseRGBA(shadowBaseColor);
+            const finalShadowColor = `rgba(${shadowRgba.r}, ${shadowRgba.g}, ${shadowRgba.b}, ${Math.min(shadowRgba.a, 0.8)})`;
+
+            // Draw main orb instance & wrapped instances
+            _drawSingleOrbInstance(drawX, drawY, drawRadius, finalDrawColor, finalShadowColor, shadowBlur);
+            const worldWidth = canvasWidth; const worldHeight = canvasHeight;
+            let wrappedHorizontal = false, wrappedVertical = false;
+            if (drawX - drawRadius < 0) { _drawSingleOrbInstance(drawX + worldWidth, drawY, drawRadius, finalDrawColor, finalShadowColor, shadowBlur); wrappedHorizontal = true; }
+            if (drawX + drawRadius > canvasWidth) { _drawSingleOrbInstance(drawX - worldWidth, drawY, drawRadius, finalDrawColor, finalShadowColor, shadowBlur); wrappedHorizontal = true; }
+            if (drawY - drawRadius < 0) { _drawSingleOrbInstance(drawX, drawY + worldHeight, drawRadius, finalDrawColor, finalShadowColor, shadowBlur); wrappedVertical = true; }
+            if (drawY + drawRadius > canvasHeight) { _drawSingleOrbInstance(drawX, drawY - worldHeight, drawRadius, finalDrawColor, finalShadowColor, shadowBlur); wrappedVertical = true; }
+            if (wrappedHorizontal && wrappedVertical) { const cornerX = (drawX - drawRadius < 0) ? drawX + worldWidth : drawX - worldWidth; const cornerY = (drawY - drawRadius < 0) ? drawY + worldHeight : drawY - worldHeight; _drawSingleOrbInstance(cornerX, cornerY, drawRadius, finalDrawColor, finalShadowColor, shadowBlur); }
+        }
+
+        function _drawSingleOrbInstance(drawX, drawY, radius, color, shadowColor, shadowBlur) {
+             if (radius < MIN_ABSORB_COMPLETE_RADIUS) return;
+             ctx.beginPath();
+             ctx.arc(drawX, drawY, radius, 0, Math.PI * 2);
+             ctx.shadowColor = shadowColor;
+             ctx.shadowBlur = shadowBlur;
+             ctx.fillStyle = color;
+             ctx.fill();
+             ctx.shadowBlur = 0;
+             ctx.shadowColor = 'transparent';
+         }
+        // --- END REVERTED drawOrbWithWrapping ---
+
+
+        function updateOrb(orb, dtSeconds) { if (!orb || dtSeconds <= 0) return; orb.x += orb.dx * dtSeconds; orb.y += orb.dy * dtSeconds; if (orb.x >= canvasWidth) orb.x -= canvasWidth; else if (orb.x < 0) orb.x += canvasWidth; if (orb.y >= canvasHeight) orb.y -= canvasHeight; else if (orb.y < 0) orb.y += canvasHeight; if (orb.isPlayer && orb.radius < MIN_PLAYER_RADIUS && !activeAbsorptions.has(orb.id)) { orb.radius = MIN_PLAYER_RADIUS; orb.mass = orb.radius * orb.radius; } }
+
+        // --- Collision & Absorption Logic (Unchanged) ---
+        function mixMomentumOnAbsorption(absorber, absorbed, absorbedOriginalMass) { const totalMass = absorber.mass; const absorberOriginalMass = totalMass - absorbedOriginalMass; if (totalMass <= 0 || absorberOriginalMass < 0 || absorbedOriginalMass <= 0) { return; } const finalMass = absorber.mass; const initialAbsorberMass = finalMass - absorbedOriginalMass; if (finalMass > 0) { absorber.dx = (initialAbsorberMass * absorber.dx + absorbedOriginalMass * absorbed.dx) / finalMass; absorber.dy = (initialAbsorberMass * absorber.dy + absorbedOriginalMass * absorbed.dy) / finalMass; } else { absorber.dx = 0; absorber.dy = 0; } }
+        function updateAbsorptions(fixedTimestepMs) { if (fixedTimestepMs <= 0) return; const dtSeconds = fixedTimestepMs / 1000.0; for (let [absorbedId, absorptionInfo] of activeAbsorptions) { const { absorber, absorbed } = absorptionInfo; const currentAbsorber = absorber.isPlayer ? player : orbs.find(o => o.id === absorber.id); const currentAbsorbed = absorbed.isPlayer ? player : orbs.find(o => o.id === absorbed.id); if (!currentAbsorber || orbsToRemove.has(absorber.id) || !currentAbsorbed || orbsToRemove.has(absorbed.id)) { activeAbsorptions.delete(absorbedId); continue; } const dist = wrappedDistance(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const radiiSum = currentAbsorber.radius + currentAbsorbed.radius; const overlap = Math.max(0, radiiSum - dist); if (overlap >= 0 && dist <= radiiSum + 0.1 && currentAbsorber.mass > currentAbsorbed.mass * MASS_ABSORPTION_RATIO && currentAbsorbed.radius >= MIN_ABSORB_COMPLETE_RADIUS * 0.9) { let approachSpeed = 0; if (dist > 0.1) { const v_rel_x = currentAbsorbed.dx - currentAbsorber.dx; const v_rel_y = currentAbsorbed.dy - currentAbsorber.dy; const disp = getWrappedVector(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const dispMag = Math.sqrt(disp.dx * disp.dx + disp.dy * disp.dy); if (dispMag > 0.01) { const unit_x = disp.dx / dispMag; const unit_y = disp.dy / dispMag; const v_radial = v_rel_x * unit_x + v_rel_y * unit_y; approachSpeed = Math.max(0, -v_radial); } } const overlapRatio = currentAbsorbed.radius > 0.1 ? Math.min(1, overlap / currentAbsorbed.radius) : 1; const overlapFactor = overlapRatio * (MAX_OVERLAP_SPEED_FACTOR - 1.0); const velocityFactor = approachSpeed * (VELOCITY_ABSORPTION_FACTOR / BASE_ABSORPTION_RATE_PER_SECOND); const speedFactor = 1.0 + overlapFactor + velocityFactor; const effectiveAbsorptionRate = BASE_ABSORPTION_RATE_PER_SECOND * speedFactor; let massToTransfer = effectiveAbsorptionRate * dtSeconds; massToTransfer = Math.min(massToTransfer, currentAbsorbed.mass); const oldAbsorberMass = currentAbsorber.mass; const massBeingTransferred = massToTransfer; if (massBeingTransferred > 0) { currentAbsorber.mass += massBeingTransferred; currentAbsorbed.mass -= massBeingTransferred; currentAbsorber.radius = Math.sqrt(currentAbsorber.mass); currentAbsorbed.radius = currentAbsorbed.mass > 0 ? Math.sqrt(currentAbsorbed.mass) : 0; if (!(currentAbsorber.isPlayer && isPlayerColorConstant)) { const c1 = parseRGBA(currentAbsorber.color); const c2 = parseRGBA(currentAbsorbed.color); const newTotalMass = currentAbsorber.mass; if (newTotalMass > 0 && c1 && c2) { const newR = Math.round((c1.r * oldAbsorberMass + c2.r * massBeingTransferred) / newTotalMass); const newG = Math.round((c1.g * oldAbsorberMass + c2.g * massBeingTransferred) / newTotalMass); const newB = Math.round((c1.b * oldAbsorberMass + c2.b * massBeingTransferred) / newTotalMass); const newA = (c1.a * oldAbsorberMass + c2.a * massBeingTransferred) / newTotalMass; currentAbsorber.color = `rgba(${Math.max(0,Math.min(255,newR))}, ${Math.max(0,Math.min(255,newG))}, ${Math.max(0,Math.min(255,newB))}, ${Math.max(0.1,Math.min(1,newA)).toFixed(2)})`; } } } const newRadiiSum = currentAbsorber.radius + currentAbsorbed.radius; const newDist = wrappedDistance(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const penetration = Math.max(0, newRadiiSum - newDist); if (penetration > 0.05 && newDist > 0.05) { const vector = getWrappedVector(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const vectorMag = Math.sqrt(vector.dx * vector.dx + vector.dy * vector.dy); if (vectorMag > 0.01) { const nudgeFactor = penetration / vectorMag; const totalMassForNudge = currentAbsorber.mass + currentAbsorbed.mass; if (totalMassForNudge > 0.01) { const nudgeAbsorbedX = vector.dx * nudgeFactor * (currentAbsorber.mass / totalMassForNudge); const nudgeAbsorbedY = vector.dy * nudgeFactor * (currentAbsorber.mass / totalMassForNudge); const nudgeAbsorberX = -vector.dx * nudgeFactor * (currentAbsorbed.mass / totalMassForNudge); const nudgeAbsorberY = -vector.dy * nudgeFactor * (currentAbsorbed.mass / totalMassForNudge); currentAbsorbed.x = (currentAbsorbed.x + nudgeAbsorbedX + canvasWidth) % canvasWidth; currentAbsorbed.y = (currentAbsorbed.y + nudgeAbsorbedY + canvasHeight) % canvasHeight; currentAbsorber.x = (currentAbsorber.x + nudgeAbsorberX + canvasWidth) % canvasWidth; currentAbsorber.y = (currentAbsorber.y + nudgeAbsorberY + canvasHeight) % canvasHeight; } } } if (!currentAbsorbed.isPlayer && (currentAbsorbed.radius < MIN_ABSORB_COMPLETE_RADIUS || currentAbsorbed.mass <= 0.01)) { const remainingMass = currentAbsorbed.mass; if (remainingMass > 0) { currentAbsorber.mass += remainingMass; currentAbsorber.radius = Math.sqrt(currentAbsorber.mass); } mixMomentumOnAbsorption(currentAbsorber, currentAbsorbed, massBeingTransferred + remainingMass); orbsToRemove.add(absorbedId); activeAbsorptions.delete(absorbedId); currentAbsorbed.mass = 0; currentAbsorbed.radius = 0; currentAbsorbed.dx = 0; currentAbsorbed.dy = 0; } } else { activeAbsorptions.delete(absorbedId); } } }
+        function checkCollisions() { if (!player) return; const allOrbs = [player, ...orbs.filter(o => !orbsToRemove.has(o.id))]; const checkedPairs = new Set(); for (let i = allOrbs.length - 1; i >= 0; i--) { const orb1 = allOrbs[i]; if (!orb1 || orb1.mass <= 0) continue; for (let j = i - 1; j >= 0; j--) { const orb2 = allOrbs[j]; if (!orb2 || orb2.mass <= 0) continue; const pairKey = orb1.id < orb2.id ? `${orb1.id}-${orb2.id}` : `${orb2.id}-${orb1.id}`; if (checkedPairs.has(pairKey)) continue; checkedPairs.add(pairKey); const dist = wrappedDistance(orb1.x, orb1.y, orb2.x, orb2.y, canvasWidth, canvasHeight); const radiiSum = orb1.radius + orb2.radius; if (dist <= radiiSum + 0.5) { let absorber = null, absorbed = null; if (orb1.mass > orb2.mass * MASS_ABSORPTION_RATIO && orb1.radius > orb2.radius) { absorber = orb1; absorbed = orb2; } else if (orb2.mass > orb1.mass * MASS_ABSORPTION_RATIO && orb2.radius > orb1.radius) { absorber = orb2; absorbed = orb1; } if (absorber && absorbed) { const reverseAbsorption = activeAbsorptions.get(absorber.id); if (reverseAbsorption && reverseAbsorption.absorber.id === absorbed.id) { activeAbsorptions.delete(absorber.id); } const existingAbsorption = activeAbsorptions.get(absorbed.id); if (!existingAbsorption || existingAbsorption.absorber.id !== absorber.id) { activeAbsorptions.set(absorbed.id, { absorber: absorber, absorbed: absorbed, }); } } } else { const absorption12 = activeAbsorptions.get(orb2.id); if (absorption12 && absorption12.absorber.id === orb1.id) { activeAbsorptions.delete(orb2.id); } const absorption21 = activeAbsorptions.get(orb1.id); if (absorption21 && absorption21.absorber.id === orb2.id) { activeAbsorptions.delete(orb1.id); } } } } }
+
+        // Player Control (Unchanged)
+        function propelPlayer(targetScreenX, targetScreenY) { if (!player || player.radius <= MIN_PLAYER_RADIUS) return false; const targetWorldX = player.x + (targetScreenX - canvasWidth / 2); const targetWorldY = player.y + (targetScreenY - canvasHeight / 2); const vec = getWrappedVector(player.x, player.y, targetWorldX, targetWorldY, canvasWidth, canvasHeight); let dx = vec.dx; let dy = vec.dy; if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) return false; const angleToTarget = Math.atan2(dy, dx); const ejectionAngle = angleToTarget; const propulsionAngle = angleToTarget + Math.PI; const massToEject = player.mass * EJECTION_MASS_RATIO; if (massToEject <= 0) return false; const radiusEjected = Math.sqrt(massToEject); const potentialNewPlayerMass = player.mass - massToEject; if (potentialNewPlayerMass < (MIN_PLAYER_RADIUS * MIN_PLAYER_RADIUS)) { return false; } if (radiusEjected < MIN_ORB_RADIUS * 0.5) return false; const baseEjectionSpeed = EJECTION_SPEED_MULTIPLIER; const ejectVelX = player.dx + Math.cos(ejectionAngle) * baseEjectionSpeed; const ejectVelY = player.dy + Math.sin(ejectionAngle) * baseEjectionSpeed; const playerNewRadiusIfEjected = Math.sqrt(potentialNewPlayerMass); const effectivePlayerRadiusForPlacement = Math.max(MIN_PLAYER_RADIUS, playerNewRadiusIfEjected); const startDist = effectivePlayerRadiusForPlacement + radiusEjected + 1.5; const ejectStartRawX = player.x + Math.cos(ejectionAngle) * startDist; const ejectStartRawY = player.y + Math.sin(ejectionAngle) * startDist; const ejectStartX = (ejectStartRawX % canvasWidth + canvasWidth) % canvasWidth; const ejectStartY = (ejectStartRawY % canvasHeight + canvasHeight) % canvasHeight; const playerBaseColor = parseRGBA(player.color); const ejectAlpha = Math.max(0.2, playerBaseColor.a * 0.7).toFixed(2); const ejectColor = `rgba(${playerBaseColor.r}, ${playerBaseColor.g}, ${playerBaseColor.b}, ${ejectAlpha})`; const particle = createOrb(ejectStartX, ejectStartY, radiusEjected, ejectVelX, ejectVelY, ejectColor, true); if (particle && particle.mass > 0) { orbs.push(particle); } else { console.warn("Ejected particle invalid mass or creation failed."); return false; } player.mass = potentialNewPlayerMass; player.radius = Math.max(MIN_PLAYER_RADIUS, Math.sqrt(player.mass)); const impulseMagnitude = massToEject * baseEjectionSpeed; if (player.mass > 0) { const thrustX = Math.cos(propulsionAngle) * impulseMagnitude / player.mass; const thrustY = Math.sin(propulsionAngle) * impulseMagnitude / player.mass; player.dx += thrustX; player.dy += thrustY; } return true; }
+
+        // --- UI Functions (Unchanged) ---
+        function drawColorMenuToggle() { ctx.save(); const lineMargin = colorMenuToggleRect.width * 0.25; const lineLength = colorMenuToggleRect.width - 2 * lineMargin; const lineThickness = 2; const lineSpacing = (colorMenuToggleRect.height - 3 * lineThickness) / 4; ctx.fillStyle = 'rgba(200, 200, 220, 0.7)'; let lineY = colorMenuToggleRect.y + lineSpacing; ctx.fillRect(colorMenuToggleRect.x + lineMargin, lineY, lineLength, lineThickness); lineY += lineThickness + lineSpacing; ctx.fillRect(colorMenuToggleRect.x + lineMargin, lineY, lineLength, lineThickness); lineY += lineThickness + lineSpacing; ctx.fillRect(colorMenuToggleRect.x + lineMargin, lineY, lineLength, lineThickness); ctx.restore(); }
+        function drawCheckbox(rect, isChecked) { ctx.strokeStyle = 'rgba(200, 200, 220, 0.8)'; ctx.lineWidth = 1; ctx.strokeRect(rect.x, rect.y, rect.width, rect.height); if (isChecked) { ctx.beginPath(); ctx.moveTo(rect.x + 3, rect.y + 7); ctx.lineTo(rect.x + 6, rect.y + 10); ctx.lineTo(rect.x + 11, rect.y + 4); ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(220, 220, 255, 0.9)'; ctx.stroke(); } }
+        function drawColorMenu() { if (!isColorMenuOpen) { isPlayerPickerPopupVisible = false; return; } ctx.save(); const menuBgColor = 'rgba(30, 30, 50, 0.85)'; const menuBorderColor = 'rgba(180, 180, 220, 0.9)'; ctx.fillStyle = menuBgColor; ctx.strokeStyle = menuBorderColor; ctx.lineWidth = 1; ctx.fillRect(colorMenuRect.x, colorMenuRect.y, colorMenuRect.width, colorMenuRect.height); ctx.strokeRect(colorMenuRect.x, colorMenuRect.y, colorMenuRect.width, colorMenuRect.height); const labelFont = '12px Arial'; const valueFont = '10px Arial'; const textColor = 'rgba(220, 220, 255, 0.9)'; ctx.fillStyle = textColor; ctx.font = labelFont; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+            ctx.fillText("Player:", playerColorTogglePreviewRect.x, playerColorTogglePreviewRect.y - 8); const playerRgb = parseRGBA(player ? player.color : 'rgba(128,128,128,0.9)'); ctx.fillStyle = `rgb(${playerRgb.r}, ${playerRgb.g}, ${playerRgb.b})`; ctx.fillRect(playerColorTogglePreviewRect.x, playerColorTogglePreviewRect.y, playerColorTogglePreviewRect.width, playerColorTogglePreviewRect.height); ctx.strokeStyle = menuBorderColor; ctx.lineWidth = 1; ctx.strokeRect(playerColorTogglePreviewRect.x, playerColorTogglePreviewRect.y, playerColorTogglePreviewRect.width, playerColorTogglePreviewRect.height);
+            ctx.fillStyle = textColor; ctx.font = labelFont; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText('Vibrancy:', vibrancySliderRect.x, vibrancySliderRect.y - 8); ctx.font = valueFont; ctx.fillText('Mellow', vibrancySliderRect.x, vibrancySliderRect.y + vibrancySliderRect.height + 8); ctx.textAlign = 'right'; ctx.fillText('Vivid', vibrancySliderRect.x + vibrancySliderRect.width, vibrancySliderRect.y + vibrancySliderRect.height + 8); ctx.fillStyle = 'rgba(100, 100, 120, 0.8)'; ctx.fillRect(vibrancySliderRect.x, vibrancySliderRect.y, vibrancySliderRect.width, vibrancySliderRect.height); ctx.strokeStyle = menuBorderColor; ctx.lineWidth = 1; ctx.strokeRect(vibrancySliderRect.x, vibrancySliderRect.y, vibrancySliderRect.width, vibrancySliderRect.height); ctx.fillStyle = 'rgba(200, 200, 230, 0.95)'; ctx.fillRect(vibrancySliderHandleRect.x, vibrancySliderHandleRect.y, vibrancySliderHandleRect.width, vibrancySliderHandleRect.height); ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)'; ctx.strokeRect(vibrancySliderHandleRect.x, vibrancySliderHandleRect.y, vibrancySliderHandleRect.width, vibrancySliderHandleRect.height);
+            if (isPlayerPickerPopupVisible) { ctx.fillStyle = menuBgColor; ctx.strokeStyle = menuBorderColor; ctx.lineWidth = 1; ctx.fillRect(playerPickerPopupRect.x, playerPickerPopupRect.y, playerPickerPopupRect.width, playerPickerPopupRect.height); ctx.strokeRect(playerPickerPopupRect.x, playerPickerPopupRect.y, playerPickerPopupRect.width, playerPickerPopupRect.height); const hueGradPopup = ctx.createLinearGradient(0, hueSliderRect.y, 0, hueSliderRect.y + hueSliderRect.height); for (let i = 0; i <= 1; i += 1 / 6) { hueGradPopup.addColorStop(i, `hsl(${i * 360}, 100%, 50%)`); } ctx.fillStyle = hueGradPopup; ctx.fillRect(hueSliderRect.x, hueSliderRect.y, hueSliderRect.width, hueSliderRect.height); ctx.strokeStyle = 'black'; ctx.lineWidth = 1; ctx.strokeRect(hueSliderRect.x - 2, hueSliderHandleY - HUE_HANDLE_HEIGHT / 2, hueSliderRect.width + 4, HUE_HANDLE_HEIGHT); ctx.strokeStyle = 'white'; ctx.strokeRect(hueSliderRect.x - 1, hueSliderHandleY - HUE_HANDLE_HEIGHT / 2 + 1 , hueSliderRect.width + 2 , HUE_HANDLE_HEIGHT - 2); ctx.fillStyle = `hsl(${pickerHue}, 100%, 50%)`; ctx.fillRect(svBoxRect.x, svBoxRect.y, svBoxRect.width, svBoxRect.height); const satGradPopup = ctx.createLinearGradient(svBoxRect.x, svBoxRect.y, svBoxRect.x + svBoxRect.width, svBoxRect.y ); satGradPopup.addColorStop(0, 'rgba(255, 255, 255, 1)'); satGradPopup.addColorStop(1, 'rgba(255, 255, 255, 0)'); ctx.fillStyle = satGradPopup; ctx.fillRect(svBoxRect.x, svBoxRect.y, svBoxRect.width, svBoxRect.height); const valGradPopup = ctx.createLinearGradient(svBoxRect.x, svBoxRect.y, svBoxRect.x, svBoxRect.y + svBoxRect.height ); valGradPopup.addColorStop(0, 'rgba(0, 0, 0, 0)'); valGradPopup.addColorStop(1, 'rgba(0, 0, 0, 1)'); ctx.fillStyle = valGradPopup; ctx.fillRect(svBoxRect.x, svBoxRect.y, svBoxRect.width, svBoxRect.height); ctx.strokeStyle = pickerLightness < 0.5 ? 'white' : 'black'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(svBoxHandlePos.x, svBoxHandlePos.y, PICKER_HANDLE_RADIUS, 0, Math.PI * 2); ctx.stroke(); const currentPickerRgbPopup = hslToRgb(pickerHue, pickerSaturation, pickerLightness); ctx.fillStyle = `rgb(${currentPickerRgbPopup.r}, ${currentPickerRgbPopup.g}, ${currentPickerRgbPopup.b})`; ctx.fillRect(colorPreviewRect.x, colorPreviewRect.y, colorPreviewRect.width, colorPreviewRect.height); ctx.strokeStyle = menuBorderColor; ctx.lineWidth = 1; ctx.strokeRect(colorPreviewRect.x, colorPreviewRect.y, colorPreviewRect.width, colorPreviewRect.height); ctx.save(); if (eyedropperIcon.complete) { ctx.drawImage(eyedropperIcon, eyedropperRect.x, eyedropperRect.y, eyedropperRect.width, eyedropperRect.height); } else { ctx.fillStyle = 'grey'; ctx.fillRect(eyedropperRect.x, eyedropperRect.y, eyedropperRect.width, eyedropperRect.height); } ctx.strokeStyle = isEyedropperActive ? 'rgba(100, 255, 100, 1)' : 'rgba(200, 200, 220, 0.8)'; ctx.lineWidth = 1.5; ctx.strokeRect(eyedropperRect.x -1, eyedropperRect.y -1, eyedropperRect.width + 2, eyedropperRect.height + 2); ctx.restore(); drawCheckbox(constantColorCheckboxRect, isPlayerColorConstant); ctx.fillStyle = textColor; ctx.font = labelFont; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText("Lock", constantColorCheckboxRect.x + constantColorCheckboxRect.width + CHECKBOX_LABEL_SPACING, constantColorCheckboxRect.y + constantColorCheckboxRect.height / 2); }
+            ctx.restore();
+        }
+        function calculateUILayout() {
+            colorMenuToggleRect.x = canvasWidth - COLOR_MENU_TOGGLE_SIZE - COLOR_MENU_TOGGLE_PADDING; colorMenuToggleRect.y = canvasHeight - COLOR_MENU_TOGGLE_SIZE - COLOR_MENU_TOGGLE_PADDING; const menuPadding = COLOR_MENU_INTERNAL_PADDING; const uiSpacing = 20; const labelHeight = 15; const valueBelowSliderHeight = 18; const pickerSpacing = 8; const previewTopMargin = 8; const baseWidth = PICKER_BOX_SIZE + pickerSpacing + HUE_SLIDER_WIDTH; const menuWidth = baseWidth + 2 * menuPadding; let currentY = menuPadding;
+            let relPlayerColorTogglePreviewRect = { x: menuPadding, y: currentY + labelHeight, width: playerColorTogglePreviewRect.width, height: playerColorTogglePreviewRect.height }; currentY += labelHeight + relPlayerColorTogglePreviewRect.height; currentY += uiSpacing;
+            let relVibrancySliderRect = { x: menuPadding, y: currentY + labelHeight, width: baseWidth, height: 10 }; let relVibrancySliderHandleRect = { width: 8, height: 16 }; currentY += labelHeight + relVibrancySliderRect.height + valueBelowSliderHeight;
+            const finalBottomMargin = 15; const menuHeight = currentY + finalBottomMargin;
+            colorMenuRect.width = menuWidth; colorMenuRect.height = menuHeight; colorMenuRect.x = colorMenuToggleRect.x - menuWidth; colorMenuRect.y = colorMenuToggleRect.y - menuHeight; colorMenuRect.x = Math.max(COLOR_MENU_TOGGLE_PADDING, colorMenuRect.x); colorMenuRect.y = Math.max(COLOR_MENU_TOGGLE_PADDING, colorMenuRect.y);
+            playerColorTogglePreviewRect = { ...relPlayerColorTogglePreviewRect, x: relPlayerColorTogglePreviewRect.x + colorMenuRect.x, y: relPlayerColorTogglePreviewRect.y + colorMenuRect.y }; vibrancySliderRect = { ...relVibrancySliderRect, x: relVibrancySliderRect.x + colorMenuRect.x, y: relVibrancySliderRect.y + colorMenuRect.y };
+            vibrancySliderHandleRect.width = relVibrancySliderHandleRect.width; vibrancySliderHandleRect.height = relVibrancySliderHandleRect.height; vibrancySliderHandleRect.x = mapRange(globalVibrancySetting, MIN_VIBRANCY, MAX_VIBRANCY, vibrancySliderRect.x, vibrancySliderRect.x + vibrancySliderRect.width - vibrancySliderHandleRect.width); vibrancySliderHandleRect.y = vibrancySliderRect.y + (vibrancySliderRect.height / 2) - (vibrancySliderHandleRect.height / 2);
+            const lockLabelApproxWidth = 35; const popupWidth = PICKER_BOX_SIZE + pickerSpacing + HUE_SLIDER_WIDTH + pickerSpacing + EYEDROPPER_SIZE + pickerSpacing + CHECKBOX_SIZE + lockLabelApproxWidth + menuPadding * 2; const popupHeight = PICKER_BOX_SIZE + previewTopMargin + PICKER_PREVIEW_HEIGHT + menuPadding * 2; let popupX = playerColorTogglePreviewRect.x - popupWidth - pickerSpacing; let popupY = playerColorTogglePreviewRect.y; popupX = Math.max(COLOR_MENU_TOGGLE_PADDING, Math.min(popupX, canvasWidth - popupWidth - COLOR_MENU_TOGGLE_PADDING)); popupY = Math.max(COLOR_MENU_TOGGLE_PADDING, Math.min(popupY, canvasHeight - popupHeight - COLOR_MENU_TOGGLE_PADDING)); playerPickerPopupRect = { x: popupX, y: popupY, width: popupWidth, height: popupHeight };
+            let relSvBoxPopupRect = { x: menuPadding, y: menuPadding, width: PICKER_BOX_SIZE, height: PICKER_BOX_SIZE }; let relHueSliderPopupRect = { x: relSvBoxPopupRect.x + PICKER_BOX_SIZE + pickerSpacing, y: menuPadding, width: HUE_SLIDER_WIDTH, height: PICKER_BOX_SIZE }; let relColorPreviewPopupRect = { x: menuPadding, y: relSvBoxPopupRect.y + PICKER_BOX_SIZE + previewTopMargin, width: PICKER_BOX_SIZE, height: PICKER_PREVIEW_HEIGHT }; let relEyedropperPopupRect = { x: relHueSliderPopupRect.x, y: relColorPreviewPopupRect.y + (relColorPreviewPopupRect.height - EYEDROPPER_SIZE) / 2, width: EYEDROPPER_SIZE, height: EYEDROPPER_SIZE}; let relConstantColorCheckboxPopupRect = { x: relHueSliderPopupRect.x + HUE_SLIDER_WIDTH + pickerSpacing, y: relColorPreviewPopupRect.y + (relColorPreviewPopupRect.height - CHECKBOX_SIZE)/2, width: CHECKBOX_SIZE, height: CHECKBOX_SIZE};
+            svBoxRect = { ...relSvBoxPopupRect, x: relSvBoxPopupRect.x + playerPickerPopupRect.x, y: relSvBoxPopupRect.y + playerPickerPopupRect.y }; hueSliderRect = { ...relHueSliderPopupRect, x: relHueSliderPopupRect.x + playerPickerPopupRect.x, y: relHueSliderPopupRect.y + playerPickerPopupRect.y }; colorPreviewRect = { ...relColorPreviewPopupRect, x: relColorPreviewPopupRect.x + playerPickerPopupRect.x, y: relColorPreviewPopupRect.y + playerPickerPopupRect.y }; eyedropperRect = { ...relEyedropperPopupRect, x: relEyedropperPopupRect.x + playerPickerPopupRect.x, y: relEyedropperPopupRect.y + playerPickerPopupRect.y }; constantColorCheckboxRect = { ...relConstantColorCheckboxPopupRect, x: relConstantColorCheckboxPopupRect.x + playerPickerPopupRect.x, y: relConstantColorCheckboxPopupRect.y + playerPickerPopupRect.y };
+            svBoxHandlePos.x = svBoxRect.x + pickerSaturation * svBoxRect.width; svBoxHandlePos.y = svBoxRect.y + (1 - pickerLightness) * svBoxRect.height; hueSliderHandleY = hueSliderRect.y + (pickerHue / 360) * hueSliderRect.height;
+         }
+
+        // --- Game Loop (Unchanged) ---
+        function gameLoop(currentTime) { const now = performance.now(); if (!lastTimestamp) lastTimestamp = now; let deltaTime = now - lastTimestamp; lastTimestamp = now; if (!isDraggingVibrancySlider && !isDraggingHueSlider && !isDraggingSvBox && !isEyedropperActive && isMouseDown && player && !isColorMenuOpen && !isPlayerPickerPopupVisible ) { if (now - lastPropulsionTime > PROPULSION_COOLDOWN) { if (propelPlayer(lastMouseX, lastMouseY)) { lastPropulsionTime = now; } } } timeAccumulator += deltaTime; timeAccumulator = Math.min(timeAccumulator, MAX_ACCUMULATED_TIME_MS); while (timeAccumulator >= FIXED_TIMESTEP_MS) { if (player) updateOrb(player, FIXED_TIMESTEP_S); orbs.forEach(orb => { if (!orbsToRemove.has(orb.id)) updateOrb(orb, FIXED_TIMESTEP_S); }); updateAbsorptions(FIXED_TIMESTEP_MS); timeAccumulator -= FIXED_TIMESTEP_MS; } checkCollisions(); if (orbsToRemove.size > 0) { orbs = orbs.filter(orb => !orbsToRemove.has(orb.id)); activeAbsorptions.forEach((value, key) => { if (orbsToRemove.has(key)) { activeAbsorptions.delete(key); } }); orbsToRemove.clear(); } if (player && player.radius < MIN_PLAYER_RADIUS) { console.log(`Game Over - Player radius too small (${player.radius.toFixed(2)})`); init(); return; } ctx.clearRect(0, 0, canvasWidth, canvasHeight); ctx.save(); if (player) { const drawOffsetX = player.x - canvasWidth / 2; const drawOffsetY = player.y - canvasHeight / 2; orbs.forEach(orb => drawOrbWithWrapping(orb, drawOffsetX, drawOffsetY)); drawOrbWithWrapping(player, drawOffsetX, drawOffsetY); } else { orbs.forEach(orb => drawOrbWithWrapping(orb, canvasWidth / 2, canvasHeight / 2)); } ctx.restore(); drawColorMenuToggle(); drawColorMenu(); animationFrameId = requestAnimationFrame(gameLoop); }
+
+        // --- Initialization (Unchanged) ---
+        function spawnOrbs(count) { const existingOrbsAndPlayer = player ? [...orbs, player] : [...orbs]; let spawnedCount = 0; for (let i = 0; i < count; i++) { let r, x, y; let tooClose; let attempts = 0; const maxAttempts = 100; do { r = Math.random() * (MAX_ORB_RADIUS - MIN_ORB_RADIUS) + MIN_ORB_RADIUS; x = Math.random() * canvasWidth; y = Math.random() * canvasHeight; tooClose = false; for (const existing of existingOrbsAndPlayer) { const checkDist = wrappedDistance(x, y, existing.x, existing.y, canvasWidth, canvasHeight); const requiredDist = (existing.radius + r) * 1.1 + (existing.isPlayer ? SAFE_ZONE_RADIUS : 5); if (checkDist < requiredDist) { tooClose = true; break; } } attempts++; } while (tooClose && attempts < maxAttempts); if (!tooClose) { const angle = Math.random() * Math.PI * 2; const speed = Math.random() * INITIAL_ORB_MAX_SPEED; const newOrb = createOrb(x, y, r, Math.cos(angle) * speed, Math.sin(angle) * speed); if (newOrb) { orbs.push(newOrb); existingOrbsAndPlayer.push(newOrb); spawnedCount++; } } } console.log(`Spawned ${spawnedCount} orbs.`); }
+        async function init() { console.log("Initializing game..."); if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; } if (!canvas || !ctx) { console.error("CRITICAL: Canvas/context missing!"); return; } try { canvasWidth = window.innerWidth; canvasHeight = window.innerHeight; canvas.width = canvasWidth; canvas.height = canvasHeight; globalVibrancySetting = DEFAULT_VIBRANCY; isPlayerColorConstant = false; const initialPlayerColor = 'rgba(100, 200, 255, 0.9)'; const initialRgb = parseRGBA(initialPlayerColor); if (initialRgb) { const initialHsl = rgbToHsl(initialRgb.r, initialRgb.g, initialRgb.b); pickerHue = initialHsl.h; pickerSaturation = initialHsl.s; pickerLightness = initialHsl.l; } else { pickerHue = 205; pickerSaturation = 0.8; pickerLightness = 0.6; } } catch (e) { console.error("Error setting canvas dimensions:", e); return; } orbs = []; player = null; isMouseDown = false; isDraggingVibrancySlider = false; isDraggingHueSlider = false; isDraggingSvBox = false; isEyedropperActive = false; lastTimestamp = 0; timeAccumulator = 0; activeAbsorptions.clear(); orbsToRemove.clear(); isColorMenuOpen = false; isPlayerPickerPopupVisible = false; const initialRgbFromPicker = hslToRgb(pickerHue, pickerSaturation, pickerLightness); const playerColorString = `rgba(${initialRgbFromPicker.r}, ${initialRgbFromPicker.g}, ${initialRgbFromPicker.b}, 0.9)`; player = createOrb(canvasWidth / 2, canvasHeight / 2, 20, 0, 0, playerColorString); if (!player || typeof player !== 'object') { console.error("CRITICAL ERROR: Player creation failed!"); return; } player.isPlayer = true; spawnOrbs(INITIAL_ORBS); console.log("Initialization setup complete, calculating initial layout and starting loop..."); lastTimestamp = 0; canvas.style.cursor = 'default'; setTimeout(() => { try { console.log("Performing initial layout calculation."); calculateUILayout(); if (!animationFrameId) { console.log("Starting game loop."); lastTimestamp = performance.now(); animationFrameId = requestAnimationFrame(gameLoop); } } catch(e) { console.error("Error during delayed layout calculation:", e); } }, 10); }
+
+        // --- Event Listeners ---
+        // --- REVERTED mousedown (Simple Lock Toggle) ---
+        canvas.addEventListener('mousedown', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const clickY = event.clientY - rect.top;
+            let consumeClick = false;
+
+            // Eyedropper logic
+            if (isEyedropperActive) {
+                if (isPointInRect(clickX, clickY, playerPickerPopupRect) || isPointInRect(clickX, clickY, colorMenuRect)) {
+                    isEyedropperActive = false; canvas.style.cursor = 'default'; consumeClick = true;
+                } else {
+                    try { const pixelData = ctx.getImageData(clickX, clickY, 1, 1).data; const [r, g, b] = pixelData; const hsl = rgbToHsl(r, g, b); pickerHue = hsl.h; pickerSaturation = hsl.s; pickerLightness = hsl.l; const currentAlpha = player ? parseRGBA(player.color)?.a ?? 0.9 : 0.9; if (player) { player.color = `rgba(${r}, ${g}, ${b}, ${currentAlpha})`; } calculateUILayout(); } catch (e) { if (e instanceof DOMException && e.name === 'SecurityError') { console.warn("Cannot sample pixel data (security)."); } else { console.error("Error getting pixel data:", e); } } finally { isEyedropperActive = false; canvas.style.cursor = 'default'; consumeClick = true; }
+                }
+                if (consumeClick) { isMouseDown = false; return; }
+            }
+
+            // Player Color Picker Popup interaction
+            if (isPlayerPickerPopupVisible) {
+                if (isPointInRect(clickX, clickY, playerPickerPopupRect)) {
+                    consumeClick = true;
+                    if (isPointInRect(clickX, clickY, eyedropperRect)) {
+                        isEyedropperActive = true; canvas.style.cursor = eyedropperCursorURI;
+                    } else if (isPointInRect(clickX, clickY, hueSliderRect)) {
+                        isDraggingHueSlider = true; updateHueFromMouse(clickY);
+                    } else if (isPointInRect(clickX, clickY, svBoxRect)) {
+                        isDraggingSvBox = true; updateSvFromMouse(clickX, clickY);
+                    } else if (isPointInRect(clickX, clickY, constantColorCheckboxRect)) {
+                        // --- Simple Lock Toggle ---
+                        isPlayerColorConstant = !isPlayerColorConstant; // Just toggle the flag
+                        consumeClick = true;
+                        // --- End Simple Lock Toggle ---
+                    }
+                } else {
+                    isPlayerPickerPopupVisible = false; consumeClick = true;
+                    if (isPointInRect(clickX, clickY, colorMenuToggleRect)) { consumeClick = false; }
+                }
+            }
+
+            // Main Menu Interaction (only if click hasn't been consumed yet)
+            if (!consumeClick && isPointInRect(clickX, clickY, colorMenuToggleRect)) {
+                isColorMenuOpen = !isColorMenuOpen;
+                if (!isColorMenuOpen) isPlayerPickerPopupVisible = false;
+                else {
+                    const currentRgb = parseRGBA(player ? player.color : 'rgba(128,128,128,0.9)');
+                    if (currentRgb) { const currentHsl = rgbToHsl(currentRgb.r, currentRgb.g, currentRgb.b); pickerHue = currentHsl.h; pickerSaturation = currentHsl.s; pickerLightness = currentHsl.l; }
+                    calculateUILayout();
+                }
+                consumeClick = true;
+            } else if (!consumeClick && isColorMenuOpen) {
+                if (isPointInRect(clickX, clickY, colorMenuRect)) {
+                    consumeClick = true;
+                    if (isPointInRect(clickX, clickY, playerColorTogglePreviewRect)) {
+                        isPlayerPickerPopupVisible = !isPlayerPickerPopupVisible;
+                        if(isPlayerPickerPopupVisible) calculateUILayout();
+                    } else {
+                        const vibHandleMargin = 4;
+                        const vibHandleClickRect = { x: vibrancySliderHandleRect.x - vibHandleMargin, y: vibrancySliderHandleRect.y - vibHandleMargin, width: vibrancySliderHandleRect.width + 2 * vibHandleMargin, height: vibrancySliderHandleRect.height + 2 * vibHandleMargin };
+                        if (isPointInRect(clickX, clickY, vibHandleClickRect) || isPointInRect(clickX, clickY, vibrancySliderRect)) {
+                            isDraggingVibrancySlider = true;
+                            updateVibrancySliderFromMouse(clickX);
+                        }
+                    }
+                } else {
+                    isColorMenuOpen = false;
+                    isPlayerPickerPopupVisible = false;
+                    consumeClick = false;
+                }
+            }
+
+            // Determine if the click is for propulsion
+            isMouseDown = !consumeClick;
+            if (isMouseDown) {
+                lastMouseX = clickX;
+                lastMouseY = clickY;
+            } else {
+                isDraggingVibrancySlider = isDraggingVibrancySlider && consumeClick;
+                isDraggingHueSlider = isDraggingHueSlider && consumeClick;
+                isDraggingSvBox = isDraggingSvBox && consumeClick;
+            }
+        });
+        // --- END REVERTED mousedown ---
+
+        // --- mouseup, mouseleave, mousemove (Unchanged) ---
+        canvas.addEventListener('mouseup', () => { isMouseDown = false; isDraggingVibrancySlider = false; isDraggingHueSlider = false; isDraggingSvBox = false; });
+        canvas.addEventListener('mouseleave', () => { isMouseDown = false; isDraggingVibrancySlider = false; isDraggingHueSlider = false; isDraggingSvBox = false; if (isEyedropperActive){ isEyedropperActive = false; canvas.style.cursor = 'default'; } });
+        canvas.addEventListener('mousemove', (event) => { if (isEyedropperActive) return; const rect = canvas.getBoundingClientRect(); const moveX = event.clientX - rect.left; const moveY = event.clientY - rect.top; if (isDraggingHueSlider) { updateHueFromMouse(moveY); } else if (isDraggingSvBox) { updateSvFromMouse(moveX, moveY); } else if (isDraggingVibrancySlider) { updateVibrancySliderFromMouse(moveX); } else if (isMouseDown && !isColorMenuOpen && !isPlayerPickerPopupVisible) { lastMouseX = moveX; lastMouseY = moveY; } });
+
+        // --- Update functions (Unchanged) ---
+        function updateHueFromMouse(mouseY) { const trackStartY = hueSliderRect.y; const trackEndY = hueSliderRect.y + hueSliderRect.height; const ratio = clamp((mouseY - trackStartY) / hueSliderRect.height, 0, 1); pickerHue = ratio * 360; hueSliderHandleY = trackStartY + ratio * hueSliderRect.height; updatePlayerColorFromPicker(); }
+        function updateSvFromMouse(mouseX, mouseY) { const boxStartX = svBoxRect.x; const boxStartY = svBoxRect.y; const boxW = svBoxRect.width; const boxH = svBoxRect.height; const ratioX = clamp((mouseX - boxStartX) / boxW, 0, 1); const ratioY = clamp((mouseY - boxStartY) / boxH, 0, 1); pickerSaturation = ratioX; pickerLightness = 1 - ratioY; svBoxHandlePos.x = boxStartX + ratioX * boxW; svBoxHandlePos.y = boxStartY + ratioY * boxH; updatePlayerColorFromPicker(); }
+        function updatePlayerColorFromPicker() { if (!player) return; const newRgb = hslToRgb(pickerHue, pickerSaturation, pickerLightness); const currentRgb = parseRGBA(player.color); const alpha = currentRgb ? currentRgb.a : 0.9; player.color = `rgba(${newRgb.r}, ${newRgb.g}, ${newRgb.b}, ${alpha})`; }
+        function updateVibrancySliderFromMouse(mouseX) { const trackStartX = vibrancySliderRect.x; const handleWidth = vibrancySliderHandleRect.width; const trackEffectiveWidth = vibrancySliderRect.width - handleWidth; const relativeX = mouseX - trackStartX - (handleWidth / 2); let ratio = clamp(relativeX / trackEffectiveWidth, 0, 1); globalVibrancySetting = MIN_VIBRANCY + ratio * (MAX_VIBRANCY - MIN_VIBRANCY); vibrancySliderHandleRect.x = trackStartX + ratio * trackEffectiveWidth; }
+
+        // --- Global Listeners (Unchanged) ---
+        window.addEventListener('resize', () => { console.log("Window resize, re-init."); if (animationFrameId) cancelAnimationFrame(animationFrameId); animationFrameId = null; init(); });
+        document.addEventListener('DOMContentLoaded', () => { console.log("DOMContentLoaded."); init(); });
+
+    </script>
+</body>
+</html>
