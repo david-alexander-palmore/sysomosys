@@ -62,6 +62,11 @@
             /* display: none; */
         }
 
+        /* --- Hide Audio Player --- */
+        #background-music {
+            display: none; /* Hide the default audio controls */
+        }
+
     </style>
 </head>
 <body>
@@ -74,16 +79,17 @@
 
     <canvas id="gameCanvas"></canvas>
 
+    <!-- Background Music Element -->
+    <audio id="background-music" src="Sysomosys-Vibes.mp3" loop preload="auto"></audio>
+    <!-- Note: 'autoplay' attribute removed, we'll handle it with JS -->
+    <!-- preload="auto" suggests the browser load the file ASAP -->
+
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        const bgMusic = document.getElementById('background-music'); // Get the audio element
 
         // --- Game Settings ---
-        let canvasWidth = window.innerWidth;
-        let canvasHeight = window.innerHeight;
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
-
         const MIN_PLAYER_RADIUS = 5;
         const EJECTION_MASS_RATIO = 0.025;
         const EJECTION_SPEED_MULTIPLIER = 200;
@@ -105,6 +111,8 @@
         const INITIAL_ORB_MAX_SPEED = 3;
 
         // --- Game State ---
+        let canvasWidth;
+        let canvasHeight;
         let player = null;
         let orbs = [];
         let animationFrameId = null;
@@ -116,7 +124,8 @@
         let timeAccumulator = 0;
         let activeAbsorptions = new Map();
         let orbsToRemove = new Set();
-        let playerAbsorbed = false; // Flag to track player absorption completion
+        let playerAbsorbed = false;
+        let musicStarted = false;
 
         // --- Helper Functions ---
         function getRandomColor() { const r = Math.floor(Math.random() * 155) + 100; const g = Math.floor(Math.random() * 155) + 100; const b = Math.floor(Math.random() * 155) + 100; const a = (Math.random() * 0.3 + 0.6).toFixed(2); return `rgba(${r}, ${g}, ${b}, ${a})`; }
@@ -125,7 +134,7 @@
         function getWrappedVector(x1, y1, x2, y2, width, height) { let dx = x2 - x1; let dy = y2 - y1; if (Math.abs(dx) > width / 2) { dx = dx > 0 ? dx - width : dx + width; } if (Math.abs(dy) > height / 2) { dy = dy > 0 ? dy - height : dy + height; } return { dx, dy }; }
 
         // --- Orb Object Creation ---
-        function createOrb(x, y, radius, dx = 0, dy = 0, color = getRandomColor()) {
+         function createOrb(x, y, radius, dx = 0, dy = 0, color = getRandomColor()) {
             if (typeof MIN_ABSORB_COMPLETE_RADIUS === 'undefined') { console.error("CRITICAL: MIN_ABSORB_COMPLETE_RADIUS is not defined!"); return undefined; }
             const validRadius = Math.max(MIN_ABSORB_COMPLETE_RADIUS, radius);
             if (isNaN(validRadius)) { console.error(`CRITICAL: validRadius became NaN! Input: ${radius}`); return undefined; }
@@ -138,31 +147,28 @@
         function drawOrbWithWrapping(orb, drawOffsetX, drawOffsetY) { if (!orb || orb.radius < MIN_ABSORB_COMPLETE_RADIUS || orbsToRemove.has(orb.id)) return; const drawX = orb.x - drawOffsetX; const drawY = orb.y - drawOffsetY; const drawRadius = orb.radius; let drawColor = orb.color; let baseShadowColor = orb.color; if (orb.isPlayer) { const baseColor = parseRGBA(orb.color); const timeSeconds = Date.now() / 1000; const pulseFactor = 1.0 + PLAYER_PULSE_AMPLITUDE * Math.sin(2 * Math.PI * PLAYER_PULSE_FREQ_HZ * timeSeconds); const newR = Math.max(0, Math.min(255, Math.round(baseColor.r * pulseFactor))); const newG = Math.max(0, Math.min(255, Math.round(baseColor.g * pulseFactor))); const newB = Math.max(0, Math.min(255, Math.round(baseColor.b * pulseFactor))); drawColor = `rgba(${newR}, ${newG}, ${newB}, ${baseColor.a})`; baseShadowColor = drawColor; } const glowAmount = Math.min(drawRadius * 0.7, 15); const shadowBlur = glowAmount > 1 ? glowAmount : 0; const shadowColor = baseShadowColor; _drawSingleOrbInstance(drawX, drawY, drawRadius, drawColor, shadowColor, shadowBlur); const worldWidth = canvasWidth; const worldHeight = canvasHeight; let wrapDrawX = drawX, wrapDrawY = drawY; let wrappedHorizontal = false, wrappedVertical = false; if (drawX - drawRadius < 0) { _drawSingleOrbInstance(drawX + worldWidth, drawY, drawRadius, drawColor, shadowColor, shadowBlur); wrappedHorizontal = true; wrapDrawX = drawX + worldWidth; } if (drawX + drawRadius > canvasWidth) { _drawSingleOrbInstance(drawX - worldWidth, drawY, drawRadius, drawColor, shadowColor, shadowBlur); wrappedHorizontal = true; wrapDrawX = drawX - worldWidth; } if (drawY - drawRadius < 0) { _drawSingleOrbInstance(drawX, drawY + worldHeight, drawRadius, drawColor, shadowColor, shadowBlur); wrappedVertical = true; wrapDrawY = drawY + worldHeight; } if (drawY + drawRadius > canvasHeight) { _drawSingleOrbInstance(drawX, drawY - worldHeight, drawRadius, drawColor, shadowColor, shadowBlur); wrappedVertical = true; wrapDrawY = drawY - worldHeight; } if (wrappedHorizontal && wrappedVertical) { const cornerX = (drawX - drawRadius < 0) ? drawX + worldWidth : drawX - worldWidth; const cornerY = (drawY - drawRadius < 0) ? drawY + worldHeight : drawY - worldHeight; _drawSingleOrbInstance(cornerX, cornerY, drawRadius, drawColor, shadowColor, shadowBlur); } ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; }
 
         // --- Update Functions ---
-        function updateOrb(orb, dtSeconds) {
+         function updateOrb(orb, dtSeconds) {
             if (!orb || dtSeconds <= 0) return;
             orb.x += orb.dx * dtSeconds;
             orb.y += orb.dy * dtSeconds;
             if (orb.x >= canvasWidth) orb.x -= canvasWidth; else if (orb.x < 0) orb.x += canvasWidth;
             if (orb.y >= canvasHeight) orb.y -= canvasHeight; else if (orb.y < 0) orb.y += canvasHeight;
 
-            // Prevent non-player orbs from getting ridiculously small *unless* they are actively being absorbed
             if (!orb.isPlayer && !activeAbsorptions.has(orb.id) && orb.mass < (MIN_ORB_RADIUS * MIN_ORB_RADIUS * 0.1)) {
                  orb.mass = Math.max(0.01, orb.mass);
                  orb.radius = Math.sqrt(orb.mass);
             }
-            // Ensure player doesn't shrink below min *unless actively being absorbed*
             if (orb.isPlayer && orb.radius < MIN_PLAYER_RADIUS && !activeAbsorptions.has(orb.id)) {
                  orb.radius = MIN_PLAYER_RADIUS;
                  orb.mass = orb.radius * orb.radius;
             }
-            // Player *can* shrink below MIN_PLAYER_RADIUS if actively being absorbed.
         }
 
         // --- Collision & Absorption Logic ---
         function mixMomentumOnAbsorption(absorber, absorbed, absorbedOriginalMass) {
-             if (!absorber || !absorbed || absorber.mass <= 0 || absorbedOriginalMass <= 0) { return; } // Avoid invalid calculations
+             if (!absorber || !absorbed || absorber.mass <= 0 || absorbedOriginalMass <= 0) { return; }
              const initialAbsorberMass = absorber.mass - absorbedOriginalMass;
-             if (initialAbsorberMass <= 0) { // Handle potential edge case where transferred mass >= original mass
+             if (initialAbsorberMass <= 0) {
                 absorber.dx = (absorbed.dx * absorbedOriginalMass) / absorber.mass;
                 absorber.dy = (absorbed.dy * absorbedOriginalMass) / absorber.mass;
              } else {
@@ -171,33 +177,26 @@
              }
         }
 
-        // <<< MODIFIED updateAbsorptions function >>>
         function updateAbsorptions(fixedTimestepMs) {
             if (fixedTimestepMs <= 0) return;
             const dtSeconds = fixedTimestepMs / 1000.0;
             for (let [absorbedId, absorptionInfo] of activeAbsorptions) {
                 const { absorber, absorbed } = absorptionInfo;
-
                 const currentAbsorber = absorber.isPlayer ? player : orbs.find(o => o.id === absorber.id);
                 const currentAbsorbed = absorbed.isPlayer ? player : orbs.find(o => o.id === absorbed.id);
 
                 if (!currentAbsorber || orbsToRemove.has(absorber.id) || !currentAbsorbed || orbsToRemove.has(absorbed.id)) {
-                    activeAbsorptions.delete(absorbedId);
-                    continue;
+                    activeAbsorptions.delete(absorbedId); continue;
                 }
 
                 const dist = wrappedDistance(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight);
                 const radiiSum = currentAbsorber.radius + currentAbsorbed.radius;
                 const overlap = Math.max(0, radiiSum - dist);
 
-                // Check for absorption condition and ensure the absorbed orb is still large enough to be meaningfully absorbed
-                // The *continuation* check uses 0.9 factor to allow absorption slightly below the completion threshold
                 if (overlap >= 0 && dist <= radiiSum + 0.1 && currentAbsorber.mass > currentAbsorbed.mass * MASS_ABSORPTION_RATIO && currentAbsorbed.radius >= MIN_ABSORB_COMPLETE_RADIUS * 0.9) {
-                    // --- Calculate mass transfer ---
                     let approachSpeed = 0;
                     if (dist > 0.1) {
-                        const v_rel_x = currentAbsorbed.dx - currentAbsorber.dx;
-                        const v_rel_y = currentAbsorbed.dy - currentAbsorber.dy;
+                        const v_rel_x = currentAbsorbed.dx - currentAbsorber.dx; const v_rel_y = currentAbsorbed.dy - currentAbsorber.dy;
                         const disp = getWrappedVector(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight);
                         const dispMag = Math.sqrt(disp.dx * disp.dx + disp.dy * disp.dy);
                         if (dispMag > 0.01) {
@@ -211,183 +210,103 @@
                     const velocityFactor = approachSpeed * (VELOCITY_ABSORPTION_FACTOR / BASE_ABSORPTION_RATE_PER_SECOND);
                     const speedFactor = 1.0 + overlapFactor + velocityFactor;
                     const effectiveAbsorptionRate = BASE_ABSORPTION_RATE_PER_SECOND * speedFactor;
-
                     let massToTransfer = effectiveAbsorptionRate * dtSeconds;
                     massToTransfer = Math.min(massToTransfer, currentAbsorbed.mass);
-
-                    const oldAbsorberMass = currentAbsorber.mass;
-                    const massBeingTransferred = massToTransfer;
+                    const oldAbsorberMass = currentAbsorber.mass; const massBeingTransferred = massToTransfer;
 
                     if (massBeingTransferred > 0) {
-                        currentAbsorber.mass += massBeingTransferred;
-                        currentAbsorbed.mass -= massBeingTransferred;
-                        currentAbsorber.radius = Math.sqrt(currentAbsorber.mass);
-                        currentAbsorbed.radius = currentAbsorbed.mass > 0 ? Math.sqrt(currentAbsorbed.mass) : 0;
-
-                        // --- Color Mixing ---
+                        currentAbsorber.mass += massBeingTransferred; currentAbsorbed.mass -= massBeingTransferred;
+                        currentAbsorber.radius = Math.sqrt(currentAbsorber.mass); currentAbsorbed.radius = currentAbsorbed.mass > 0 ? Math.sqrt(currentAbsorbed.mass) : 0;
                         const c1 = parseRGBA(currentAbsorber.color); const c2 = parseRGBA(currentAbsorbed.color);
                         const newTotalMass = currentAbsorber.mass;
                         if (newTotalMass > 0) {
-                           const newR = Math.round((c1.r * oldAbsorberMass + c2.r * massBeingTransferred) / newTotalMass);
-                           const newG = Math.round((c1.g * oldAbsorberMass + c2.g * massBeingTransferred) / newTotalMass);
-                           const newB = Math.round((c1.b * oldAbsorberMass + c2.b * massBeingTransferred) / newTotalMass);
-                           const newA = (c1.a * oldAbsorberMass + c2.a * massBeingTransferred) / newTotalMass;
+                           const newR = Math.round((c1.r * oldAbsorberMass + c2.r * massBeingTransferred) / newTotalMass); const newG = Math.round((c1.g * oldAbsorberMass + c2.g * massBeingTransferred) / newTotalMass);
+                           const newB = Math.round((c1.b * oldAbsorberMass + c2.b * massBeingTransferred) / newTotalMass); const newA = (c1.a * oldAbsorberMass + c2.a * massBeingTransferred) / newTotalMass;
                            currentAbsorber.color = `rgba(${Math.max(0,Math.min(255,newR))}, ${Math.max(0,Math.min(255,newG))}, ${Math.max(0,Math.min(255,newB))}, ${Math.max(0.1,Math.min(1,newA)).toFixed(2)})`;
                         }
-                     }
+                    }
 
-                    // --- Nudging apart based on remaining overlap ---
                     const newRadiiSum = currentAbsorber.radius + currentAbsorbed.radius;
                     const newDist = wrappedDistance(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight);
                     const penetration = Math.max(0, newRadiiSum - newDist);
-
                     if (penetration > 0.05 && newDist > 0.05) {
                          const vector = getWrappedVector(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight);
                          const vectorMag = Math.sqrt(vector.dx * vector.dx + vector.dy * vector.dy);
                          if (vectorMag > 0.01) {
-                             const nudgeFactor = penetration / vectorMag;
-                             const totalMassForNudge = currentAbsorber.mass + currentAbsorbed.mass;
+                             const nudgeFactor = penetration / vectorMag; const totalMassForNudge = currentAbsorber.mass + currentAbsorbed.mass;
                              if (totalMassForNudge > 0.01) {
-                                 const nudgeAbsorbedX = vector.dx * nudgeFactor * (currentAbsorber.mass / totalMassForNudge);
-                                 const nudgeAbsorbedY = vector.dy * nudgeFactor * (currentAbsorber.mass / totalMassForNudge);
-                                 const nudgeAbsorberX = -vector.dx * nudgeFactor * (currentAbsorbed.mass / totalMassForNudge);
-                                 const nudgeAbsorberY = -vector.dy * nudgeFactor * (currentAbsorbed.mass / totalMassForNudge);
-                                 currentAbsorbed.x = (currentAbsorbed.x + nudgeAbsorbedX + canvasWidth) % canvasWidth;
-                                 currentAbsorbed.y = (currentAbsorbed.y + nudgeAbsorbedY + canvasHeight) % canvasHeight;
-                                 currentAbsorber.x = (currentAbsorber.x + nudgeAbsorberX + canvasWidth) % canvasWidth;
-                                 currentAbsorber.y = (currentAbsorber.y + nudgeAbsorberY + canvasHeight) % canvasHeight;
+                                 const nudgeAbsorbedX = vector.dx * nudgeFactor * (currentAbsorber.mass / totalMassForNudge); const nudgeAbsorbedY = vector.dy * nudgeFactor * (currentAbsorber.mass / totalMassForNudge);
+                                 const nudgeAbsorberX = -vector.dx * nudgeFactor * (currentAbsorbed.mass / totalMassForNudge); const nudgeAbsorberY = -vector.dy * nudgeFactor * (currentAbsorbed.mass / totalMassForNudge);
+                                 currentAbsorbed.x = (currentAbsorbed.x + nudgeAbsorbedX + canvasWidth) % canvasWidth; currentAbsorbed.y = (currentAbsorbed.y + nudgeAbsorbedY + canvasHeight) % canvasHeight;
+                                 currentAbsorber.x = (currentAbsorber.x + nudgeAbsorberX + canvasWidth) % canvasWidth; currentAbsorber.y = (currentAbsorber.y + nudgeAbsorberY + canvasHeight) % canvasHeight;
                              }
                          }
-                     }
+                    }
 
-                    // --- Check for Absorption Completion ---
-                    // <<< MODIFIED HERE: Changed < to <= for radius check >>>
                     if (currentAbsorbed.radius <= MIN_ABSORB_COMPLETE_RADIUS || currentAbsorbed.mass <= 0.01) {
                         const remainingMass = currentAbsorbed.mass;
-                        if (remainingMass > 0) {
-                            currentAbsorber.mass += remainingMass;
-                            currentAbsorber.radius = Math.sqrt(currentAbsorber.mass);
-                        }
-                        // Mix momentum based on *all* mass transferred in this step + remainder
+                        if (remainingMass > 0) { currentAbsorber.mass += remainingMass; currentAbsorber.radius = Math.sqrt(currentAbsorber.mass); }
                         mixMomentumOnAbsorption(currentAbsorber, currentAbsorbed, massBeingTransferred + remainingMass);
-
-                        // Check if the absorbed orb is the player
-                        if (currentAbsorbed.isPlayer) {
-                            playerAbsorbed = true; // Set the flag
-                            console.log("Player orb fully absorbed (radius <= threshold). Reset pending.");
-                        }
-
-                        // Mark the absorbed orb for removal
-                        orbsToRemove.add(absorbedId);
-                        activeAbsorptions.delete(absorbedId); // Stop this absorption process
-
-                        // Nullify the absorbed orb's properties to prevent further interaction/drawing
-                        currentAbsorbed.mass = 0;
-                        currentAbsorbed.radius = 0;
-                        currentAbsorbed.dx = 0;
-                        currentAbsorbed.dy = 0;
+                        if (currentAbsorbed.isPlayer) { playerAbsorbed = true; console.log("Player orb fully absorbed (radius <= threshold). Reset pending."); }
+                        orbsToRemove.add(absorbedId); activeAbsorptions.delete(absorbedId);
+                        currentAbsorbed.mass = 0; currentAbsorbed.radius = 0; currentAbsorbed.dx = 0; currentAbsorbed.dy = 0;
                     }
                 } else {
-                    // Conditions for absorption no longer met (e.g., moved too far apart, mass ratio changed, or radius too small to continue)
                     activeAbsorptions.delete(absorbedId);
                 }
             }
         }
 
-
         // --- Elastic Collision Helper ---
-        function resolveElasticCollision(orb1, orb2, dist, canvasWidth, canvasHeight) {
-            // Prevent division by zero or bouncing if perfectly overlapped (pathological case)
+         function resolveElasticCollision(orb1, orb2, dist, width, height) {
             if (dist < 0.01) {
-                // Simple separation nudge if perfectly overlapped
-                const angle = Math.random() * Math.PI * 2;
-                const nudge = 0.1;
-                orb1.x = (orb1.x - Math.cos(angle) * nudge + canvasWidth) % canvasWidth;
-                orb1.y = (orb1.y - Math.sin(angle) * nudge + canvasHeight) % canvasHeight;
-                orb2.x = (orb2.x + Math.cos(angle) * nudge + canvasWidth) % canvasWidth;
-                orb2.y = (orb2.y + Math.sin(angle) * nudge + canvasHeight) % canvasHeight;
+                const angle = Math.random() * Math.PI * 2; const nudge = 0.1;
+                orb1.x = (orb1.x - Math.cos(angle) * nudge + width) % width; orb1.y = (orb1.y - Math.sin(angle) * nudge + height) % height;
+                orb2.x = (orb2.x + Math.cos(angle) * nudge + width) % width; orb2.y = (orb2.y + Math.sin(angle) * nudge + height) % height;
                 return;
             }
-
-            // 1. Collision Normal (Unit Vector from orb1 to orb2)
-            const vec = getWrappedVector(orb1.x, orb1.y, orb2.x, orb2.y, canvasWidth, canvasHeight);
-            const nx = vec.dx / dist; // Normalized collision vector x
-            const ny = vec.dy / dist; // Normalized collision vector y
-
-            // 2. Relative Velocity
-            const rvx = orb2.dx - orb1.dx;
-            const rvy = orb2.dy - orb1.dy;
-
-            // 3. Velocity component along the normal
-            const velAlongNormal = rvx * nx + rvy * ny;
-
-            // 4. Only bounce if objects are moving towards each other
-            if (velAlongNormal >= 0) {
-                return; // Moving apart or parallel, no bounce needed
-            }
-
-            // 5. Simplified Elastic Collision (Swap normal velocity components)
-            const tx = -ny; const ty = nx; // Tangent vector
+            const vec = getWrappedVector(orb1.x, orb1.y, orb2.x, orb2.y, width, height);
+            const nx = vec.dx / dist; const ny = vec.dy / dist; const rvx = orb2.dx - orb1.dx; const rvy = orb2.dy - orb1.dy;
+            const velAlongNormal = rvx * nx + rvy * ny; if (velAlongNormal >= 0) { return; }
+            const tx = -ny; const ty = nx;
             const v1n_scalar = orb1.dx * nx + orb1.dy * ny; const v1t_scalar = orb1.dx * tx + orb1.dy * ty;
             const v2n_scalar = orb2.dx * nx + orb2.dy * ny; const v2t_scalar = orb2.dx * tx + orb2.dy * ty;
-            const v1n_scalar_new = v2n_scalar; const v2n_scalar_new = v1n_scalar; // Swap normal components
+            const v1n_scalar_new = v2n_scalar; const v2n_scalar_new = v1n_scalar;
             orb1.dx = (v1n_scalar_new * nx) + (v1t_scalar * tx); orb1.dy = (v1n_scalar_new * ny) + (v1t_scalar * ty);
             orb2.dx = (v2n_scalar_new * nx) + (v2t_scalar * tx); orb2.dy = (v2n_scalar_new * ny) + (v2t_scalar * ty);
-
-            // 6. Resolve Overlap / Penetration
-            const radiiSum = orb1.radius + orb2.radius;
-            const penetration = Math.max(0, radiiSum - dist);
+            const radiiSum = orb1.radius + orb2.radius; const penetration = Math.max(0, radiiSum - dist);
             if (penetration > 0.01) {
                  const nudgeAmount = (penetration / 2) + 0.01;
-                 orb1.x = (orb1.x - nx * nudgeAmount + canvasWidth) % canvasWidth;
-                 orb1.y = (orb1.y - ny * nudgeAmount + canvasHeight) % canvasHeight;
-                 orb2.x = (orb2.x + nx * nudgeAmount + canvasWidth) % canvasWidth;
-                 orb2.y = (orb2.y + ny * nudgeAmount + canvasHeight) % canvasHeight;
+                 orb1.x = (orb1.x - nx * nudgeAmount + width) % width; orb1.y = (orb1.y - ny * nudgeAmount + height) % height;
+                 orb2.x = (orb2.x + nx * nudgeAmount + width) % width; orb2.y = (orb2.y + ny * nudgeAmount + height) % height;
             }
-
-             // 7. Cancel any active absorption involving these two
              if (activeAbsorptions.has(orb1.id) && activeAbsorptions.get(orb1.id).absorber.id === orb2.id) { activeAbsorptions.delete(orb1.id); }
              if (activeAbsorptions.has(orb2.id) && activeAbsorptions.get(orb2.id).absorber.id === orb1.id) { activeAbsorptions.delete(orb2.id); }
         }
 
         // --- Collision Detection ---
-        function checkCollisions() {
+         function checkCollisions() {
              if (!player && !playerAbsorbed) return;
-
+             const width = canvasWidth; const height = canvasHeight;
              const allOrbs = player && !playerAbsorbed && player.mass > 0 ? [player, ...orbs.filter(o => !orbsToRemove.has(o.id))] : [...orbs.filter(o => !orbsToRemove.has(o.id))];
              const checkedPairs = new Set();
-
              for (let i = allOrbs.length - 1; i >= 0; i--) {
-                 const orb1 = allOrbs[i];
-                 if (!orb1 || orb1.mass <= 0 || orbsToRemove.has(orb1.id)) continue;
-
+                 const orb1 = allOrbs[i]; if (!orb1 || orb1.mass <= 0 || orbsToRemove.has(orb1.id)) continue;
                  for (let j = i - 1; j >= 0; j--) {
-                     const orb2 = allOrbs[j];
-                     if (!orb2 || orb2.mass <= 0 || orbsToRemove.has(orb2.id)) continue;
-
-                     const pairKey = orb1.id < orb2.id ? `${orb1.id}-${orb2.id}` : `${orb2.id}-${orb1.id}`;
-                     if (checkedPairs.has(pairKey)) continue;
-                     checkedPairs.add(pairKey);
-
-                     const dist = wrappedDistance(orb1.x, orb1.y, orb2.x, orb2.y, canvasWidth, canvasHeight);
-                     const radiiSum = orb1.radius + orb2.radius;
-
-                     if (dist <= radiiSum + 0.5) { // Collision/Overlap detected
+                     const orb2 = allOrbs[j]; if (!orb2 || orb2.mass <= 0 || orbsToRemove.has(orb2.id)) continue;
+                     const pairKey = orb1.id < orb2.id ? `${orb1.id}-${orb2.id}` : `${orb2.id}-${orb1.id}`; if (checkedPairs.has(pairKey)) continue; checkedPairs.add(pairKey);
+                     const dist = wrappedDistance(orb1.x, orb1.y, orb2.x, orb2.y, width, height); const radiiSum = orb1.radius + orb2.radius;
+                     if (dist <= radiiSum + 0.5) {
                          let absorber = null, absorbed = null;
-
                          if (orb1.mass > orb2.mass * MASS_ABSORPTION_RATIO && orb1.radius > orb2.radius) { absorber = orb1; absorbed = orb2; }
                          else if (orb2.mass > orb1.mass * MASS_ABSORPTION_RATIO && orb2.radius > orb1.radius) { absorber = orb2; absorbed = orb1; }
-
-                         if (absorber && absorbed) { // Handle Absorption
-                            const reverseAbsorption = activeAbsorptions.get(absorber.id);
-                            if (reverseAbsorption && reverseAbsorption.absorber.id === absorbed.id) { activeAbsorptions.delete(absorber.id); }
-                            const existingAbsorption = activeAbsorptions.get(absorbed.id);
-                            if (!existingAbsorption || existingAbsorption.absorber.id !== absorber.id) { activeAbsorptions.set(absorbed.id, { absorber: absorber, absorbed: absorbed }); }
-                         } else { // Handle Bounce (Neither can absorb)
-                             resolveElasticCollision(orb1, orb2, dist, canvasWidth, canvasHeight);
+                         if (absorber && absorbed) {
+                            const reverseAbsorption = activeAbsorptions.get(absorber.id); if (reverseAbsorption && reverseAbsorption.absorber.id === absorbed.id) { activeAbsorptions.delete(absorber.id); }
+                            const existingAbsorption = activeAbsorptions.get(absorbed.id); if (!existingAbsorption || existingAbsorption.absorber.id !== absorber.id) { activeAbsorptions.set(absorbed.id, { absorber: absorber, absorbed: absorbed }); }
+                         } else {
+                             resolveElasticCollision(orb1, orb2, dist, width, height);
                          }
-
-                     } else { // No collision: Stop any active absorption between these two
+                     } else {
                          const absorption12 = activeAbsorptions.get(orb2.id); if (absorption12 && absorption12.absorber.id === orb1.id) { activeAbsorptions.delete(orb2.id); }
                          const absorption21 = activeAbsorptions.get(orb1.id); if (absorption21 && absorption21.absorber.id === orb2.id) { activeAbsorptions.delete(orb1.id); }
                      }
@@ -397,13 +316,12 @@
 
         // --- Player Control ---
         function propelPlayer(targetScreenX, targetScreenY) {
-            if (!player || player.radius <= MIN_PLAYER_RADIUS || playerAbsorbed) return false; // Cannot propel if being absorbed
-            const targetWorldX = player.x + (targetScreenX - canvasWidth / 2);
-            const targetWorldY = player.y + (targetScreenY - canvasHeight / 2);
-            const vec = getWrappedVector(player.x, player.y, targetWorldX, targetWorldY, canvasWidth, canvasHeight);
+            if (!player || player.radius <= MIN_PLAYER_RADIUS || playerAbsorbed) return false;
+            const width = canvasWidth; const height = canvasHeight;
+            const targetWorldX = player.x + (targetScreenX - width / 2); const targetWorldY = player.y + (targetScreenY - height / 2);
+            const vec = getWrappedVector(player.x, player.y, targetWorldX, targetWorldY, width, height);
             let dx = vec.dx; let dy = vec.dy; if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) return false;
-            const angleToTarget = Math.atan2(dy, dx);
-            const ejectionAngle = angleToTarget; const propulsionAngle = angleToTarget + Math.PI;
+            const angleToTarget = Math.atan2(dy, dx); const ejectionAngle = angleToTarget; const propulsionAngle = angleToTarget + Math.PI;
             const massToEject = player.mass * EJECTION_MASS_RATIO; if (massToEject <= 0) return false;
             const radiusEjected = Math.sqrt(massToEject); if (radiusEjected < MIN_ORB_RADIUS * 0.5) return false;
             const potentialNewPlayerMass = player.mass - massToEject; if (potentialNewPlayerMass < (MIN_PLAYER_RADIUS * MIN_PLAYER_RADIUS)) { return false; }
@@ -412,7 +330,7 @@
             const playerNewRadiusIfEjected = Math.sqrt(potentialNewPlayerMass); const effectivePlayerRadiusForPlacement = Math.max(MIN_PLAYER_RADIUS, playerNewRadiusIfEjected);
             const startDist = effectivePlayerRadiusForPlacement + radiusEjected + 1.5;
             const ejectStartRawX = player.x + Math.cos(ejectionAngle) * startDist; const ejectStartRawY = player.y + Math.sin(ejectionAngle) * startDist;
-            const ejectStartX = (ejectStartRawX % canvasWidth + canvasWidth) % canvasWidth; const ejectStartY = (ejectStartRawY % canvasHeight + canvasHeight) % canvasHeight;
+            const ejectStartX = (ejectStartRawX % width + width) % width; const ejectStartY = (ejectStartRawY % height + height) % height;
             const playerBaseColor = parseRGBA(player.color); const ejectAlpha = Math.max(0.2, playerBaseColor.a * 0.7).toFixed(2);
             const ejectColor = `rgba(${playerBaseColor.r}, ${playerBaseColor.g}, ${playerBaseColor.b}, ${ejectAlpha})`;
             const particle = createOrb(ejectStartX, ejectStartY, radiusEjected, ejectVelX, ejectVelY, ejectColor);
@@ -423,16 +341,14 @@
         }
 
         // --- Game Loop ---
-        function gameLoop(currentTime) {
+         function gameLoop(currentTime) {
             if (!lastTimestamp) lastTimestamp = currentTime;
             let deltaTime = currentTime - lastTimestamp; lastTimestamp = currentTime;
             deltaTime = Math.min(deltaTime, MAX_ACCUMULATED_TIME_MS * 2);
 
             if (isInteractionActive && player && !playerAbsorbed) {
                 if (currentTime - lastPropulsionTime > PROPULSION_COOLDOWN) {
-                    if (propelPlayer(lastInteractionX, lastInteractionY)) {
-                        lastPropulsionTime = currentTime;
-                    }
+                    if (propelPlayer(lastInteractionX, lastInteractionY)) { lastPropulsionTime = currentTime; }
                 }
             }
             timeAccumulator += deltaTime; timeAccumulator = Math.min(timeAccumulator, MAX_ACCUMULATED_TIME_MS);
@@ -444,7 +360,7 @@
                 timeAccumulator -= FIXED_TIMESTEP_MS;
              }
 
-            checkCollisions(); // Handles both absorptions setup and bounces
+            checkCollisions();
 
             if (orbsToRemove.size > 0) {
                 orbs = orbs.filter(orb => !orbsToRemove.has(orb.id));
@@ -452,83 +368,132 @@
                 orbsToRemove.clear();
             }
 
-            // Check if player was absorbed and reset if necessary
             if (playerAbsorbed) {
                 console.log("Executing reset due to player absorption.");
+                 if (bgMusic && !bgMusic.paused) { bgMusic.pause(); bgMusic.currentTime = 0; musicStarted = false; }
                 if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
-                init(); // Reset the game
-                return; // Exit the current game loop frame immediately
+                init(); return;
             }
 
-            // --- Drawing ---
             ctx.clearRect(0, 0, canvasWidth, canvasHeight);
             const drawOffsetX = (player && player.mass > 0) ? player.x - canvasWidth / 2 : canvasWidth / 2;
             const drawOffsetY = (player && player.mass > 0) ? player.y - canvasHeight / 2 : canvasHeight / 2;
-
             ctx.save();
             orbs.forEach(orb => drawOrbWithWrapping(orb, drawOffsetX, drawOffsetY));
-            if (player && player.radius >= MIN_ABSORB_COMPLETE_RADIUS) { // Only draw player if large enough
-                 drawOrbWithWrapping(player, drawOffsetX, drawOffsetY);
-            }
+            if (player && player.radius >= MIN_ABSORB_COMPLETE_RADIUS) { drawOrbWithWrapping(player, drawOffsetX, drawOffsetY); }
             ctx.restore();
 
-            // --- Continue Animation ---
-            if (!playerAbsorbed) {
-                animationFrameId = requestAnimationFrame(gameLoop);
+            if (!playerAbsorbed) { animationFrameId = requestAnimationFrame(gameLoop); }
+        }
+
+        // *** MOVED spawnOrbs function definition BEFORE init ***
+        function spawnOrbs(count) {
+            console.log(`Spawning ${count} orbs... Max speed: ${INITIAL_ORB_MAX_SPEED}`);
+            // Ensure canvasWidth/Height are defined before using them
+            if (typeof canvasWidth === 'undefined' || typeof canvasHeight === 'undefined') {
+                console.error("Cannot spawn orbs: canvas dimensions not yet initialized.");
+                return;
             }
+            const existingOrbsAndPlayer = player ? [...orbs, player] : [...orbs];
+            let spawnedCount = 0;
+            for (let i = 0; i < count; i++) {
+                let r, x, y;
+                let tooClose;
+                let attempts = 0;
+                const maxAttempts = 100;
+                do {
+                    r = Math.random() * (MAX_ORB_RADIUS - MIN_ORB_RADIUS) + MIN_ORB_RADIUS;
+                    x = Math.random() * canvasWidth;
+                    y = Math.random() * canvasHeight;
+                    tooClose = false;
+                    for (const existing of existingOrbsAndPlayer) {
+                        const checkDist = wrappedDistance(x, y, existing.x, existing.y, canvasWidth, canvasHeight);
+                        const requiredDist = (existing.radius + r) * 1.1 + (existing.isPlayer ? SAFE_ZONE_RADIUS : 5);
+                        if (checkDist < requiredDist) {
+                            tooClose = true;
+                            break;
+                        }
+                    }
+                    attempts++;
+                } while (tooClose && attempts < maxAttempts);
+
+                if (!tooClose) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * INITIAL_ORB_MAX_SPEED;
+                    const newOrb = createOrb(x, y, r, Math.cos(angle) * speed, Math.sin(angle) * speed);
+                    if (newOrb) {
+                        orbs.push(newOrb);
+                        existingOrbsAndPlayer.push(newOrb); // Add to list for next collision check
+                        spawnedCount++;
+                    }
+                }
+            }
+            console.log(`Successfully spawned ${spawnedCount} / ${count} orbs.`);
         }
 
         // --- Initialization ---
-        function spawnOrbs(count) { console.log(`Spawning ${count} orbs... Max speed: ${INITIAL_ORB_MAX_SPEED}`); const existingOrbsAndPlayer = player ? [...orbs, player] : [...orbs]; let spawnedCount = 0; for (let i = 0; i < count; i++) { let r, x, y; let tooClose; let attempts = 0; const maxAttempts = 100; do { r = Math.random() * (MAX_ORB_RADIUS - MIN_ORB_RADIUS) + MIN_ORB_RADIUS; x = Math.random() * canvasWidth; y = Math.random() * canvasHeight; tooClose = false; for (const existing of existingOrbsAndPlayer) { const checkDist = wrappedDistance(x, y, existing.x, existing.y, canvasWidth, canvasHeight); const requiredDist = (existing.radius + r) * 1.1 + (existing.isPlayer ? SAFE_ZONE_RADIUS : 5); if (checkDist < requiredDist) { tooClose = true; break; } } attempts++; } while (tooClose && attempts < maxAttempts); if (!tooClose) { const angle = Math.random() * Math.PI * 2; const speed = Math.random() * INITIAL_ORB_MAX_SPEED; const newOrb = createOrb(x, y, r, Math.cos(angle) * speed, Math.sin(angle) * speed); if (newOrb) { orbs.push(newOrb); existingOrbsAndPlayer.push(newOrb); spawnedCount++; } } } console.log(`Successfully spawned ${spawnedCount} / ${count} orbs.`); }
         function init(isResize = false) {
             console.log(`Initializing game (Touch Enabled)... ${isResize ? '(Resize)' : ''}`);
             if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
             if (!canvas || !ctx) { console.error("CRITICAL: Canvas or context missing!"); return; }
 
-            const prevWidth = canvasWidth;
-            const prevHeight = canvasHeight;
+            const prevWidth = typeof canvasWidth !== 'undefined' ? canvasWidth : window.innerWidth;
+            const prevHeight = typeof canvasHeight !== 'undefined' ? canvasHeight : window.innerHeight;
 
-            try { canvasWidth = window.innerWidth; canvasHeight = window.innerHeight; canvas.width = canvasWidth; canvas.height = canvasHeight; } catch (e) { console.error("Error setting canvas dimensions:", e); return; }
+            try {
+                canvasWidth = window.innerWidth;
+                canvasHeight = window.innerHeight;
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+            } catch (e) {
+                console.error("Error setting canvas dimensions:", e); return;
+            }
 
-            // Full reset if not resizing, player gone, or player was absorbed
             if (!isResize || !player || playerAbsorbed) {
                  console.log("Full reset required.");
-                 orbs = [];
-                 player = null;
-                 activeAbsorptions.clear();
-                 orbsToRemove.clear();
+                 orbs = []; player = null; activeAbsorptions.clear(); orbsToRemove.clear();
+                 if (bgMusic && !bgMusic.paused) { bgMusic.pause(); bgMusic.currentTime = 0; }
+                 musicStarted = false;
                  console.log("Attempting to create player orb...");
                  player = createOrb(canvasWidth / 2, canvasHeight / 2, 20, 0, 0, 'rgba(100, 200, 255, 0.9)');
                  if (!player || typeof player !== 'object') { console.error("CRITICAL ERROR: Player creation failed!"); return; }
                  player.isPlayer = true;
+                 // *** Now spawnOrbs can be called safely ***
                  spawnOrbs(INITIAL_ORBS);
-            } else { // Handle resize only
+            } else {
                  console.log(`Resizing canvas from ${prevWidth}x${prevHeight} to ${canvasWidth}x${canvasHeight}`);
-                 // Simple approach: Re-center player
-                 player.x = canvasWidth / 2;
-                 player.y = canvasHeight / 2;
-                 // Clear potentially invalid physics states due to resize
-                 activeAbsorptions.clear();
-                 orbsToRemove.clear();
+                 player.x = canvasWidth / 2; player.y = canvasHeight / 2;
+                 activeAbsorptions.clear(); orbsToRemove.clear();
             }
 
-            // Reset common states
-            isInteractionActive = false;
-            lastTimestamp = 0;
-            timeAccumulator = 0;
-            playerAbsorbed = false; // Reset the flag
-
+            isInteractionActive = false; lastTimestamp = 0; timeAccumulator = 0; playerAbsorbed = false;
             console.log("Initialization complete, requesting loop...");
-            if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; } // Prevent duplicates
+            if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
             animationFrameId = requestAnimationFrame(gameLoop);
         }
 
-
         // --- Event Listeners (Mouse & Touch) ---
         function getCanvasCoordinates(event) { if (event.target && event.target.closest && event.target.closest('#hamburger-menu')) { return null; } const rect = canvas.getBoundingClientRect(); let clientX, clientY; if (event.touches && event.touches.length > 0) { clientX = event.touches[0].clientX; clientY = event.touches[0].clientY; } else if (event.changedTouches && event.changedTouches.length > 0) { clientX = event.changedTouches[0].clientX; clientY = event.changedTouches[0].clientY; } else { clientX = event.clientX; clientY = event.clientY; } if (clientX === undefined || clientY === undefined) return null; return { x: clientX - rect.left, y: clientY - rect.top }; }
-        function handleInteractionStart(event) { const coords = getCanvasCoordinates(event); if (!coords) return; if (event.type === 'touchstart') { event.preventDefault(); } isInteractionActive = true; lastInteractionX = coords.x; lastInteractionY = coords.y; if (player && !playerAbsorbed && Date.now() - lastPropulsionTime > PROPULSION_COOLDOWN) { if (propelPlayer(lastInteractionX, lastInteractionY)) { lastPropulsionTime = Date.now(); } } }
+
+        function handleInteractionStart(event) {
+            if (bgMusic && !musicStarted) {
+                console.log("First interaction detected, attempting to play music...");
+                const playPromise = bgMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => { console.log("Background music started successfully."); musicStarted = true; })
+                               .catch(error => { console.warn("Background music play() failed:", error); });
+                } else { console.warn("bgMusic.play() did not return a promise. Playback status uncertain."); musicStarted = true; }
+            }
+            const coords = getCanvasCoordinates(event); if (!coords) return;
+            if (event.type === 'touchstart') { event.preventDefault(); }
+            isInteractionActive = true; lastInteractionX = coords.x; lastInteractionY = coords.y;
+            if (player && !playerAbsorbed && Date.now() - lastPropulsionTime > PROPULSION_COOLDOWN) {
+                if (propelPlayer(lastInteractionX, lastInteractionY)) { lastPropulsionTime = Date.now(); }
+            }
+        }
         function handleInteractionMove(event) { if (!isInteractionActive) return; const coords = getCanvasCoordinates(event); if (!coords) return; if (event.type === 'touchmove') { event.preventDefault(); } lastInteractionX = coords.x; lastInteractionY = coords.y; }
         function handleInteractionEnd(event) { const targetIsCanvas = !event.target || !event.target.closest || !event.target.closest('#hamburger-menu'); if (targetIsCanvas && (event.type === 'touchend' || event.type === 'touchcancel')) { if (event.cancelable) { event.preventDefault(); } } isInteractionActive = false; }
+
         canvas.addEventListener('mousedown', handleInteractionStart);
         canvas.addEventListener('mousemove', handleInteractionMove);
         window.addEventListener('mouseup', handleInteractionEnd);
@@ -542,7 +507,7 @@
 
         // --- Fullscreen Toggle Logic ---
         const hamburgerMenu = document.getElementById('hamburger-menu'); const docElement = document.documentElement; function isFullScreen() { return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement); } function toggleFullScreen() { if (!isFullScreen()) { console.log("Requesting fullscreen..."); if (docElement.requestFullscreen) { docElement.requestFullscreen().catch(err => console.error(`Error attempting FScr: ${err.message} (${err.name})`)); } else if (docElement.webkitRequestFullscreen) { docElement.webkitRequestFullscreen().catch(err => console.error(`Error attempting FScr (webkit): ${err.message} (${err.name})`)); } else if (docElement.msRequestFullscreen) { docElement.msRequestFullscreen().catch(err => console.error(`Error attempting FScr (ms): ${err.message} (${err.name})`)); } else { console.warn("Fullscreen API is not supported by this browser."); } } else { console.log("Exiting fullscreen..."); if (document.exitFullscreen) { document.exitFullscreen(); } else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); } else if (document.msExitFullscreen) { document.msExitFullscreen(); } else { console.warn("Exit Fullscreen API is not supported?"); } } }
-        if (hamburgerMenu) { hamburgerMenu.addEventListener('click', toggleFullScreen); hamburgerMenu.addEventListener('touchstart', (e) => { toggleFullScreen(); }, { passive: true }); } else { console.error("Hamburger menu element not found!"); }
+        if (hamburgerMenu) { hamburgerMenu.addEventListener('click', toggleFullScreen); hamburgerMenu.addEventListener('touchstart', (e) => { e.preventDefault(); toggleFullScreen(); }, { passive: false }); } else { console.error("Hamburger menu element not found!"); } // Make touch passive:false if preventing default
         document.addEventListener('fullscreenchange', () => { console.log('Fullscreen state changed (std)'); }); document.addEventListener('webkitfullscreenchange', () => { console.log('Fullscreen state changed (webkit)'); }); document.addEventListener('mozfullscreenchange', () => { console.log('Fullscreen state changed (moz)'); }); document.addEventListener('MSFullscreenChange', () => { console.log('Fullscreen state changed (ms)'); });
 
         // --- Start Game ---
