@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Osmos Clone - Touch Enabled</title> <!-- Updated Title -->
     <style>
-        body { margin: 0; overflow: hidden; background-color: #000510; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        canvas { display: block;
+        /* Basic body and canvas styles */
+        body { margin: 0; overflow: hidden; background-color: #000510; display: flex; justify-content: center; align-items: center; height: 100vh; position: relative; /* Needed for absolute positioning context if menu was inside body */ }
+        canvas {
+            display: block;
             /* Prevent unwanted text selection, etc. on touch */
-           -webkit-touch-callout: none;
+            -webkit-touch-callout: none;
             -webkit-user-select: none;
             -khtml-user-select: none;
             -moz-user-select: none;
@@ -18,9 +20,58 @@
             /* Improve touch responsiveness */
             touch-action: none;
          }
+
+         /* --- Hamburger Menu Styles --- */
+         #hamburger-menu {
+            position: fixed; /* Position relative to the viewport */
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 25px;
+            cursor: pointer;
+            z-index: 1000; /* Ensure it's above the canvas */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 5px; /* Add some padding for easier tapping */
+            box-sizing: border-box; /* Include padding in width/height */
+         }
+
+         #hamburger-menu span {
+            display: block;
+            width: 100%;
+            height: 3px; /* Line thickness */
+            background-color: #ffffff; /* White lines */
+            border-radius: 2px;
+            transition: background-color 0.2s ease-in-out; /* Smooth hover effect */
+         }
+
+        /* Optional: Slightly change color on hover */
+         #hamburger-menu:hover span {
+             background-color: #cccccc;
+         }
+
+        /* Hide menu when in fullscreen? Optional, but can be cleaner */
+        :fullscreen #hamburger-menu {
+            /* display: none; */ /* Uncomment this line if you want to hide it */
+        }
+        :-webkit-full-screen #hamburger-menu { /* Safari */
+            /* display: none; */
+        }
+        :-ms-fullscreen #hamburger-menu { /* IE11 */
+            /* display: none; */
+        }
+
     </style>
 </head>
 <body>
+    <!-- The Hamburger Menu Button -->
+    <div id="hamburger-menu" title="Toggle Fullscreen">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
     <canvas id="gameCanvas"></canvas>
 
     <script>
@@ -216,28 +267,74 @@
 
         // --- Initialization ---
         function spawnOrbs(count) { console.log(`Spawning ${count} orbs... Max speed: ${INITIAL_ORB_MAX_SPEED}`); const existingOrbsAndPlayer = player ? [...orbs, player] : [...orbs]; let spawnedCount = 0; for (let i = 0; i < count; i++) { let r, x, y; let tooClose; let attempts = 0; const maxAttempts = 100; do { r = Math.random() * (MAX_ORB_RADIUS - MIN_ORB_RADIUS) + MIN_ORB_RADIUS; x = Math.random() * canvasWidth; y = Math.random() * canvasHeight; tooClose = false; for (const existing of existingOrbsAndPlayer) { const checkDist = wrappedDistance(x, y, existing.x, existing.y, canvasWidth, canvasHeight); const requiredDist = (existing.radius + r) * 1.1 + (existing.isPlayer ? SAFE_ZONE_RADIUS : 5); if (checkDist < requiredDist) { tooClose = true; break; } } attempts++; } while (tooClose && attempts < maxAttempts); if (!tooClose) { const angle = Math.random() * Math.PI * 2; const speed = Math.random() * INITIAL_ORB_MAX_SPEED; const newOrb = createOrb(x, y, r, Math.cos(angle) * speed, Math.sin(angle) * speed); if (newOrb) { orbs.push(newOrb); existingOrbsAndPlayer.push(newOrb); spawnedCount++; } } } console.log(`Successfully spawned ${spawnedCount} / ${count} orbs.`); }
-        function init() {
-            console.log("Initializing game (Touch Enabled)...");
+        function init(isResize = false) { // Add flag to know if it's a resize call
+            console.log(`Initializing game (Touch Enabled)... ${isResize ? '(Resize)' : ''}`);
             if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
             if (!canvas || !ctx) { console.error("CRITICAL: Canvas or context missing!"); return; }
+
+            // Store previous dimensions if resizing
+            const prevWidth = canvasWidth;
+            const prevHeight = canvasHeight;
+
             try { canvasWidth = window.innerWidth; canvasHeight = window.innerHeight; canvas.width = canvasWidth; canvas.height = canvasHeight; } catch (e) { console.error("Error setting canvas dimensions:", e); return; }
-            orbs = []; player = null; isInteractionActive = false; // Use renamed flag
-            lastTimestamp = 0; timeAccumulator = 0;
-            activeAbsorptions.clear(); orbsToRemove.clear();
-            console.log("Attempting to create player orb...");
-            player = createOrb(canvasWidth / 2, canvasHeight / 2, 20, 0, 0, 'rgba(100, 200, 255, 0.9)');
-            if (!player || typeof player !== 'object') { console.error("CRITICAL ERROR: Player creation failed!"); return; }
-            console.log("Player object created.");
-            player.isPlayer = true;
-            spawnOrbs(INITIAL_ORBS);
+
+            // Only fully reset if not resizing (or if player doesn't exist)
+            if (!isResize || !player) {
+                 console.log("Full reset required.");
+                 orbs = [];
+                 player = null;
+                 activeAbsorptions.clear();
+                 orbsToRemove.clear();
+                 console.log("Attempting to create player orb...");
+                 player = createOrb(canvasWidth / 2, canvasHeight / 2, 20, 0, 0, 'rgba(100, 200, 255, 0.9)');
+                 if (!player || typeof player !== 'object') { console.error("CRITICAL ERROR: Player creation failed!"); return; }
+                 console.log("Player object created.");
+                 player.isPlayer = true;
+                 spawnOrbs(INITIAL_ORBS);
+            } else {
+                 // Adjust positions based on resize factor (optional, could just center player)
+                 const scaleX = canvasWidth / prevWidth;
+                 const scaleY = canvasHeight / prevHeight;
+                 console.log(`Rescaling positions: ScaleX=${scaleX.toFixed(2)}, ScaleY=${scaleY.toFixed(2)}`);
+
+                 // --- Simple approach: Re-center player ---
+                 player.x = canvasWidth / 2;
+                 player.y = canvasHeight / 2;
+                 // --- More complex: Scale all orb positions (might look weird) ---
+                 // player.x *= scaleX;
+                 // player.y *= scaleY;
+                 // orbs.forEach(orb => {
+                 //    orb.x *= scaleX;
+                 //    orb.y *= scaleY;
+                 //    // Ensure they stay within new bounds (optional, wrapping handles it)
+                 //    // orb.x = (orb.x % canvasWidth + canvasWidth) % canvasWidth;
+                 //    // orb.y = (orb.y % canvasHeight + canvasHeight) % canvasHeight;
+                 // });
+
+                 // Clear absorptions as distances/overlaps changed drastically
+                 activeAbsorptions.clear();
+                 orbsToRemove.clear(); // Should be empty but good practice
+            }
+
+            // Reset interaction state and timing regardless
+            isInteractionActive = false;
+            lastTimestamp = 0;
+            timeAccumulator = 0;
+
             console.log("Initialization complete, requesting loop...");
             animationFrameId = requestAnimationFrame(gameLoop);
         }
+
 
         // --- Event Listeners (Mouse & Touch) ---
 
         // Helper to get coordinates relative to canvas
         function getCanvasCoordinates(event) {
+            // Check if the event target is the menu - if so, ignore for game input
+            if (event.target && event.target.closest && event.target.closest('#hamburger-menu')) {
+                return null;
+            }
+
             const rect = canvas.getBoundingClientRect();
             let clientX, clientY;
 
@@ -245,16 +342,14 @@
                 clientX = event.touches[0].clientX; // Use first touch point
                 clientY = event.touches[0].clientY;
             } else if (event.changedTouches && event.changedTouches.length > 0) {
-                // Useful for touchend if needed, but primarily for touchstart/move
                 clientX = event.changedTouches[0].clientX;
                 clientY = event.changedTouches[0].clientY;
-            } else {
-                // Mouse event
+            } else { // Mouse event
                 clientX = event.clientX;
                 clientY = event.clientY;
             }
 
-            if (clientX === undefined || clientY === undefined) return null; // Handle cases where coords aren't available
+            if (clientX === undefined || clientY === undefined) return null;
 
             return {
                 x: clientX - rect.left,
@@ -264,19 +359,18 @@
 
         // --- Interaction Start (Mouse Down or Touch Start) ---
         function handleInteractionStart(event) {
-             // For touch, prevent default browser actions like scrolling
+            const coords = getCanvasCoordinates(event);
+            if (!coords) return; // Exit if we couldn't get coordinates (or event was on menu)
+
+             // For touch on canvas, prevent default browser actions like scrolling
              if (event.type === 'touchstart') {
                  event.preventDefault();
              }
 
-            const coords = getCanvasCoordinates(event);
-            if (!coords) return; // Exit if we couldn't get coordinates
-
-            isInteractionActive = true; // Set the unified flag
-            lastInteractionX = coords.x; // Update unified coordinates
+            isInteractionActive = true;
+            lastInteractionX = coords.x;
             lastInteractionY = coords.y;
 
-            // Attempt initial propulsion immediately on interaction start
             if (player && Date.now() - lastPropulsionTime > PROPULSION_COOLDOWN) {
                 if (propelPlayer(lastInteractionX, lastInteractionY)) {
                     lastPropulsionTime = Date.now();
@@ -286,51 +380,121 @@
 
         // --- Interaction Move (Mouse Move or Touch Move) ---
         function handleInteractionMove(event) {
-            // Only process if interaction is active
             if (!isInteractionActive) return;
 
-            // Prevent scrolling while dragging finger
+            const coords = getCanvasCoordinates(event);
+            if (!coords) return; // Exit if we couldn't get coordinates (or event was on menu)
+
+            // Prevent scrolling while dragging finger on canvas
              if (event.type === 'touchmove') {
                  event.preventDefault();
              }
 
-            const coords = getCanvasCoordinates(event);
-             if (!coords) return; // Exit if we couldn't get coordinates
-
-            lastInteractionX = coords.x; // Update unified coordinates
+            lastInteractionX = coords.x;
             lastInteractionY = coords.y;
         }
 
         // --- Interaction End (Mouse Up, Mouse Leave, Touch End, Touch Cancel) ---
         function handleInteractionEnd(event) {
-             // Prevent default actions if it's a touch event ending
-             if (event.type === 'touchend' || event.type === 'touchcancel') {
-                 event.preventDefault();
+             // No need to check coords here, just end the active state
+             // Prevent default only if it was a touch ending on the canvas
+             const targetIsCanvas = !event.target || !event.target.closest || !event.target.closest('#hamburger-menu');
+             if (targetIsCanvas && (event.type === 'touchend' || event.type === 'touchcancel')) {
+                 // Check if preventDefault is allowed/needed. If the touch started on canvas, it likely is.
+                 // This check might be overly cautious but safe.
+                 if (event.cancelable) {
+                     event.preventDefault();
+                 }
              }
-            isInteractionActive = false; // Clear the unified flag
+            isInteractionActive = false;
         }
 
-        // --- Attach Listeners ---
-        // Mouse Listeners
+        // --- Attach Game Interaction Listeners ---
         canvas.addEventListener('mousedown', handleInteractionStart);
         canvas.addEventListener('mousemove', handleInteractionMove);
-        canvas.addEventListener('mouseup', handleInteractionEnd);
-        canvas.addEventListener('mouseleave', handleInteractionEnd); // End interaction if mouse leaves canvas
+        // Use window for mouseup/leave to catch dragging off canvas
+        window.addEventListener('mouseup', handleInteractionEnd); // Changed from canvas
+        window.addEventListener('mouseleave', handleInteractionEnd); // Added to window
 
-        // Touch Listeners
-        // Use { passive: false } to allow preventDefault()
         canvas.addEventListener('touchstart', handleInteractionStart, { passive: false });
         canvas.addEventListener('touchmove', handleInteractionMove, { passive: false });
-        canvas.addEventListener('touchend', handleInteractionEnd, { passive: false });
-        canvas.addEventListener('touchcancel', handleInteractionEnd, { passive: false }); // Handle interruptions
+        // Use window for touchend/cancel
+        window.addEventListener('touchend', handleInteractionEnd, { passive: false }); // Changed from canvas
+        window.addEventListener('touchcancel', handleInteractionEnd, { passive: false }); // Changed from canvas
+
 
         // --- Resize Listener ---
-        window.addEventListener('resize', init);
+        // Debounce resize to avoid excessive init calls
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => init(true), 250); // Call init with resize flag after 250ms delay
+        });
+
+
+        // --- Fullscreen Toggle Logic ---
+        const hamburgerMenu = document.getElementById('hamburger-menu');
+        const docElement = document.documentElement; // Usually the best element to fullscreen
+
+        function isFullScreen() {
+            return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+        }
+
+        function toggleFullScreen() {
+            if (!isFullScreen()) {
+                console.log("Requesting fullscreen...");
+                if (docElement.requestFullscreen) {
+                    docElement.requestFullscreen().catch(err => console.error(`Error attempting FScr: ${err.message} (${err.name})`));
+                } else if (docElement.webkitRequestFullscreen) { /* Safari */
+                    docElement.webkitRequestFullscreen().catch(err => console.error(`Error attempting FScr (webkit): ${err.message} (${err.name})`));
+                } else if (docElement.msRequestFullscreen) { /* IE11 */
+                    docElement.msRequestFullscreen().catch(err => console.error(`Error attempting FScr (ms): ${err.message} (${err.name})`));
+                } else {
+                    console.warn("Fullscreen API is not supported by this browser.");
+                    // Optionally alert the user
+                    // alert("Fullscreen mode is not supported by your browser.");
+                }
+            } else {
+                console.log("Exiting fullscreen...");
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) { /* Safari */
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { /* IE11 */
+                    document.msExitFullscreen();
+                } else {
+                     console.warn("Exit Fullscreen API is not supported?");
+                }
+            }
+        }
+
+        // Attach listener to the menu
+        if (hamburgerMenu) {
+             hamburgerMenu.addEventListener('click', toggleFullScreen);
+             // Also listen for touchstart for better responsiveness on touch devices
+             // Use passive: false because we might call preventDefault if needed,
+             // but in this simple case, it's unlikely to be needed. Toggling FS doesn't scroll.
+             hamburgerMenu.addEventListener('touchstart', (e) => {
+                 // e.preventDefault(); // Optional: prevent potential double-tap zoom maybe? Usually not needed here.
+                 toggleFullScreen();
+             }, { passive: true }); // Can likely be passive=true for this button
+        } else {
+            console.error("Hamburger menu element not found!");
+        }
+
+        // Optional: Listen for fullscreen changes (e.g., user presses ESC)
+        // This could be used to update the hamburger icon state if needed
+        document.addEventListener('fullscreenchange', () => { console.log('Fullscreen state changed (std)'); });
+        document.addEventListener('webkitfullscreenchange', () => { console.log('Fullscreen state changed (webkit)'); });
+        document.addEventListener('mozfullscreenchange', () => { console.log('Fullscreen state changed (moz)'); });
+        document.addEventListener('MSFullscreenChange', () => { console.log('Fullscreen state changed (ms)'); });
+
 
         // --- Start Game ---
         document.addEventListener('DOMContentLoaded', () => {
              console.log("DOMContentLoaded event fired.");
-             init();
+             // Initial game setup
+             init(false); // Call init without resize flag initially
         });
 
     </script>
