@@ -29,12 +29,10 @@
             position: fixed;
             top: 55px; /* Below hamburger */
             right: 15px;
-            /* --- CHANGE: Responsive Width --- */
-            width: calc(100% - 30px); /* Occupy screen width minus padding */
-            max-width: 350px;       /* But don't exceed 350px on wider screens */
-            box-sizing: border-box; /* Ensure padding is included in width calculation */
-            /* --- END CHANGE --- */
-            max-height: calc(100vh - 70px); /* Avoid overflow */
+            width: calc(100% - 30px);
+            max-width: 350px;
+            box-sizing: border-box;
+            max-height: calc(100vh - 70px);
             overflow-y: auto;
             background-color: rgba(30, 30, 40, 0.95);
             color: #eee;
@@ -42,129 +40,34 @@
             border-radius: 8px;
             padding: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            z-index: 1005; /* Below hamburger, above canvas */
-            display: none; /* Hidden by default */
+            z-index: 1005;
+            display: none;
             font-size: 14px;
          }
-         #settings-popup.visible {
-            display: block;
-         }
-         #settings-popup h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #aef;
-            border-bottom: 1px solid #555;
-            padding-bottom: 5px;
-         }
-         #settings-popup .setting-group {
-            margin-bottom: 15px;
-         }
-         #settings-popup label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-         }
-         #settings-popup .inline-label {
-            display: inline-block;
-            margin-right: 10px;
-            margin-bottom: 0;
-            vertical-align: middle;
-         }
-         #settings-popup input[type="checkbox"] {
-            margin-right: 5px;
-            vertical-align: middle;
-         }
-         #settings-popup input[type="range"] {
-            width: 70%;
-            vertical-align: middle;
-            cursor: pointer;
-         }
-         #settings-popup input[type="color"] {
-             vertical-align: middle;
-             margin-left: 5px;
-             border: 1px solid #777;
-             padding: 1px;
-             background-color: #333;
-             cursor: pointer;
-             width: 30px;
-             height: 20px;
-         }
-         #settings-popup select {
-            padding: 3px;
-            background-color: #445;
-            color: #eee;
-            border: 1px solid #777;
-            border-radius: 3px;
-            vertical-align: middle;
-            cursor: pointer;
-         }
-         /* Style for the editable value inputs */
-         #settings-popup .slider-value-input {
-            display: inline-block;
-            width: 50px; /* Adjust width as needed */
-            text-align: right;
-            margin-left: 10px;
-            font-family: monospace;
-            vertical-align: middle;
-            background-color: #2a2a3a;
-            color: #eee;
-            border: 1px solid #555;
-            padding: 1px 4px;
-            border-radius: 3px;
-            box-sizing: border-box; /* Include padding/border in width */
-         }
-         #settings-popup .control-row {
-             display: flex;
-             align-items: center;
-             justify-content: space-between;
-             margin-bottom: 8px;
-             flex-wrap: wrap; /* Allow controls to wrap on narrow screens if needed */
-         }
-         #settings-popup .control-row label {
-             /* flex-basis: 40%; */ /* Removing fixed basis for better wrap */
-             margin-right: 10px; /* Add some space */
-             margin-bottom: 0;
-             white-space: nowrap;
-             flex-shrink: 0; /* Prevent label from shrinking */
-         }
-         #settings-popup .control-row .controls {
-             /* flex-basis: 60%; */ /* Removing fixed basis */
-             text-align: right;
-             flex-grow: 1; /* Allow controls to take remaining space */
-             min-width: 150px; /* Give controls minimum space */
-         }
-         #settings-popup button {
-             padding: 5px 10px;
-             background-color: #567;
-             color: #fff;
-             border: 1px solid #89a;
-             border-radius: 4px;
-             cursor: pointer;
-             transition: background-color 0.2s;
-             margin-top: 10px;
-         }
-         #settings-popup button:hover {
-             background-color: #678;
-         }
-         #settings-popup input:disabled,
-         #settings-popup select:disabled,
-         #settings-popup button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-         }
-
-
-         /* --- Hide Audio Player --- */
+         #settings-popup.visible { display: block; }
+         #settings-popup h3 { margin-top: 0; margin-bottom: 10px; color: #aef; border-bottom: 1px solid #555; padding-bottom: 5px; }
+         #settings-popup .setting-group { margin-bottom: 15px; }
+         #settings-popup label { display: block; margin-bottom: 5px; font-weight: bold; }
+         #settings-popup .inline-label { display: inline-block; margin-right: 10px; margin-bottom: 0; vertical-align: middle; }
+         #settings-popup input[type="checkbox"] { margin-right: 5px; vertical-align: middle; }
+         #settings-popup input[type="range"] { width: 70%; vertical-align: middle; cursor: pointer; }
+         #settings-popup input[type="color"] { vertical-align: middle; margin-left: 5px; border: 1px solid #777; padding: 1px; background-color: #333; cursor: pointer; width: 30px; height: 20px; }
+         #settings-popup select { padding: 3px; background-color: #445; color: #eee; border: 1px solid #777; border-radius: 3px; vertical-align: middle; cursor: pointer; }
+         #settings-popup .slider-value-input { display: inline-block; width: 50px; text-align: right; margin-left: 10px; font-family: monospace; vertical-align: middle; background-color: #2a2a3a; color: #eee; border: 1px solid #555; padding: 1px 4px; border-radius: 3px; box-sizing: border-box; }
+         #settings-popup .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; }
+         #settings-popup .control-row label { margin-right: 10px; margin-bottom: 0; white-space: nowrap; flex-shrink: 0; }
+         #settings-popup .control-row .controls { text-align: right; flex-grow: 1; min-width: 150px; }
+         #settings-popup button { padding: 5px 10px; background-color: #567; color: #fff; border: 1px solid #89a; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; margin-top: 10px; }
+         #settings-popup button:hover { background-color: #678; }
+         #settings-popup input:disabled, #settings-popup select:disabled, #settings-popup button:disabled { opacity: 0.5; cursor: not-allowed; }
          #background-music { display: none; }
     </style>
 </head>
 <body>
-    <!-- Hamburger Menu Icon -->
     <div id="hamburger-menu" title="Settings / Fullscreen">
         <span></span><span></span><span></span>
     </div>
 
-    <!-- Settings Popup Menu (Initially Hidden) -->
     <div id="settings-popup">
         <!-- Fullscreen -->
         <div class="setting-group">
@@ -338,133 +241,46 @@
         <!-- Reset Settings / Game -->
         <div class="setting-group" style="text-align: center;">
              <button id="reset-settings-button">Reset Settings</button>
-             <!-- --- ADDED: Reset Game Button --- -->
              <button id="reset-game-button" style="margin-left: 10px;">Reset Orbs</button>
-             <!-- --- END ADD --- -->
         </div>
 
     </div>
 
-    <!-- GAME: Elements -->
     <canvas id="gameCanvas"></canvas>
     <audio id="background-music" src="Sysomosys-Vibes.mp3" loop preload="auto"></audio>
-    <!-- QUOTE: No separate canvas needed -->
-    <!-- QUOTE: Audio object created in JS -->
 
     <script>
-        // --- Shared Canvas & Context ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-
-        // --- Game Audio ---
         const bgMusic = document.getElementById('background-music');
-
-        // --- Quote Audio ---
         const quoteTypingSound = new Audio('keyclicks.mp3');
         quoteTypingSound.loop = true;
         quoteTypingSound.preload = 'auto';
 
-        // --- Shared Canvas Dimensions ---
-        let canvasWidth;
-        let canvasHeight;
+        let canvasWidth, canvasHeight;
 
-        // --- SETTINGS STATE (with defaults) ---
         let appSettings = {
-            fullscreen: false,
-            fontFamily: 'monospace',
-            fontSize: 24,
-            fontColor: '#FFFFFF',
-            fontBold: false,
-            fontItalic: false,
-            fontUnderline: false,
-            fontHighlightEnabled: true,
-            fontHighlightColor: '#000000',
-            fontHighlightWidth: 3,
-            randomFont: false,
-            randomFontColor: false,
-            quotesEnabled: true,
-            quotePauseDurationMs: 3000,
-            quoteFadeDurationMs: 3000,
-            quoteIntervalMs: 15000,
-            quoteWpm: 90,
-            quoteTypingSpeedMs: 133,
-            playerOrbColor: 'rgba(100, 200, 255, 0.9)',
-            orbPulseRange: 0.25,
-            orbPulseToMusic: true,
-            orbPulseFreqEnabled: false,
-            orbPulseFreqHz: 1.0,
-            otherOrbSaturation: 0.5,
-            musicVolume: 0.75,
-            musicMuted: false,
-            typingVolume: 0.75,
-            typingMuted: false
+            fullscreen: false, fontFamily: 'monospace', fontSize: 24, fontColor: '#FFFFFF', fontBold: false, fontItalic: false, fontUnderline: false,
+            fontHighlightEnabled: true, fontHighlightColor: '#000000', fontHighlightWidth: 3, randomFont: false, randomFontColor: false,
+            quotesEnabled: true, quotePauseDurationMs: 3000, quoteFadeDurationMs: 3000, quoteIntervalMs: 15000, quoteWpm: 90, quoteTypingSpeedMs: 133,
+            playerOrbColor: 'rgba(100, 200, 255, 0.9)', orbPulseRange: 0.25, orbPulseToMusic: true, orbPulseFreqEnabled: false, orbPulseFreqHz: 1.0,
+            otherOrbSaturation: 0.5, musicVolume: 0.75, musicMuted: false, typingVolume: 0.75, typingMuted: false
         };
         appSettings.quoteTypingSpeedMs = wpmToMs(appSettings.quoteWpm);
         const defaultSettings = JSON.parse(JSON.stringify(appSettings));
 
-        // --- Game Constants ---
-        const MIN_PLAYER_RADIUS = 5;
-        const EJECTION_MASS_RATIO = 0.025;
-        const EJECTION_SPEED_MULTIPLIER = 200;
-        const INITIAL_ORBS = 40;
-        const MAX_ORB_RADIUS = 45;
-        const MIN_ORB_RADIUS = 2;
-        const SAFE_ZONE_RADIUS = 30;
-        const MASS_ABSORPTION_RATIO = 1.01;
-        const PROPULSION_COOLDOWN = 80;
-        const BASE_ABSORPTION_RATE_PER_SECOND = 100;
-        const MAX_OVERLAP_SPEED_FACTOR = 4;
-        const VELOCITY_ABSORPTION_FACTOR = 60;
-        const MIN_ABSORB_COMPLETE_RADIUS = 0.5;
-        const FIXED_TIMESTEP_MS = 1000 / 120;
-        const FIXED_TIMESTEP_S = FIXED_TIMESTEP_MS / 1000.0;
-        const MAX_ACCUMULATED_TIME_MS = 100;
-        const INITIAL_ORB_MAX_SPEED = 3;
+        const MIN_PLAYER_RADIUS = 5, EJECTION_MASS_RATIO = 0.025, EJECTION_SPEED_MULTIPLIER = 200, INITIAL_ORBS = 40, MAX_ORB_RADIUS = 45, MIN_ORB_RADIUS = 2, SAFE_ZONE_RADIUS = 30, MASS_ABSORPTION_RATIO = 1.01, PROPULSION_COOLDOWN = 80, BASE_ABSORPTION_RATE_PER_SECOND = 100, MAX_OVERLAP_SPEED_FACTOR = 4, VELOCITY_ABSORPTION_FACTOR = 60, MIN_ABSORB_COMPLETE_RADIUS = 0.5, FIXED_TIMESTEP_MS = 1000 / 120, FIXED_TIMESTEP_S = FIXED_TIMESTEP_MS / 1000.0, MAX_ACCUMULATED_TIME_MS = 100, INITIAL_ORB_MAX_SPEED = 3;
+        const QUOTE_MAX_CHARS_PER_LINE = 45, QUOTE_TYPO_CHANCE = 0.02, QUOTE_PADDING = 50, QUOTE_CENTER_EXCLUSION_FACTOR_X = 0.3, QUOTE_CENTER_EXCLUSION_FACTOR_Y = 0.4, QUOTE_MAX_PLACEMENT_ATTEMPTS = 10;
 
-        // --- Quote Settings ---
-        const QUOTE_MAX_CHARS_PER_LINE = 45;
-        const QUOTE_TYPO_CHANCE = 0.02;
-        const QUOTE_PADDING = 50;
-        const QUOTE_CENTER_EXCLUSION_FACTOR_X = 0.3;
-        const QUOTE_CENTER_EXCLUSION_FACTOR_Y = 0.4;
-        const QUOTE_MAX_PLACEMENT_ATTEMPTS = 10;
+        let player = null, orbs = [], gameAnimationFrameId = null, isInteractionActive = false, lastInteractionX = 0, lastInteractionY = 0, lastPropulsionTime = 0, gameLastTimestamp = 0, gameTimeAccumulator = 0, activeAbsorptions = new Map(), orbsToRemove = new Set(), playerAbsorbed = false, musicStarted = false;
 
-        // --- Game State ---
-        let player = null;
-        let orbs = [];
-        let gameAnimationFrameId = null;
-        let isInteractionActive = false;
-        let lastInteractionX = 0;
-        let lastInteractionY = 0;
-        let lastPropulsionTime = 0;
-        let gameLastTimestamp = 0;
-        let gameTimeAccumulator = 0;
-        let activeAbsorptions = new Map();
-        let orbsToRemove = new Set();
-        let playerAbsorbed = false;
-        let musicStarted = false;
+        let quotesData = [], currentQuote = null, quoteState = 'ready_to_load', quoteNextQuoteTimeoutId = null, quoteInitialLoadComplete = false, quoteCurrentTypoDelayMs = 0, quoteCurrentBackspaceDelayMs = 0, quoteLineHeight = 0;
+        let recentlyShownQuoteIndices = new Set();
 
-        // --- Quote State ---
-        let quotesData = [];
-        let currentQuote = null;
-        let quoteState = 'ready_to_load'; // States: ready_to_load, loading, idle, typing, paused, fading, waiting_for_next, disabled, error
-        let quoteNextQuoteTimeoutId = null;
-        let quoteInitialLoadComplete = false;
-        let quoteCurrentTypoDelayMs = 0;
-        let quoteCurrentBackspaceDelayMs = 0;
-        let quoteLineHeight = 0;
+        let audioContext = null, analyser = null, sourceNode = null, audioDataArray = null;
+        const ANALYSER_FFT_SIZE = 256, ANALYSER_SMOOTHING = 0.5;
 
-        // --- Web Audio API State ---
-        let audioContext = null;
-        let analyser = null;
-        let sourceNode = null;
-        let audioDataArray = null;
-        const ANALYSER_FFT_SIZE = 256;
-        const ANALYSER_SMOOTHING = 0.5;
-
-        // --- Settings Popup Elements ---
-        const settingsPopup = document.getElementById('settings-popup');
-        const hamburgerMenu = document.getElementById('hamburger-menu');
+        const settingsPopup = document.getElementById('settings-popup'), hamburgerMenu = document.getElementById('hamburger-menu');
 
         // --- Helper Functions ---
         function getRandomColor() { const r = Math.floor(Math.random() * 155) + 100; const g = Math.floor(Math.random() * 155) + 100; const b = Math.floor(Math.random() * 155) + 100; const a = (Math.random() * 0.3 + 0.6).toFixed(2); return `rgba(${r}, ${g}, ${b}, ${a})`; }
@@ -472,419 +288,117 @@
         function wrappedDistance(x1, y1, x2, y2, width, height) { let dx = Math.abs(x1 - x2); let dy = Math.abs(y1 - y2); if (dx > width / 2) { dx = width - dx; } if (dy > height / 2) { dy = height - dy; } return Math.sqrt(dx * dx + dy * dy); }
         function getWrappedVector(x1, y1, x2, y2, width, height) { let dx = x2 - x1; let dy = y2 - y1; if (Math.abs(dx) > width / 2) { dx = dx > 0 ? dx - width : dx + width; } if (Math.abs(dy) > height / 2) { dy = dy > 0 ? dy - height : dy + height; } return { dx, dy }; }
         function wpmToMs(wpm) { if (wpm <= 0) return 5000; const avgCharsPerWord = 5; const ms = (60 * 1000) / (wpm * avgCharsPerWord); return Math.max(1, ms); }
-        function updateSliderValueDisplay(sliderId, displayId, unit = '', decimals = 0) {
-            const slider = document.getElementById(sliderId);
-            const displayInput = document.getElementById(displayId);
-            if (slider && displayInput) {
-                let value = parseFloat(slider.value);
-                displayInput.value = value.toFixed(decimals) + unit;
-            }
-        }
+        function updateSliderValueDisplay(sliderId, displayId, unit = '', decimals = 0) { const slider = document.getElementById(sliderId); const displayInput = document.getElementById(displayId); if (slider && displayInput) { let value = parseFloat(slider.value); displayInput.value = value.toFixed(decimals) + unit; } }
         function getFontString() { let fontStyle = ''; if (appSettings.fontItalic) fontStyle += 'italic '; if (appSettings.fontBold) fontStyle += 'bold '; return `${fontStyle}${appSettings.fontSize}px ${appSettings.fontFamily}`; }
         function rgbaToHsla(r, g, b, a) { r /= 255, g /= 255, b /= 255; const max = Math.max(r, g, b), min = Math.min(r, g, b); let h, s, l = (max + min) / 2; if (max === min) { h = s = 0; } else { const d = max - min; s = l > 0.5 ? d / (2 - max - min) : d / (max + min); switch (max) { case r: h = (g - b) / d + (g < b ? 6 : 0); break; case g: h = (b - r) / d + 2; break; case b: h = (r - g) / d + 4; break; } h /= 6; } return { h: h * 360, s: s * 100, l: l * 100, a: a }; }
         function hslaToRgba(h, s, l, a) { let r, g, b; h /= 360; s /= 100; l /= 100; if (s === 0) { r = g = b = l; } else { const hue2rgb = (p, q, t) => { if (t < 0) t += 1; if (t > 1) t -= 1; if (t < 1 / 6) return p + (q - p) * 6 * t; if (t < 1 / 2) return q; if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6; return p; }; const q = l < 0.5 ? l * (1 + s) : l + s - l * s; const p = 2 * l - q; r = hue2rgb(p, q, h + 1 / 3); g = hue2rgb(p, q, h); b = hue2rgb(p, q, h - 1 / 3); } return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255), a: a }; }
         function adjustSaturation(rgbaString, saturationFactor) { const original = parseRGBA(rgbaString); if (!original) return rgbaString; const hsla = rgbaToHsla(original.r, original.g, original.b, original.a); hsla.s *= saturationFactor; hsla.s = Math.max(0, Math.min(100, hsla.s)); const adjustedRgba = hslaToRgba(hsla.h, hsla.s, hsla.l, hsla.a); return `rgba(${adjustedRgba.r}, ${adjustedRgba.g}, ${adjustedRgba.b}, ${adjustedRgba.a.toFixed(2)})`; }
 
         // --- QUOTE Functions ---
-        function quoteParseCSV(csvText) { const lines = csvText.trim().split('\n'); const parsedQuotes = []; lines.forEach((line, index) => { line = line.trim(); if (!line) return; const firstCommaIndex = line.indexOf(','); if (firstCommaIndex === -1) { console.warn(`QUOTE: Skipping invalid CSV line: "${line}"`); return; } let authorRaw = line.substring(0, firstCommaIndex); let quoteRaw = line.substring(firstCommaIndex + 1); const cleanField = (str) => { let cleaned = str.trim(); if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || (cleaned.startsWith("'") && cleaned.endsWith("'"))) cleaned = cleaned.substring(1, cleaned.length - 1); cleaned = cleaned.replace(/""/g, '"'); return cleaned; }; let author = cleanField(authorRaw); let quote = cleanField(quoteRaw); if (!author) author = "Anonymous"; if (!quote) { console.warn(`QUOTE: Skipping line ${index + 1} with empty quote: "${line}"`); return; } parsedQuotes.push({ author, quote }); }); return parsedQuotes; }
-        function quoteFormatText(quote, author) {
-             ctx.font = getFontString();
-             quoteLineHeight = appSettings.fontSize * 1.4;
-             let formatFontFamily = appSettings.fontFamily;
-             let formatFontColor = appSettings.fontColor;
-             if (appSettings.randomFont) { const fonts = document.getElementById('font-family-select').options; const randomFontIndex = Math.floor(Math.random() * fonts.length); formatFontFamily = fonts[randomFontIndex].value; let tempFontStr = getFontString().replace(appSettings.fontFamily, formatFontFamily); ctx.font = tempFontStr; }
-             if (appSettings.randomFontColor) { const r = Math.floor(Math.random() * 256); const g = Math.floor(Math.random() * 256); const b = Math.floor(Math.random() * 256); formatFontColor = `rgb(${r}, ${g}, ${b})`; }
-             const words = quote.split(' '); const quoteLines = []; let currentLine = ''; for (let i = 0; i < words.length; i++) { const word = words[i]; if (!word) continue; const potentialLine = currentLine ? `${currentLine} ${word}` : word; if (ctx.measureText(potentialLine).width <= (canvasWidth - QUOTE_PADDING * 2) && potentialLine.length <= QUOTE_MAX_CHARS_PER_LINE ) { currentLine = potentialLine; } else { if (currentLine.length > 0) { quoteLines.push(currentLine); } currentLine = word; if (word.length > QUOTE_MAX_CHARS_PER_LINE) { console.warn(`QUOTE: Word "${word}" exceeds MAX_CHARS_PER_LINE (${QUOTE_MAX_CHARS_PER_LINE})`); } } } if (currentLine) { quoteLines.push(currentLine); } if (quoteLines.length === 0 && quote) { quoteLines.push(quote.substring(0, QUOTE_MAX_CHARS_PER_LINE)); console.warn("QUOTE: Formatting failed, using truncated quote:", quote); }
-             const authorLine = `— ${author}`; let maxQuoteLineWidth = 0; quoteLines.forEach(line => { const lineWidth = ctx.measureText(line).width; if (lineWidth > maxQuoteLineWidth) maxQuoteLineWidth = lineWidth; }); const authorLineWidth = ctx.measureText(authorLine).width;
-             ctx.font = getFontString();
-             return { quoteLines, authorLine, fullText: quoteLines.join('\n') + '\n' + authorLine, maxQuoteLineWidth, authorLineWidth, totalQuoteLines: quoteLines.length, appliedFontFamily: formatFontFamily, appliedFontColor: formatFontColor };
-         }
-        function quoteDrawTextWithOutline(text, x, y, quoteObj) {
-            ctx.strokeStyle = appSettings.fontHighlightEnabled ? appSettings.fontHighlightColor : 'transparent';
-            ctx.lineWidth = appSettings.fontHighlightEnabled ? appSettings.fontHighlightWidth : 0;
-            ctx.strokeText(text, x, y);
-            ctx.fillStyle = quoteObj.appliedFontColor;
-            ctx.fillText(text, x, y);
-            if (appSettings.fontUnderline) { const metrics = ctx.measureText(text); const underlineY = y + appSettings.fontSize * 1.1; ctx.beginPath(); ctx.strokeStyle = quoteObj.appliedFontColor; ctx.lineWidth = Math.max(1, Math.floor(appSettings.fontSize / 12)); ctx.moveTo(x, underlineY); ctx.lineTo(x + metrics.width, underlineY); ctx.stroke(); }
-        }
-        function quoteDrawState(quoteObj, alpha = 1.0) {
-             const { x, y, quoteLines, authorLine, typedText, maxQuoteLineWidth, authorLineWidth, totalQuoteLines, appliedFontFamily } = quoteObj;
-             if (typedText === undefined) return;
-             const linesToDraw = typedText.split('\n');
-             ctx.save(); ctx.globalAlpha = alpha; let fontStyle = ''; if (appSettings.fontItalic) fontStyle += 'italic '; if (appSettings.fontBold) fontStyle += 'bold '; ctx.font = `${fontStyle}${appSettings.fontSize}px ${appliedFontFamily}`; ctx.textBaseline = 'top'; ctx.textAlign = 'left'; ctx.lineJoin = 'round';
-             for (let i = 0; i < linesToDraw.length; i++) { if (i < totalQuoteLines) { quoteDrawTextWithOutline(linesToDraw[i], x, y + i * quoteLineHeight, quoteObj); } }
-             if (linesToDraw.length > totalQuoteLines) { const authorTextToDraw = linesToDraw[linesToDraw.length - 1] || ''; if(authorTextToDraw) { const authorY = y + totalQuoteLines * quoteLineHeight; const authorStartX = x + Math.max(0, maxQuoteLineWidth - authorLineWidth); quoteDrawTextWithOutline(authorTextToDraw, authorStartX, authorY, quoteObj); } }
-             ctx.restore();
-        }
+        function quoteParseCSV(csvText) { const lines = csvText.trim().split('\n'); const parsedQuotes = []; lines.forEach((line, index) => { line = line.trim(); if (!line) return; const firstCommaIndex = line.indexOf(','); if (firstCommaIndex === -1) { return; } let authorRaw = line.substring(0, firstCommaIndex); let quoteRaw = line.substring(firstCommaIndex + 1); const cleanField = (str) => { let cleaned = str.trim(); if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || (cleaned.startsWith("'") && cleaned.endsWith("'"))) cleaned = cleaned.substring(1, cleaned.length - 1); cleaned = cleaned.replace(/""/g, '"'); return cleaned; }; let author = cleanField(authorRaw); let quote = cleanField(quoteRaw); if (!author) author = "Anonymous"; if (!quote) { return; } parsedQuotes.push({ author, quote }); }); return parsedQuotes; }
+        function quoteFormatText(quote, author) { ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; let formatFontFamily = appSettings.fontFamily; let formatFontColor = appSettings.fontColor; if (appSettings.randomFont) { const fonts = document.getElementById('font-family-select').options; const randomFontIndex = Math.floor(Math.random() * fonts.length); formatFontFamily = fonts[randomFontIndex].value; } if (appSettings.randomFontColor) { const r = Math.floor(Math.random() * 256); const g = Math.floor(Math.random() * 256); const b = Math.floor(Math.random() * 256); formatFontColor = `rgb(${r}, ${g}, ${b})`; } let measureFont = getFontString(); if (appSettings.randomFont) { let fontStyle = ''; if (appSettings.fontItalic) fontStyle += 'italic '; if (appSettings.fontBold) fontStyle += 'bold '; measureFont = `${fontStyle}${appSettings.fontSize}px ${formatFontFamily}`; } ctx.save(); ctx.font = measureFont; const words = quote.split(' '); const quoteLines = []; let currentLine = ''; const maxWidth = canvasWidth - QUOTE_PADDING * 2; for (let i = 0; i < words.length; i++) { const word = words[i]; if (!word) continue; const potentialLine = currentLine ? `${currentLine} ${word}` : word; if (ctx.measureText(potentialLine).width <= maxWidth && potentialLine.length <= QUOTE_MAX_CHARS_PER_LINE ) { currentLine = potentialLine; } else { if (currentLine.length > 0) { quoteLines.push(currentLine); } currentLine = word; if (ctx.measureText(word).width > maxWidth || word.length > QUOTE_MAX_CHARS_PER_LINE) { if (currentLine.length > QUOTE_MAX_CHARS_PER_LINE) { currentLine = currentLine.substring(0, QUOTE_MAX_CHARS_PER_LINE); } } } } if (currentLine) { quoteLines.push(currentLine); } if (quoteLines.length === 0 && quote) { let truncatedQuote = quote.substring(0, QUOTE_MAX_CHARS_PER_LINE); if (ctx.measureText(truncatedQuote).width > maxWidth) { while(ctx.measureText(truncatedQuote).width > maxWidth && truncatedQuote.length > 0) { truncatedQuote = truncatedQuote.slice(0,-1); } } quoteLines.push(truncatedQuote); } const authorLine = `— ${author}`; let maxQuoteLineWidth = 0; quoteLines.forEach(line => { const lineWidth = ctx.measureText(line).width; if (lineWidth > maxQuoteLineWidth) maxQuoteLineWidth = lineWidth; }); const authorLineWidth = ctx.measureText(authorLine).width; ctx.restore(); return { quoteLines, authorLine, fullText: quoteLines.join('\n') + '\n' + authorLine, maxQuoteLineWidth, authorLineWidth, totalQuoteLines: quoteLines.length, appliedFontFamily: formatFontFamily, appliedFontColor: formatFontColor }; }
+        function quoteDrawTextWithOutline(text, x, y, quoteObj) { ctx.strokeStyle = appSettings.fontHighlightEnabled ? appSettings.fontHighlightColor : 'transparent'; ctx.lineWidth = appSettings.fontHighlightEnabled ? appSettings.fontHighlightWidth : 0; ctx.strokeText(text, x, y); ctx.fillStyle = quoteObj.appliedFontColor; ctx.fillText(text, x, y); if (appSettings.fontUnderline) { const metrics = ctx.measureText(text); const underlineY = y + appSettings.fontSize * 1.1; ctx.beginPath(); ctx.strokeStyle = quoteObj.appliedFontColor; ctx.lineWidth = Math.max(1, Math.floor(appSettings.fontSize / 12)); ctx.moveTo(x, underlineY); ctx.lineTo(x + metrics.width, underlineY); ctx.stroke(); } }
+        function quoteDrawState(quoteObj, alpha = 1.0) { const { x, y, quoteLines, authorLine, typedText, maxQuoteLineWidth, authorLineWidth, totalQuoteLines, appliedFontFamily } = quoteObj; if (typedText === undefined) return; const linesToDraw = typedText.split('\n'); ctx.save(); ctx.globalAlpha = alpha; let fontStyle = ''; if (appSettings.fontItalic) fontStyle += 'italic '; if (appSettings.fontBold) fontStyle += 'bold '; ctx.font = `${fontStyle}${appSettings.fontSize}px ${appliedFontFamily}`; ctx.textBaseline = 'top'; ctx.textAlign = 'left'; ctx.lineJoin = 'round'; for (let i = 0; i < linesToDraw.length; i++) { if (i < totalQuoteLines) { quoteDrawTextWithOutline(linesToDraw[i], x, y + i * quoteLineHeight, quoteObj); } } if (linesToDraw.length > totalQuoteLines) { const authorTextToDraw = linesToDraw[linesToDraw.length - 1] || ''; if(authorTextToDraw) { const authorY = y + totalQuoteLines * quoteLineHeight; const authorStartX = x + Math.max(0, maxQuoteLineWidth - authorLineWidth); quoteDrawTextWithOutline(authorTextToDraw, authorStartX, authorY, quoteObj); } } ctx.restore(); }
         function quoteDisplayStatusMessage(message) { ctx.save(); ctx.fillStyle = '#888888'; ctx.font = 'italic 18px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(message, canvasWidth / 2, canvasHeight / 2); ctx.restore(); }
         function quoteDisplayError(message) { ctx.save(); ctx.clearRect(0, 0, canvasWidth, canvasHeight); ctx.fillStyle = '#D32F2F'; ctx.strokeStyle = '#424242'; ctx.lineWidth = 1; ctx.font = 'bold 16px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; const lines = message.split('. '); const yOffset = - ( (lines.length -1) * 10); lines.forEach((line, index) => { const text = line + (index < lines.length - 1 ? '.' : ''); const yPos = canvasHeight / 2 + (index * 20) + yOffset; ctx.strokeText(text, canvasWidth / 2, yPos); ctx.fillText(text, canvasWidth / 2, yPos); }); ctx.font = '14px sans-serif'; const detailText = "Check console (F12) for details."; const detailY = canvasHeight / 2 + (lines.length * 20) + yOffset + 10; ctx.strokeText(detailText, canvasWidth / 2, detailY); ctx.fillText(detailText, canvasWidth / 2, detailY); ctx.restore(); }
-        function quoteTypeCharacter() {
-             if (quoteState !== 'typing' || !currentQuote || currentQuote.isCorrectingTypo) return;
-             if (currentQuote.currentIndex >= currentQuote.fullText.length) { currentQuote.isComplete = true; currentQuote.completionTime = Date.now(); quoteState = 'paused'; console.log("QUOTE: Finished typing."); quoteTypingSound.pause(); return; }
-             quoteCurrentTypoDelayMs = appSettings.quoteTypingSpeedMs * 2.0; quoteCurrentBackspaceDelayMs = appSettings.quoteTypingSpeedMs * 1.5;
-             const targetChar = currentQuote.fullText[currentQuote.currentIndex]; const makeTypo = Math.random() < QUOTE_TYPO_CHANCE && targetChar !== '\n' && !(targetChar === '—' && currentQuote.currentIndex === currentQuote.fullText.lastIndexOf('\n') + 1);
-             if (makeTypo) { currentQuote.isCorrectingTypo = true; const typoChars = 'abcdefghijklmnopqrstuvwxyz'; const typoChar = typoChars[Math.floor(Math.random() * typoChars.length)]; currentQuote.typedText += typoChar; setTimeout(() => { if (currentQuote && currentQuote.typedText) currentQuote.typedText = currentQuote.typedText.slice(0, -1); setTimeout(() => { if (currentQuote) { currentQuote.typedText += targetChar; currentQuote.currentIndex++; currentQuote.isCorrectingTypo = false; quoteScheduleNextChar(); } }, quoteCurrentBackspaceDelayMs / 2); }, quoteCurrentTypoDelayMs); } else { currentQuote.typedText += targetChar; currentQuote.currentIndex++; quoteScheduleNextChar(); }
-         }
+        function quoteTypeCharacter() { if (quoteState !== 'typing' || !currentQuote || currentQuote.isCorrectingTypo) return; if (currentQuote.currentIndex >= currentQuote.fullText.length) { currentQuote.isComplete = true; currentQuote.completionTime = Date.now(); quoteState = 'paused'; console.log("QUOTE: Finished typing."); quoteTypingSound.pause(); return; } quoteCurrentTypoDelayMs = appSettings.quoteTypingSpeedMs * 2.0; quoteCurrentBackspaceDelayMs = appSettings.quoteTypingSpeedMs * 1.5; const targetChar = currentQuote.fullText[currentQuote.currentIndex]; const makeTypo = Math.random() < QUOTE_TYPO_CHANCE && targetChar !== '\n' && !(targetChar === '—' && currentQuote.currentIndex === currentQuote.fullText.lastIndexOf('\n') + 1); if (makeTypo) { currentQuote.isCorrectingTypo = true; const typoChars = 'abcdefghijklmnopqrstuvwxyz'; const typoChar = typoChars[Math.floor(Math.random() * typoChars.length)]; currentQuote.typedText += typoChar; setTimeout(() => { if (currentQuote && currentQuote.typedText) currentQuote.typedText = currentQuote.typedText.slice(0, -1); setTimeout(() => { if (currentQuote) { currentQuote.typedText += targetChar; currentQuote.currentIndex++; currentQuote.isCorrectingTypo = false; quoteScheduleNextChar(); } }, quoteCurrentBackspaceDelayMs / 2); }, quoteCurrentTypoDelayMs); } else { currentQuote.typedText += targetChar; currentQuote.currentIndex++; quoteScheduleNextChar(); } }
         function quoteScheduleNextChar() { if (quoteState !== 'typing' || !currentQuote || currentQuote.isComplete) return; const baseDelay = appSettings.quoteTypingSpeedMs; const delay = baseDelay + (Math.random() * baseDelay * 0.4) - (baseDelay * 0.2); setTimeout(quoteTypeCharacter, Math.max(20, delay)); }
         function quoteStartNew() {
-             if (!appSettings.quotesEnabled) { console.log("QUOTE: Quotes disabled."); quoteState = 'disabled'; if (currentQuote && quoteState !== 'fading') { currentQuote.fadeStartTime = Date.now(); quoteState = 'fading'; } else if (!currentQuote) { quoteState = 'idle';} return; }
-             if (quotesData.length === 0 || !quoteInitialLoadComplete || (quoteState !== 'idle' && quoteState !== 'ready_to_load') || currentQuote !== null) { console.log(`QUOTE: Cannot start new quote. State: ${quoteState}, currentQuote: ${!!currentQuote}, loaded: ${quoteInitialLoadComplete}`); return; }
-             if (quoteNextQuoteTimeoutId) { clearTimeout(quoteNextQuoteTimeoutId); quoteNextQuoteTimeoutId = null; }
-             console.log("QUOTE: Starting new quote...");
-             const randomIndex = Math.floor(Math.random() * quotesData.length); const selectedQuote = quotesData[randomIndex]; const formatted = quoteFormatText(selectedQuote.quote, selectedQuote.author);
-             if(!formatted || formatted.quoteLines.length === 0) { console.error("QUOTE: Failed to format quote, skipping:", selectedQuote); setTimeout(quoteStartNew, 50); return; }
-             const estHeight = (formatted.totalQuoteLines + 1) * quoteLineHeight; const estWidth = Math.max(formatted.maxQuoteLineWidth, formatted.authorLineWidth) + (appSettings.fontHighlightEnabled ? appSettings.fontHighlightWidth * 2 : 0);
-             const excludeZoneWidth = canvasWidth * QUOTE_CENTER_EXCLUSION_FACTOR_X; const excludeZoneHeight = canvasHeight * QUOTE_CENTER_EXCLUSION_FACTOR_Y; const excludeZoneLeft = (canvasWidth - excludeZoneWidth) / 2; const excludeZoneRight = excludeZoneLeft + excludeZoneWidth; const excludeZoneTop = (canvasHeight - excludeZoneHeight) / 2; const excludeZoneBottom = excludeZoneTop + excludeZoneHeight; let x = QUOTE_PADDING, y = QUOTE_PADDING, attempts = 0, placementSuccessful = false;
-             while (attempts < QUOTE_MAX_PLACEMENT_ATTEMPTS && !placementSuccessful) { attempts++; const zoneIndex = Math.floor(Math.random() * 4); let zoneMinX = QUOTE_PADDING, zoneMaxX = QUOTE_PADDING, zoneMinY = QUOTE_PADDING, zoneMaxY = QUOTE_PADDING; let zoneIsValid = false; switch (zoneIndex) { case 0: zoneMinX = QUOTE_PADDING; zoneMaxX = canvasWidth - estWidth - QUOTE_PADDING; zoneMinY = QUOTE_PADDING; zoneMaxY = excludeZoneTop - estHeight - QUOTE_PADDING; if (zoneMaxX > zoneMinX && zoneMaxY > zoneMinY) zoneIsValid = true; break; case 1: zoneMinX = QUOTE_PADDING; zoneMaxX = canvasWidth - estWidth - QUOTE_PADDING; zoneMinY = excludeZoneBottom + QUOTE_PADDING; zoneMaxY = canvasHeight - estHeight - QUOTE_PADDING; if (zoneMaxX > zoneMinX && zoneMaxY > zoneMinY) zoneIsValid = true; break; case 2: zoneMinX = QUOTE_PADDING; zoneMaxX = excludeZoneLeft - estWidth - QUOTE_PADDING; zoneMinY = excludeZoneTop + QUOTE_PADDING; zoneMaxY = excludeZoneBottom - estHeight - QUOTE_PADDING; if (zoneMaxX > zoneMinX && zoneMaxY > zoneMinY) zoneIsValid = true; break; case 3: zoneMinX = excludeZoneRight + QUOTE_PADDING; zoneMaxX = canvasWidth - estWidth - QUOTE_PADDING; zoneMinY = excludeZoneTop + QUOTE_PADDING; zoneMaxY = excludeZoneBottom - estHeight - QUOTE_PADDING; if (zoneMaxX > zoneMinX && zoneMaxY > zoneMinY) zoneIsValid = true; break; } if (zoneIsValid) { x = zoneMinX + Math.random() * (zoneMaxX - zoneMinX); y = zoneMinY + Math.random() * (zoneMaxY - zoneMinY); placementSuccessful = true; } }
-             if (!placementSuccessful) { console.warn(`QUOTE: Could not find suitable zone after ${attempts} attempts.`); x = QUOTE_PADDING; y = QUOTE_PADDING; }
-             currentQuote = { ...formatted, x: Math.max(QUOTE_PADDING, x), y: Math.max(QUOTE_PADDING, y), typedText: '', currentIndex: 0, isComplete: false, isCorrectingTypo: false, completionTime: null, fadeStartTime: null };
-             console.log("QUOTE: Sound/typing start...");
-             if (!appSettings.typingMuted) {
-                 const playPromise = quoteTypingSound.play();
-                 if (playPromise !== undefined) {
-                     playPromise.catch(error => console.warn("QUOTE: Audio play failed:", error, "(Might be OK if before user interaction)"));
-                 }
-             }
-             quoteState = 'typing'; quoteScheduleNextChar();
+            if (!appSettings.quotesEnabled || quoteState === 'disabled') { quoteState = 'disabled'; return; } if (quotesData.length === 0 || !quoteInitialLoadComplete || (quoteState !== 'idle' && quoteState !== 'ready_to_load') || currentQuote !== null) { return; } if (quoteNextQuoteTimeoutId) { clearTimeout(quoteNextQuoteTimeoutId); quoteNextQuoteTimeoutId = null; } console.log("QUOTE: Starting new quote..."); let randomIndex = -1, selectedQuote = null; const maxAttempts = 5; let attempts = 0; if (quotesData.length > 1) { if (recentlyShownQuoteIndices.size >= Math.max(1, quotesData.length / 2)) { recentlyShownQuoteIndices.clear(); } do { randomIndex = Math.floor(Math.random() * quotesData.length); attempts++; } while (recentlyShownQuoteIndices.has(randomIndex) && attempts < maxAttempts); } else if (quotesData.length === 1) { randomIndex = 0; } else { return; } selectedQuote = quotesData[randomIndex]; recentlyShownQuoteIndices.add(randomIndex); const formatted = quoteFormatText(selectedQuote.quote, selectedQuote.author); if (!formatted || formatted.quoteLines.length === 0) { setTimeout(quoteStartNew, 50); return; } const estHeight = (formatted.totalQuoteLines + 1) * quoteLineHeight; const estWidth = Math.max(formatted.maxQuoteLineWidth, formatted.authorLineWidth) + (appSettings.fontHighlightEnabled ? appSettings.fontHighlightWidth * 2 : 0); const excludeZoneWidth = canvasWidth * QUOTE_CENTER_EXCLUSION_FACTOR_X; const excludeZoneHeight = canvasHeight * QUOTE_CENTER_EXCLUSION_FACTOR_Y; const excludeZoneLeft = (canvasWidth - excludeZoneWidth) / 2; const excludeZoneRight = excludeZoneLeft + excludeZoneWidth; const excludeZoneTop = (canvasHeight - excludeZoneHeight) / 2; const excludeZoneBottom = excludeZoneTop + excludeZoneHeight; let x = QUOTE_PADDING, y = QUOTE_PADDING, placeAttempts = 0, placementSuccessful = false; while (placeAttempts < QUOTE_MAX_PLACEMENT_ATTEMPTS && !placementSuccessful) { placeAttempts++; const zoneIndex = Math.floor(Math.random() * 4); let zoneMinX = QUOTE_PADDING, zoneMaxX = QUOTE_PADDING, zoneMinY = QUOTE_PADDING, zoneMaxY = QUOTE_PADDING; let zoneIsValid = false; switch (zoneIndex) { case 0: zoneMinX = QUOTE_PADDING; zoneMaxX = canvasWidth - estWidth - QUOTE_PADDING; zoneMinY = QUOTE_PADDING; zoneMaxY = excludeZoneTop - estHeight - QUOTE_PADDING; if (zoneMaxX > zoneMinX && zoneMaxY > zoneMinY) zoneIsValid = true; break; case 1: zoneMinX = QUOTE_PADDING; zoneMaxX = canvasWidth - estWidth - QUOTE_PADDING; zoneMinY = excludeZoneBottom + QUOTE_PADDING; zoneMaxY = canvasHeight - estHeight - QUOTE_PADDING; if (zoneMaxX > zoneMinX && zoneMaxY > zoneMinY) zoneIsValid = true; break; case 2: zoneMinX = QUOTE_PADDING; zoneMaxX = excludeZoneLeft - estWidth - QUOTE_PADDING; zoneMinY = excludeZoneTop + QUOTE_PADDING; zoneMaxY = excludeZoneBottom - estHeight - QUOTE_PADDING; if (zoneMaxX > zoneMinX && zoneMaxY > zoneMinY) zoneIsValid = true; break; case 3: zoneMinX = excludeZoneRight + QUOTE_PADDING; zoneMaxX = canvasWidth - estWidth - QUOTE_PADDING; zoneMinY = excludeZoneTop + QUOTE_PADDING; zoneMaxY = excludeZoneBottom - estHeight - QUOTE_PADDING; if (zoneMaxX > zoneMinX && zoneMaxY > zoneMinY) zoneIsValid = true; break; } if (zoneIsValid) { x = zoneMinX + Math.random() * (zoneMaxX - zoneMinX); y = zoneMinY + Math.random() * (zoneMaxY - zoneMinY); placementSuccessful = true; } } if (!placementSuccessful) { x = QUOTE_PADDING; y = QUOTE_PADDING; }
+            currentQuote = { ...formatted, x: Math.max(QUOTE_PADDING, x), y: Math.max(QUOTE_PADDING, y), typedText: '', currentIndex: 0, isComplete: false, isCorrectingTypo: false, completionTime: null, fadeStartTime: null, originalQuote: selectedQuote.quote, originalAuthor: selectedQuote.author };
+            // Attempt to Play Typing Sound
+            if (!appSettings.typingMuted) {
+                console.log("QUOTE: Attempting to play typing sound.");
+                quoteTypingSound.currentTime = 0;
+                const playPromise = quoteTypingSound.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        // Ignore specific errors related to autoplay or interruptions
+                        if (error.name !== 'NotAllowedError' && error.name !== 'AbortError') {
+                           console.warn("QUOTE: Typing sound play failed:", error);
+                        } else {
+                           console.log("QUOTE: Typing sound blocked by browser (will play after interaction or if unblocked).");
+                        }
+                    });
+                }
+            }
+            quoteState = 'typing'; quoteScheduleNextChar();
         }
-        async function initializeQuotes() { quoteState = 'loading'; try { quoteTypingSound.play().then(() => { quoteTypingSound.pause(); }).catch(() => { console.warn("QUOTE: Audio context requires user interaction."); }); const response = await fetch('quotes.csv'); if (!response.ok) throw new Error(`HTTP ${response.status}: Failed to fetch quotes.csv`); const csvText = await response.text(); quotesData = quoteParseCSV(csvText); if (!quotesData || quotesData.length === 0) throw new Error("No valid quotes found in quotes.csv"); console.log(`QUOTE: Loaded ${quotesData.length} quotes.`); quoteInitialLoadComplete = true; quoteState = 'idle'; if (quoteNextQuoteTimeoutId) clearTimeout(quoteNextQuoteTimeoutId); quoteNextQuoteTimeoutId = setTimeout(() => { quoteNextQuoteTimeoutId = null; quoteState = 'idle'; quoteStartNew(); }, appSettings.quoteIntervalMs); } catch (error) { console.error("QUOTE: Initialization failed:", error); quoteState = 'error'; quoteDisplayError(`Quote Error: ${error.message}. Check quotes.csv & keyclicks.mp3 exists?`); } }
+        // Removed priming call from initializeQuotes
+        async function initializeQuotes() {
+            quoteState = 'loading';
+            try {
+                // REMOVED: quoteTypingSound.play().then(...).catch(...) priming attempt
+                const response = await fetch('quotes.csv');
+                if (!response.ok) throw new Error(`HTTP ${response.status}: Failed to fetch quotes.csv`);
+                const csvText = await response.text();
+                quotesData = quoteParseCSV(csvText);
+                if (!quotesData || quotesData.length === 0) throw new Error("No valid quotes found in quotes.csv");
+                console.log(`QUOTE: Loaded ${quotesData.length} quotes.`);
+                quoteInitialLoadComplete = true;
+                quoteState = 'idle';
+                if (quoteNextQuoteTimeoutId) clearTimeout(quoteNextQuoteTimeoutId);
+                quoteNextQuoteTimeoutId = setTimeout(() => {
+                    quoteNextQuoteTimeoutId = null;
+                    quoteState = 'idle';
+                    quoteStartNew(); // Start the first quote after the initial interval
+                }, appSettings.quoteIntervalMs);
+            } catch (error) {
+                console.error("QUOTE: Initialization failed:", error);
+                quoteState = 'error';
+                quoteDisplayError(`Quote Error: ${error.message}. Check quotes.csv & keyclicks.mp3 exists?`);
+            }
+        }
+
 
         // --- GAME Functions ---
-        function createOrb(x, y, radius, dx = 0, dy = 0, color = getRandomColor()) { const validRadius = Math.max(MIN_ABSORB_COMPLETE_RADIUS, radius); if (isNaN(validRadius)) { console.error(`CRITICAL: validRadius NaN! Input: ${radius}`); return undefined; } const mass = validRadius * validRadius; return { id: Math.random().toString(36).substring(2, 9) + Date.now(), x, y, radius: validRadius, dx, dy, color, mass: mass, isPlayer: false }; }
+        function createOrb(x, y, radius, dx = 0, dy = 0, initialColor = getRandomColor()) { const validRadius = Math.max(MIN_ABSORB_COMPLETE_RADIUS, radius); if (isNaN(validRadius)) { return undefined; } const mass = validRadius * validRadius; const originalColor = initialColor; return { id: Math.random().toString(36).substring(2, 9) + Date.now(), x, y, radius: validRadius, dx, dy, color: originalColor, originalColor: originalColor, mass: mass, isPlayer: false }; }
         function _drawSingleOrbInstance(drawX, drawY, radius, color, shadowColor, shadowBlur) { if (radius < MIN_ABSORB_COMPLETE_RADIUS || drawX + radius < 0 || drawX - radius > canvasWidth || drawY + radius < 0 || drawY - radius > canvasHeight) return; ctx.beginPath(); ctx.arc(drawX, drawY, radius, 0, Math.PI * 2); ctx.shadowColor = shadowColor; ctx.shadowBlur = shadowBlur; ctx.fillStyle = color; ctx.fill(); }
-        function drawOrbWithWrapping(orb, drawOffsetX, drawOffsetY) {
-            if (!orb || orb.radius < MIN_ABSORB_COMPLETE_RADIUS || orbsToRemove.has(orb.id)) return;
-            const drawX = orb.x - drawOffsetX; const drawY = orb.y - drawOffsetY; const drawRadius = orb.radius;
-            let baseColorStr = orb.color; let drawColor = orb.color;
-            if (!orb.isPlayer && appSettings.otherOrbSaturation !== 1.0) { baseColorStr = adjustSaturation(orb.color, appSettings.otherOrbSaturation); drawColor = baseColorStr; }
-            let baseShadowColor = baseColorStr;
-            if (orb.isPlayer) {
-                const baseColor = parseRGBA(appSettings.playerOrbColor); let brightnessPulse = 0;
-                 if (appSettings.orbPulseToMusic && analyser && audioDataArray) {
-                     analyser.getByteFrequencyData(audioDataArray);
-                     let maxVolume = 0;
-                     // --- CHANGE: Find MAX volume in lower frequencies instead of averaging ---
-                     const lengthToConsider = Math.floor(analyser.frequencyBinCount / 3); // Focus on lower ~third (bass/mid-bass)
-                     if (lengthToConsider > 0) {
-                        for (let i = 0; i < lengthToConsider; i++) {
-                            if (audioDataArray[i] > maxVolume) {
-                                maxVolume = audioDataArray[i];
-                            }
-                        }
-                        const normalizedMax = maxVolume / 255; // Normalize max value (0-1)
-                        // Apply non-linear curve to the max value for exaggeration
-                        const enhancedMax = Math.pow(normalizedMax, 2); // Squaring the max might be enough, could try cubing: Math.pow(normalizedMax, 3)
-                        brightnessPulse = enhancedMax * appSettings.orbPulseRange;
-                     }
-                     // --- End Change ---
-                 }
-                 else if (appSettings.orbPulseFreqEnabled && !appSettings.orbPulseToMusic) {
-                     const time = performance.now() / 1000.0;
-                     const freq = appSettings.orbPulseFreqHz;
-                     const sinePulse = (Math.sin(2 * Math.PI * freq * time) + 1) / 2;
-                     brightnessPulse = sinePulse * appSettings.orbPulseRange;
-                 }
-                 const pulseAmount = Math.max(0, Math.min(1, brightnessPulse));
-                 const newR = Math.max(0, Math.min(255, Math.round(baseColor.r + (255 - baseColor.r) * pulseAmount))); const newG = Math.max(0, Math.min(255, Math.round(baseColor.g + (255 - baseColor.g) * pulseAmount))); const newB = Math.max(0, Math.min(255, Math.round(baseColor.b + (255 - baseColor.b) * pulseAmount)));
-                 drawColor = `rgba(${newR}, ${newG}, ${newB}, ${baseColor.a})`; baseShadowColor = drawColor;
-            }
-             const glowAmount = Math.min(drawRadius * 0.7, 15); const shadowBlur = glowAmount > 1 ? glowAmount : 0; const shadowColor = baseShadowColor;
-             _drawSingleOrbInstance(drawX, drawY, drawRadius, drawColor, shadowColor, shadowBlur);
-             const worldWidth = canvasWidth; const worldHeight = canvasHeight; let wrappedHorizontal = false, wrappedVertical = false; if (drawX - drawRadius < 0) { _drawSingleOrbInstance(drawX + worldWidth, drawY, drawRadius, drawColor, shadowColor, shadowBlur); wrappedHorizontal = true; } if (drawX + drawRadius > canvasWidth) { _drawSingleOrbInstance(drawX - worldWidth, drawY, drawRadius, drawColor, shadowColor, shadowBlur); wrappedHorizontal = true; } if (drawY - drawRadius < 0) { _drawSingleOrbInstance(drawX, drawY + worldHeight, drawRadius, drawColor, shadowColor, shadowBlur); wrappedVertical = true; } if (drawY + drawRadius > canvasHeight) { _drawSingleOrbInstance(drawX, drawY - worldHeight, drawRadius, drawColor, shadowColor, shadowBlur); wrappedVertical = true; } if (wrappedHorizontal && wrappedVertical) { const cornerX = (drawX - drawRadius < 0) ? drawX + worldWidth : drawX - worldWidth; const cornerY = (drawY - drawRadius < 0) ? drawY + worldHeight : drawY - worldHeight; _drawSingleOrbInstance(cornerX, cornerY, drawRadius, drawColor, shadowColor, shadowBlur); }
-             ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
-        }
+        function drawOrbWithWrapping(orb, drawOffsetX, drawOffsetY) { if (!orb || orb.radius < MIN_ABSORB_COMPLETE_RADIUS || orbsToRemove.has(orb.id)) return; const drawX = orb.x - drawOffsetX; const drawY = orb.y - drawOffsetY; const drawRadius = orb.radius; let drawColor = orb.color; let baseShadowColor = orb.color; if (orb.isPlayer) { const baseColor = parseRGBA(appSettings.playerOrbColor); let brightnessPulse = 0; if (appSettings.orbPulseToMusic && analyser && audioDataArray) { analyser.getByteFrequencyData(audioDataArray); let maxVolume = 0; const lengthToConsider = Math.floor(analyser.frequencyBinCount / 3); if (lengthToConsider > 0) { for (let i = 0; i < lengthToConsider; i++) { if (audioDataArray[i] > maxVolume) { maxVolume = audioDataArray[i]; } } const normalizedMax = maxVolume / 255; const enhancedMax = Math.pow(normalizedMax, 2); brightnessPulse = enhancedMax * appSettings.orbPulseRange; } } else if (appSettings.orbPulseFreqEnabled && !appSettings.orbPulseToMusic) { const time = performance.now() / 1000.0; const freq = appSettings.orbPulseFreqHz; const sinePulse = (Math.sin(2 * Math.PI * freq * time) + 1) / 2; brightnessPulse = sinePulse * appSettings.orbPulseRange; } const pulseAmount = Math.max(0, Math.min(1, brightnessPulse)); const newR = Math.max(0, Math.min(255, Math.round(baseColor.r + (255 - baseColor.r) * pulseAmount))); const newG = Math.max(0, Math.min(255, Math.round(baseColor.g + (255 - baseColor.g) * pulseAmount))); const newB = Math.max(0, Math.min(255, Math.round(baseColor.b + (255 - baseColor.b) * pulseAmount))); const currentAlpha = parseRGBA(orb.color)?.a || baseColor.a; drawColor = `rgba(${newR}, ${newG}, ${newB}, ${currentAlpha.toFixed(2)})`; baseShadowColor = drawColor; } const glowAmount = Math.min(drawRadius * 0.7, 15); const shadowBlur = glowAmount > 1 ? glowAmount : 0; const shadowColor = baseShadowColor; _drawSingleOrbInstance(drawX, drawY, drawRadius, drawColor, shadowColor, shadowBlur); const worldWidth = canvasWidth; const worldHeight = canvasHeight; let wrappedHorizontal = false, wrappedVertical = false; if (drawX - drawRadius < 0) { _drawSingleOrbInstance(drawX + worldWidth, drawY, drawRadius, drawColor, shadowColor, shadowBlur); wrappedHorizontal = true; } if (drawX + drawRadius > canvasWidth) { _drawSingleOrbInstance(drawX - worldWidth, drawY, drawRadius, drawColor, shadowColor, shadowBlur); wrappedHorizontal = true; } if (drawY - drawRadius < 0) { _drawSingleOrbInstance(drawX, drawY + worldHeight, drawRadius, drawColor, shadowColor, shadowBlur); wrappedVertical = true; } if (drawY + drawRadius > canvasHeight) { _drawSingleOrbInstance(drawX, drawY - worldHeight, drawRadius, drawColor, shadowColor, shadowBlur); wrappedVertical = true; } if (wrappedHorizontal && wrappedVertical) { const cornerX = (drawX - drawRadius < 0) ? drawX + worldWidth : drawX - worldWidth; const cornerY = (drawY - drawRadius < 0) ? drawY + worldHeight : drawY - worldHeight; _drawSingleOrbInstance(cornerX, cornerY, drawRadius, drawColor, shadowColor, shadowBlur); } ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; }
         function updateOrb(orb, dtSeconds) { if (!orb || dtSeconds <= 0) return; orb.x += orb.dx * dtSeconds; orb.y += orb.dy * dtSeconds; if (orb.x >= canvasWidth) orb.x -= canvasWidth; else if (orb.x < 0) orb.x += canvasWidth; if (orb.y >= canvasHeight) orb.y -= canvasHeight; else if (orb.y < 0) orb.y += canvasHeight; if (!orb.isPlayer && !activeAbsorptions.has(orb.id) && orb.mass < (MIN_ORB_RADIUS * MIN_ORB_RADIUS * 0.1)) { orb.mass = Math.max(0.01, orb.mass); orb.radius = Math.sqrt(orb.mass); } }
         function mixMomentumOnAbsorption(absorber, absorbed, absorbedOriginalMass) { if (!absorber || !absorbed || absorber.mass <= 0 || absorbedOriginalMass <= 0) return; const initialAbsorberMass = absorber.mass - absorbedOriginalMass; if (initialAbsorberMass <= 0.001) { absorber.dx = (absorbed.dx * absorbedOriginalMass) / absorber.mass; absorber.dy = (absorbed.dy * absorbedOriginalMass) / absorber.mass; } else { const absorbedDx = absorbed.dx || 0; const absorbedDy = absorbed.dy || 0; absorber.dx = (initialAbsorberMass * absorber.dx + absorbedOriginalMass * absorbedDx) / absorber.mass; absorber.dy = (initialAbsorberMass * absorber.dy + absorbedOriginalMass * absorbedDy) / absorber.mass; } if (isNaN(absorber.dx)) absorber.dx = 0; if (isNaN(absorber.dy)) absorber.dy = 0; }
-        function updateAbsorptions(fixedTimestepMs) { if (fixedTimestepMs <= 0) return; const dtSeconds = fixedTimestepMs / 1000.0; const COMMIT_ABSORB_RADIUS = 1.5; const MASS_THRESHOLD = MIN_ABSORB_COMPLETE_RADIUS * MIN_ABSORB_COMPLETE_RADIUS; const FORCE_COMPLETE_MASS_BUFFER = 0.02; for (let [absorbedId, absorptionInfo] of activeAbsorptions) { const { absorber, absorbed } = absorptionInfo; const currentAbsorber = absorber.isPlayer ? player : orbs.find(o => o.id === absorber.id); const currentAbsorbed = absorbed.isPlayer ? player : orbs.find(o => o.id === absorbed.id); if (!currentAbsorber || orbsToRemove.has(absorber.id) || !currentAbsorbed || orbsToRemove.has(absorbed.id)) { activeAbsorptions.delete(absorbedId); continue; } if (currentAbsorbed.mass <= 0 || currentAbsorbed.radius <= MIN_ABSORB_COMPLETE_RADIUS) { if (!orbsToRemove.has(absorbedId)) { orbsToRemove.add(absorbedId); } activeAbsorptions.delete(absorbedId); if (currentAbsorbed.isPlayer) { playerAbsorbed = true; console.log("Player absorbed (Mass Zero). Reset pending."); } continue; } const massRatioOK = currentAbsorber.mass > currentAbsorbed.mass * MASS_ABSORPTION_RATIO; if (!massRatioOK) { activeAbsorptions.delete(absorbedId); continue; } const dist = wrappedDistance(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const radiiSum = currentAbsorber.radius + currentAbsorbed.radius; const overlap = radiiSum - dist; let continueAbsorption = (currentAbsorbed.radius < COMMIT_ABSORB_RADIUS || overlap >= -0.01); if (!continueAbsorption) { activeAbsorptions.delete(absorbedId); continue; } if (currentAbsorbed.mass <= MASS_THRESHOLD + FORCE_COMPLETE_MASS_BUFFER) { const finalTransferredMass = currentAbsorbed.mass > 0 ? currentAbsorbed.mass : 0; if (finalTransferredMass > 0) { currentAbsorber.mass += finalTransferredMass; currentAbsorber.radius = Math.sqrt(currentAbsorber.mass); mixMomentumOnAbsorption(currentAbsorber, currentAbsorbed, finalTransferredMass); } if (currentAbsorbed.isPlayer) { playerAbsorbed = true; console.log("Player absorbed (Near Threshold). Reset pending."); } orbsToRemove.add(absorbedId); activeAbsorptions.delete(absorbedId); currentAbsorbed.mass = 0; currentAbsorbed.radius = 0; currentAbsorbed.dx = 0; currentAbsorbed.dy = 0; continue; } let approachSpeed = 0; if (dist > 0.1) { const v_rel_x = currentAbsorbed.dx - currentAbsorber.dx; const v_rel_y = currentAbsorbed.dy - currentAbsorber.dy; const disp = getWrappedVector(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const dispMag = Math.sqrt(disp.dx * disp.dx + disp.dy * disp.dy); if (dispMag > 0.01) { const unit_x = disp.dx / dispMag; const unit_y = disp.dy / dispMag; const v_radial = v_rel_x * unit_x + v_rel_y * unit_y; approachSpeed = Math.max(0, -v_radial); } } const effectiveOverlap = Math.max(0, overlap); const overlapRatio = currentAbsorbed.radius > 0.1 ? Math.min(1, effectiveOverlap / currentAbsorbed.radius) : 1; const overlapFactor = overlapRatio * (MAX_OVERLAP_SPEED_FACTOR - 1.0); const velocityFactor = approachSpeed * (VELOCITY_ABSORPTION_FACTOR / BASE_ABSORPTION_RATE_PER_SECOND); const speedFactor = 1.0 + overlapFactor + velocityFactor; const effectiveAbsorptionRate = BASE_ABSORPTION_RATE_PER_SECOND * speedFactor; let massToTransfer = Math.min(effectiveAbsorptionRate * dtSeconds, currentAbsorbed.mass); massToTransfer = Math.max(0.00001, massToTransfer); const massBeingTransferred = massToTransfer; const oldAbsorberMass = currentAbsorber.mass; if (massBeingTransferred > 0) { currentAbsorber.mass += massBeingTransferred; currentAbsorbed.mass -= massBeingTransferred; currentAbsorbed.mass = Math.max(0, currentAbsorbed.mass); currentAbsorber.radius = Math.sqrt(currentAbsorber.mass); currentAbsorbed.radius = Math.sqrt(currentAbsorbed.mass); const c1BaseColor = currentAbsorber.isPlayer ? appSettings.playerOrbColor : currentAbsorber.color; const c1 = parseRGBA(c1BaseColor); const c2 = parseRGBA(currentAbsorbed.color); const newTotalMass = currentAbsorber.mass; if (newTotalMass > 0 && oldAbsorberMass >= 0) { const newR = Math.round((c1.r * oldAbsorberMass + c2.r * massBeingTransferred) / newTotalMass); const newG = Math.round((c1.g * oldAbsorberMass + c2.g * massBeingTransferred) / newTotalMass); const newB = Math.round((c1.b * oldAbsorberMass + c2.b * massBeingTransferred) / newTotalMass); const newA = (c1.a * oldAbsorberMass + c2.a * massBeingTransferred) / newTotalMass; currentAbsorber.color = `rgba(${Math.max(0,Math.min(255,newR))}, ${Math.max(0,Math.min(255,newG))}, ${Math.max(0,Math.min(255,newB))}, ${Math.max(0.1,Math.min(1,newA)).toFixed(2)})`; } } const newRadiiSum = currentAbsorber.radius + currentAbsorbed.radius; const newDist = wrappedDistance(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const penetration = newRadiiSum - newDist; if (penetration > 0.05 && newDist > 0.05) { const vector = getWrappedVector(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const vectorMag = Math.sqrt(vector.dx * vector.dx + vector.dy * vector.dy); if (vectorMag > 0.01) { const nudgeFactor = penetration / vectorMag; const totalMassForNudge = currentAbsorber.mass + currentAbsorbed.mass; if (totalMassForNudge > 0.01) { const nudgeAbsorbedX = vector.dx * nudgeFactor * (currentAbsorber.mass / totalMassForNudge); const nudgeAbsorbedY = vector.dy * nudgeFactor * (currentAbsorber.mass / totalMassForNudge); const nudgeAbsorberX = -vector.dx * nudgeFactor * (currentAbsorbed.mass / totalMassForNudge); const nudgeAbsorberY = -vector.dy * nudgeFactor * (currentAbsorbed.mass / totalMassForNudge); currentAbsorbed.x = (currentAbsorbed.x + nudgeAbsorbedX + canvasWidth) % canvasWidth; currentAbsorbed.y = (currentAbsorbed.y + nudgeAbsorbedY + canvasHeight) % canvasHeight; currentAbsorber.x = (currentAbsorber.x + nudgeAbsorberX + canvasWidth) % canvasWidth; currentAbsorber.y = (currentAbsorber.y + nudgeAbsorberY + canvasHeight) % canvasHeight; } } } } }
+        function updateAbsorptions(fixedTimestepMs) { if (fixedTimestepMs <= 0) return; const dtSeconds = fixedTimestepMs / 1000.0; const COMMIT_ABSORB_RADIUS = 1.5; const MASS_THRESHOLD = MIN_ABSORB_COMPLETE_RADIUS * MIN_ABSORB_COMPLETE_RADIUS; const FORCE_COMPLETE_MASS_BUFFER = 0.02; for (let [absorbedId, absorptionInfo] of activeAbsorptions) { const { absorber, absorbed } = absorptionInfo; const currentAbsorber = absorber.isPlayer ? player : orbs.find(o => o.id === absorber.id); const currentAbsorbed = absorbed.isPlayer ? player : orbs.find(o => o.id === absorbed.id); if (!currentAbsorber || orbsToRemove.has(absorber.id) || !currentAbsorbed || orbsToRemove.has(absorbed.id)) { activeAbsorptions.delete(absorbedId); continue; } if (currentAbsorbed.mass <= 0 || currentAbsorbed.radius <= MIN_ABSORB_COMPLETE_RADIUS) { if (!orbsToRemove.has(absorbedId)) { orbsToRemove.add(absorbedId); } activeAbsorptions.delete(absorbedId); if (currentAbsorbed.isPlayer) { playerAbsorbed = true; } continue; } const massRatioOK = currentAbsorber.mass > currentAbsorbed.mass * MASS_ABSORPTION_RATIO; if (!massRatioOK) { activeAbsorptions.delete(absorbedId); continue; } const dist = wrappedDistance(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const radiiSum = currentAbsorber.radius + currentAbsorbed.radius; const overlap = radiiSum - dist; let continueAbsorption = (currentAbsorbed.radius < COMMIT_ABSORB_RADIUS || overlap >= -0.01); if (!continueAbsorption) { activeAbsorptions.delete(absorbedId); continue; } if (currentAbsorbed.mass <= MASS_THRESHOLD + FORCE_COMPLETE_MASS_BUFFER) { const finalTransferredMass = currentAbsorbed.mass > 0 ? currentAbsorbed.mass : 0; if (finalTransferredMass > 0) { currentAbsorber.mass += finalTransferredMass; currentAbsorber.radius = Math.sqrt(currentAbsorber.mass); mixMomentumOnAbsorption(currentAbsorber, currentAbsorbed, finalTransferredMass); } if (currentAbsorbed.isPlayer) { playerAbsorbed = true; } orbsToRemove.add(absorbedId); activeAbsorptions.delete(absorbedId); currentAbsorbed.mass = 0; currentAbsorbed.radius = 0; currentAbsorbed.dx = 0; currentAbsorbed.dy = 0; continue; } let approachSpeed = 0; if (dist > 0.1) { const v_rel_x = currentAbsorbed.dx - currentAbsorber.dx; const v_rel_y = currentAbsorbed.dy - currentAbsorber.dy; const disp = getWrappedVector(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const dispMag = Math.sqrt(disp.dx * disp.dx + disp.dy * disp.dy); if (dispMag > 0.01) { const unit_x = disp.dx / dispMag; const unit_y = disp.dy / dispMag; const v_radial = v_rel_x * unit_x + v_rel_y * unit_y; approachSpeed = Math.max(0, -v_radial); } } const effectiveOverlap = Math.max(0, overlap); const overlapRatio = currentAbsorbed.radius > 0.1 ? Math.min(1, effectiveOverlap / currentAbsorbed.radius) : 1; const overlapFactor = overlapRatio * (MAX_OVERLAP_SPEED_FACTOR - 1.0); const velocityFactor = approachSpeed * (VELOCITY_ABSORPTION_FACTOR / BASE_ABSORPTION_RATE_PER_SECOND); const speedFactor = 1.0 + overlapFactor + velocityFactor; const effectiveAbsorptionRate = BASE_ABSORPTION_RATE_PER_SECOND * speedFactor; let massToTransfer = Math.min(effectiveAbsorptionRate * dtSeconds, currentAbsorbed.mass); massToTransfer = Math.max(0.00001, massToTransfer); const massBeingTransferred = massToTransfer; const oldAbsorberMass = currentAbsorber.mass; if (massBeingTransferred > 0) { currentAbsorber.mass += massBeingTransferred; currentAbsorbed.mass -= massBeingTransferred; currentAbsorbed.mass = Math.max(0, currentAbsorbed.mass); currentAbsorber.radius = Math.sqrt(currentAbsorber.mass); currentAbsorbed.radius = Math.sqrt(currentAbsorbed.mass); const c1 = parseRGBA(currentAbsorber.color); const c2 = parseRGBA(currentAbsorbed.color); const newTotalMass = currentAbsorber.mass; if (newTotalMass > 0 && oldAbsorberMass >= 0 && c1 && c2) { const newR = Math.round((c1.r * oldAbsorberMass + c2.r * massBeingTransferred) / newTotalMass); const newG = Math.round((c1.g * oldAbsorberMass + c2.g * massBeingTransferred) / newTotalMass); const newB = Math.round((c1.b * oldAbsorberMass + c2.b * massBeingTransferred) / newTotalMass); const newA = (c1.a * oldAbsorberMass + c2.a * massBeingTransferred) / newTotalMass; const finalColor = `rgba(${Math.max(0,Math.min(255,newR))}, ${Math.max(0,Math.min(255,newG))}, ${Math.max(0,Math.min(255,newB))}, ${Math.max(0.1,Math.min(1,newA)).toFixed(2)})`; currentAbsorber.color = finalColor; } } const newRadiiSum = currentAbsorber.radius + currentAbsorbed.radius; const newDist = wrappedDistance(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const penetration = newRadiiSum - newDist; if (penetration > 0.05 && newDist > 0.05) { const vector = getWrappedVector(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const vectorMag = Math.sqrt(vector.dx * vector.dx + vector.dy * vector.dy); if (vectorMag > 0.01) { const nudgeFactor = penetration / vectorMag; const totalMassForNudge = currentAbsorber.mass + currentAbsorbed.mass; if (totalMassForNudge > 0.01) { const nudgeAbsorbedX = vector.dx * nudgeFactor * (currentAbsorber.mass / totalMassForNudge); const nudgeAbsorbedY = vector.dy * nudgeFactor * (currentAbsorber.mass / totalMassForNudge); const nudgeAbsorberX = -vector.dx * nudgeFactor * (currentAbsorbed.mass / totalMassForNudge); const nudgeAbsorberY = -vector.dy * nudgeFactor * (currentAbsorbed.mass / totalMassForNudge); currentAbsorbed.x = (currentAbsorbed.x + nudgeAbsorbedX + canvasWidth) % canvasWidth; currentAbsorbed.y = (currentAbsorbed.y + nudgeAbsorbedY + canvasHeight) % canvasHeight; currentAbsorber.x = (currentAbsorber.x + nudgeAbsorberX + canvasWidth) % canvasWidth; currentAbsorber.y = (currentAbsorber.y + nudgeAbsorberY + canvasHeight) % canvasHeight; } } } } }
         function resolveElasticCollision(orb1, orb2, dist, width, height) { if (dist < 0.01) { const angle = Math.random() * Math.PI * 2; const nudge = 0.1; orb1.x = (orb1.x - Math.cos(angle) * nudge + width) % width; orb1.y = (orb1.y - Math.sin(angle) * nudge + height) % height; orb2.x = (orb2.x + Math.cos(angle) * nudge + width) % width; orb2.y = (orb2.y + Math.sin(angle) * nudge + height) % height; return; } const vec = getWrappedVector(orb1.x, orb1.y, orb2.x, orb2.y, width, height); const nx = vec.dx / dist; const ny = vec.dy / dist; const rvx = orb2.dx - orb1.dx; const rvy = orb2.dy - orb1.dy; const velAlongNormal = rvx * nx + rvy * ny; if (velAlongNormal >= 0) return; const tx = -ny; const ty = nx; const v1n_scalar = orb1.dx * nx + orb1.dy * ny; const v1t_scalar = orb1.dx * tx + orb1.dy * ty; const v2n_scalar = orb2.dx * nx + orb2.dy * ny; const v2t_scalar = orb2.dx * tx + orb2.dy * ty; const v1n_scalar_new = v2n_scalar; const v2n_scalar_new = v1n_scalar; orb1.dx = (v1n_scalar_new * nx) + (v1t_scalar * tx); orb1.dy = (v1n_scalar_new * ny) + (v1t_scalar * ty); orb2.dx = (v2n_scalar_new * nx) + (v2t_scalar * tx); orb2.dy = (v2n_scalar_new * ny) + (v2t_scalar * ty); const radiiSum = orb1.radius + orb2.radius; const penetration = Math.max(0, radiiSum - dist); if (penetration > 0.01) { const nudgeAmount = (penetration / 2) + 0.01; orb1.x = (orb1.x - nx * nudgeAmount + width) % width; orb1.y = (orb1.y - ny * nudgeAmount + height) % height; orb2.x = (orb2.x + nx * nudgeAmount + width) % width; orb2.y = (orb2.y + ny * nudgeAmount + height) % height; } if (activeAbsorptions.has(orb1.id) && activeAbsorptions.get(orb1.id).absorber.id === orb2.id) activeAbsorptions.delete(orb1.id); if (activeAbsorptions.has(orb2.id) && activeAbsorptions.get(orb2.id).absorber.id === orb1.id) activeAbsorptions.delete(orb2.id); }
         function checkCollisions() { if (!player && !playerAbsorbed) return; const width = canvasWidth; const height = canvasHeight; const allOrbs = player && !playerAbsorbed && player.mass > 0 ? [player, ...orbs.filter(o => !orbsToRemove.has(o.id))] : [...orbs.filter(o => !orbsToRemove.has(o.id))]; const checkedPairs = new Set(); for (let i = allOrbs.length - 1; i >= 0; i--) { const orb1 = allOrbs[i]; if (!orb1 || orb1.mass <= 0 || orbsToRemove.has(orb1.id)) continue; for (let j = i - 1; j >= 0; j--) { const orb2 = allOrbs[j]; if (!orb2 || orb2.mass <= 0 || orbsToRemove.has(orb2.id)) continue; const pairKey = orb1.id < orb2.id ? `${orb1.id}-${orb2.id}` : `${orb2.id}-${orb1.id}`; if (checkedPairs.has(pairKey)) continue; checkedPairs.add(pairKey); const dist = wrappedDistance(orb1.x, orb1.y, orb2.x, orb2.y, width, height); const radiiSum = orb1.radius + orb2.radius; if (dist <= radiiSum + 0.5) { let absorber = null, absorbed = null; if (orb1.mass > orb2.mass * MASS_ABSORPTION_RATIO && orb1.radius > orb2.radius) { absorber = orb1; absorbed = orb2; } else if (orb2.mass > orb1.mass * MASS_ABSORPTION_RATIO && orb2.radius > orb1.radius) { absorber = orb2; absorbed = orb1; } if (absorber && absorbed) { const reverseAbsorption = activeAbsorptions.get(absorber.id); if (reverseAbsorption && reverseAbsorption.absorber.id === absorbed.id) activeAbsorptions.delete(absorber.id); const existingAbsorption = activeAbsorptions.get(absorbed.id); if (!existingAbsorption || existingAbsorption.absorber.id !== absorber.id) { activeAbsorptions.set(absorbed.id, { absorber: absorber, absorbed: absorbed }); } } else { resolveElasticCollision(orb1, orb2, dist, width, height); } } else { const absorption12 = activeAbsorptions.get(orb2.id); if (absorption12 && absorption12.absorber.id === orb1.id) activeAbsorptions.delete(orb2.id); const absorption21 = activeAbsorptions.get(orb1.id); if (absorption21 && absorption21.absorber.id === orb2.id) activeAbsorptions.delete(orb1.id); } } } }
-        function propelPlayer(targetScreenX, targetScreenY) { if (!player || player.radius <= MIN_PLAYER_RADIUS || playerAbsorbed) return false; const width = canvasWidth; const height = canvasHeight; const targetWorldX = player.x + (targetScreenX - width / 2); const targetWorldY = player.y + (targetScreenY - height / 2); const vec = getWrappedVector(player.x, player.y, targetWorldX, targetWorldY, width, height); if (Math.abs(vec.dx) < 0.1 && Math.abs(vec.dy) < 0.1) return false; const angleToTarget = Math.atan2(vec.dy, vec.dx); const ejectionAngle = angleToTarget; const propulsionAngle = angleToTarget + Math.PI; const massToEject = player.mass * EJECTION_MASS_RATIO; if (massToEject <= 0) return false; const radiusEjected = Math.sqrt(massToEject); if (radiusEjected < MIN_ORB_RADIUS * 0.5) return false; const potentialNewPlayerMass = player.mass - massToEject; if (potentialNewPlayerMass < (MIN_PLAYER_RADIUS * MIN_PLAYER_RADIUS)) return false; const baseEjectionSpeed = EJECTION_SPEED_MULTIPLIER; const ejectVelX = player.dx + Math.cos(ejectionAngle) * baseEjectionSpeed; const ejectVelY = player.dy + Math.sin(ejectionAngle) * baseEjectionSpeed; const playerNewRadiusIfEjected = Math.sqrt(potentialNewPlayerMass); const effectivePlayerRadiusForPlacement = Math.max(MIN_PLAYER_RADIUS, playerNewRadiusIfEjected); const startDist = effectivePlayerRadiusForPlacement + radiusEjected + 1.5; const ejectStartRawX = player.x + Math.cos(ejectionAngle) * startDist; const ejectStartRawY = player.y + Math.sin(ejectionAngle) * startDist; const ejectStartX = (ejectStartRawX % width + width) % width; const ejectStartY = (ejectStartRawY % height + height) % height; const playerBaseColor = parseRGBA(player.color); const ejectAlpha = Math.max(0.2, playerBaseColor.a * 0.7).toFixed(2); const ejectColor = `rgba(${playerBaseColor.r}, ${playerBaseColor.g}, ${playerBaseColor.b}, ${ejectAlpha})`; const particle = createOrb(ejectStartX, ejectStartY, radiusEjected, ejectVelX, ejectVelY, ejectColor); if (!particle || particle.mass <= 0) { console.warn("Ejected particle invalid."); return false; } orbs.push(particle); player.mass = potentialNewPlayerMass; player.radius = Math.max(MIN_PLAYER_RADIUS, Math.sqrt(player.mass)); const impulseMagnitude = massToEject * baseEjectionSpeed; if (player.mass > 0) { const thrustX = Math.cos(propulsionAngle) * impulseMagnitude / player.mass; const thrustY = Math.sin(propulsionAngle) * impulseMagnitude / player.mass; player.dx += thrustX; player.dy += thrustY; } return true; }
-        function spawnOrbs(count) { if (typeof canvasWidth === 'undefined') { console.error("Cannot spawn orbs: canvas dimensions unknown."); return; } const existingOrbsAndPlayer = player ? [...orbs, player] : [...orbs]; let spawnedCount = 0; for (let i = 0; i < count; i++) { let r, x, y, tooClose, attempts = 0; const maxAttempts = 100; do { r = Math.random() * (MAX_ORB_RADIUS - MIN_ORB_RADIUS) + MIN_ORB_RADIUS; x = Math.random() * canvasWidth; y = Math.random() * canvasHeight; tooClose = false; for (const existing of existingOrbsAndPlayer) { const checkDist = wrappedDistance(x, y, existing.x, existing.y, canvasWidth, canvasHeight); const requiredDist = (existing.radius + r) * 1.1 + (existing.isPlayer ? SAFE_ZONE_RADIUS : 5); if (checkDist < requiredDist) { tooClose = true; break; } } attempts++; } while (tooClose && attempts < maxAttempts); if (!tooClose) { const angle = Math.random() * Math.PI * 2; const speed = Math.random() * INITIAL_ORB_MAX_SPEED; const newOrb = createOrb(x, y, r, Math.cos(angle) * speed, Math.sin(angle) * speed); if (newOrb) { orbs.push(newOrb); existingOrbsAndPlayer.push(newOrb); spawnedCount++; } } } console.log(`Spawned ${spawnedCount} / ${count} orbs.`); }
+        function propelPlayer(targetScreenX, targetScreenY) { if (!player || player.radius <= MIN_PLAYER_RADIUS || playerAbsorbed) return false; const width = canvasWidth; const height = canvasHeight; const targetWorldX = player.x + (targetScreenX - width / 2); const targetWorldY = player.y + (targetScreenY - height / 2); const vec = getWrappedVector(player.x, player.y, targetWorldX, targetWorldY, width, height); if (Math.abs(vec.dx) < 0.1 && Math.abs(vec.dy) < 0.1) return false; const angleToTarget = Math.atan2(vec.dy, vec.dx); const ejectionAngle = angleToTarget; const propulsionAngle = angleToTarget + Math.PI; const massToEject = player.mass * EJECTION_MASS_RATIO; if (massToEject <= 0) return false; const radiusEjected = Math.sqrt(massToEject); if (radiusEjected < MIN_ORB_RADIUS * 0.5) return false; const potentialNewPlayerMass = player.mass - massToEject; if (potentialNewPlayerMass < (MIN_PLAYER_RADIUS * MIN_PLAYER_RADIUS)) return false; const baseEjectionSpeed = EJECTION_SPEED_MULTIPLIER; const ejectVelX = player.dx + Math.cos(ejectionAngle) * baseEjectionSpeed; const ejectVelY = player.dy + Math.sin(ejectionAngle) * baseEjectionSpeed; const playerNewRadiusIfEjected = Math.sqrt(potentialNewPlayerMass); const effectivePlayerRadiusForPlacement = Math.max(MIN_PLAYER_RADIUS, playerNewRadiusIfEjected); const startDist = effectivePlayerRadiusForPlacement + radiusEjected + 1.5; const ejectStartRawX = player.x + Math.cos(ejectionAngle) * startDist; const ejectStartRawY = player.y + Math.sin(ejectionAngle) * startDist; const ejectStartX = (ejectStartRawX % width + width) % width; const ejectStartY = (ejectStartRawY % height + height) % height; const ejectColor = player.color; const particle = createOrb(ejectStartX, ejectStartY, radiusEjected, ejectVelX, ejectVelY, ejectColor); if (!particle || particle.mass <= 0) { return false; } particle.color = adjustSaturation(particle.originalColor, appSettings.otherOrbSaturation); orbs.push(particle); player.mass = potentialNewPlayerMass; player.radius = Math.max(MIN_PLAYER_RADIUS, Math.sqrt(player.mass)); const impulseMagnitude = massToEject * baseEjectionSpeed; if (player.mass > 0) { const thrustX = Math.cos(propulsionAngle) * impulseMagnitude / player.mass; const thrustY = Math.sin(propulsionAngle) * impulseMagnitude / player.mass; player.dx += thrustX; player.dy += thrustY; } return true; }
+        function spawnOrbs(count) { if (typeof canvasWidth === 'undefined') { return; } const existingOrbsAndPlayer = player ? [...orbs, player] : [...orbs]; let spawnedCount = 0; for (let i = 0; i < count; i++) { let r, x, y, tooClose, attempts = 0; const maxAttempts = 100; do { r = Math.random() * (MAX_ORB_RADIUS - MIN_ORB_RADIUS) + MIN_ORB_RADIUS; x = Math.random() * canvasWidth; y = Math.random() * canvasHeight; tooClose = false; for (const existing of existingOrbsAndPlayer) { const checkDist = wrappedDistance(x, y, existing.x, existing.y, canvasWidth, canvasHeight); const requiredDist = (existing.radius + r) * 1.1 + (existing.isPlayer ? SAFE_ZONE_RADIUS : 5); if (checkDist < requiredDist) { tooClose = true; break; } } attempts++; } while (tooClose && attempts < maxAttempts); if (!tooClose) { const angle = Math.random() * Math.PI * 2; const speed = Math.random() * INITIAL_ORB_MAX_SPEED; const newOrb = createOrb(x, y, r, Math.cos(angle) * speed, Math.sin(angle) * speed); if (newOrb) { orbs.push(newOrb); existingOrbsAndPlayer.push(newOrb); spawnedCount++; } } } console.log(`Spawned ${spawnedCount} / ${count} orbs.`); }
 
-        // Game loop
-        function gameLoop(currentTime) {
-             if (!gameLastTimestamp) gameLastTimestamp = currentTime; let deltaTime = currentTime - gameLastTimestamp; gameLastTimestamp = currentTime; deltaTime = Math.min(deltaTime, MAX_ACCUMULATED_TIME_MS * 2);
-             if (isInteractionActive && player && !playerAbsorbed && currentTime - lastPropulsionTime > PROPULSION_COOLDOWN) { if (propelPlayer(lastInteractionX, lastInteractionY)) { lastPropulsionTime = currentTime; } }
-             gameTimeAccumulator += deltaTime; gameTimeAccumulator = Math.min(gameTimeAccumulator, MAX_ACCUMULATED_TIME_MS);
-             while (gameTimeAccumulator >= FIXED_TIMESTEP_MS) { if (player && player.mass > 0 && !playerAbsorbed) { updateOrb(player, FIXED_TIMESTEP_S); } orbs.forEach(orb => { if (!orbsToRemove.has(orb.id)) { updateOrb(orb, FIXED_TIMESTEP_S); } }); updateAbsorptions(FIXED_TIMESTEP_MS); gameTimeAccumulator -= FIXED_TIMESTEP_MS; }
-             checkCollisions();
-             if (orbsToRemove.size > 0) { orbs = orbs.filter(orb => !orbsToRemove.has(orb.id)); activeAbsorptions.forEach((value, key) => { if (orbsToRemove.has(key)) { activeAbsorptions.delete(key); } }); orbsToRemove.clear(); }
-
-             // --- CHANGE: Moved playerAbsorbed check to after cleanup ---
-             if (playerAbsorbed) {
-                 console.log("GAME: Resetting due to player absorption. Music should continue.");
-                 if (quoteTypingSound && !quoteTypingSound.paused) { quoteTypingSound.pause(); }
-                 if (gameAnimationFrameId) { cancelAnimationFrame(gameAnimationFrameId); gameAnimationFrameId = null; }
-                 const wasMusicPlaying = bgMusic && !bgMusic.paused && musicStarted;
-                 // Trigger a full game reset, but keep the music state
-                 initializeGame(false);
-                 if (wasMusicPlaying && bgMusic.paused && !appSettings.musicMuted) { // Check mute setting too
-                    console.log("GAME: Music was paused unexpectedly during reset, restarting playback.");
-                    bgMusic.play().catch(e => console.warn("Error restarting music after reset:", e));
-                 }
-                 // Crucial: Stop this loop iteration immediately after initiating the reset
-                 return;
-             }
-             // --- END CHANGE ---
-
-
-             // Quote State Machine
-              if (currentQuote) {
-                 if (quoteState === 'fading') { const elapsed = currentTime - currentQuote.fadeStartTime; const fadeProgress = Math.min(1, elapsed / appSettings.quoteFadeDurationMs); if (fadeProgress >= 1) { console.log(`QUOTE: Fade complete. Pause ${appSettings.quoteIntervalMs / 1000}s...`); currentQuote = null; quoteState = 'waiting_for_next'; if (quoteNextQuoteTimeoutId) clearTimeout(quoteNextQuoteTimeoutId); quoteNextQuoteTimeoutId = setTimeout(() => { quoteNextQuoteTimeoutId = null; quoteState = 'idle'; /* Let loop handle next start */ }, appSettings.quoteIntervalMs); } }
-                 else if (quoteState === 'paused' && Date.now() - currentQuote.completionTime >= appSettings.quotePauseDurationMs) {
-                     console.log("QUOTE: Pre-fade pause finished. Fading...");
-                     currentQuote.fadeStartTime = currentTime;
-                     quoteState = 'fading';
-                 }
-             } else if (quoteState === 'idle' && appSettings.quotesEnabled && !quoteNextQuoteTimeoutId && quoteInitialLoadComplete) {
-                 console.log("QUOTE: Idle, scheduling next quote.");
-                 // Set timeout to transition back to 'idle' *after* the interval, then call quoteStartNew
-                 quoteNextQuoteTimeoutId = setTimeout(() => {
-                     quoteNextQuoteTimeoutId = null;
-                     quoteState = 'idle'; // Ready to start immediately now
-                     quoteStartNew();
-                 }, appSettings.quoteIntervalMs);
-                 quoteState = 'waiting_for_next'; // Mark that we are waiting for the interval
-             }
-
-
-             ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-             const drawOffsetX = (player && player.mass > 0 && !playerAbsorbed) ? player.x - canvasWidth / 2 : canvasWidth / 2; const drawOffsetY = (player && player.mass > 0 && !playerAbsorbed) ? player.y - canvasHeight / 2 : canvasHeight / 2;
-             ctx.save(); orbs.forEach(orb => drawOrbWithWrapping(orb, drawOffsetX, drawOffsetY)); if (player && !playerAbsorbed && player.radius >= MIN_ABSORB_COMPLETE_RADIUS) { drawOrbWithWrapping(player, drawOffsetX, drawOffsetY); } ctx.restore();
-
-            if (appSettings.quotesEnabled && currentQuote) { if (quoteState === 'fading') { const elapsed = currentTime - currentQuote.fadeStartTime; const fadeProgress = Math.min(1, elapsed / appSettings.quoteFadeDurationMs); quoteDrawState(currentQuote, 1.0 - fadeProgress); } else if (quoteState === 'typing' || quoteState === 'paused') { quoteDrawState(currentQuote, 1.0); } }
-            else if (!appSettings.quotesEnabled && currentQuote && quoteState === 'fading') { const elapsed = currentTime - currentQuote.fadeStartTime; const fadeProgress = Math.min(1, elapsed / appSettings.quoteFadeDurationMs); quoteDrawState(currentQuote, 1.0 - fadeProgress); if (fadeProgress >= 1) currentQuote = null; }
-            else if (quoteState === 'loading') { quoteDisplayStatusMessage("Loading quotes..."); }
-
+        function gameLoop(currentTime) { if (!gameLastTimestamp) gameLastTimestamp = currentTime; let deltaTime = currentTime - gameLastTimestamp; gameLastTimestamp = currentTime; deltaTime = Math.min(deltaTime, MAX_ACCUMULATED_TIME_MS * 2); if (isInteractionActive && player && !playerAbsorbed && currentTime - lastPropulsionTime > PROPULSION_COOLDOWN) { if (propelPlayer(lastInteractionX, lastInteractionY)) { lastPropulsionTime = currentTime; } } gameTimeAccumulator += deltaTime; gameTimeAccumulator = Math.min(gameTimeAccumulator, MAX_ACCUMULATED_TIME_MS); while (gameTimeAccumulator >= FIXED_TIMESTEP_MS) { if (player && player.mass > 0 && !playerAbsorbed) { updateOrb(player, FIXED_TIMESTEP_S); } orbs.forEach(orb => { if (!orbsToRemove.has(orb.id)) { updateOrb(orb, FIXED_TIMESTEP_S); } }); updateAbsorptions(FIXED_TIMESTEP_MS); gameTimeAccumulator -= FIXED_TIMESTEP_MS; } checkCollisions(); if (orbsToRemove.size > 0) { orbs = orbs.filter(orb => !orbsToRemove.has(orb.id)); activeAbsorptions.forEach((value, key) => { if (orbsToRemove.has(key)) { activeAbsorptions.delete(key); } }); orbsToRemove.clear(); } if (playerAbsorbed) { if (quoteTypingSound && !quoteTypingSound.paused) { quoteTypingSound.pause(); } if (gameAnimationFrameId) { cancelAnimationFrame(gameAnimationFrameId); gameAnimationFrameId = null; } const wasMusicPlaying = bgMusic && !bgMusic.paused && musicStarted; initializeGame(false); if (wasMusicPlaying && bgMusic.paused && !appSettings.musicMuted) { bgMusic.play().catch(e => {}); } return; }
+             if (currentQuote) { if (quoteState === 'fading') { const elapsed = currentTime - currentQuote.fadeStartTime; const fadeProgress = Math.min(1, elapsed / appSettings.quoteFadeDurationMs); if (fadeProgress >= 1) { currentQuote = null; quoteState = 'waiting_for_next'; if (quoteNextQuoteTimeoutId) clearTimeout(quoteNextQuoteTimeoutId); quoteNextQuoteTimeoutId = setTimeout(() => { quoteNextQuoteTimeoutId = null; quoteState = 'idle'; }, appSettings.quoteIntervalMs); } } else if (quoteState === 'paused' && Date.now() - currentQuote.completionTime >= appSettings.quotePauseDurationMs) { currentQuote.fadeStartTime = currentTime; quoteState = 'fading'; } }
+             else if (quoteState === 'idle' && appSettings.quotesEnabled && !quoteNextQuoteTimeoutId && quoteInitialLoadComplete) { quoteNextQuoteTimeoutId = setTimeout(() => { quoteNextQuoteTimeoutId = null; quoteState = 'idle'; quoteStartNew(); }, appSettings.quoteIntervalMs); quoteState = 'waiting_for_next'; }
+             ctx.clearRect(0, 0, canvasWidth, canvasHeight); const drawOffsetX = (player && player.mass > 0 && !playerAbsorbed) ? player.x - canvasWidth / 2 : canvasWidth / 2; const drawOffsetY = (player && player.mass > 0 && !playerAbsorbed) ? player.y - canvasHeight / 2 : canvasHeight / 2; ctx.save(); orbs.forEach(orb => drawOrbWithWrapping(orb, drawOffsetX, drawOffsetY)); if (player && !playerAbsorbed && player.radius >= MIN_ABSORB_COMPLETE_RADIUS) { drawOrbWithWrapping(player, drawOffsetX, drawOffsetY); } ctx.restore();
+            if (currentQuote) { if (quoteState === 'fading') { const elapsed = currentTime - currentQuote.fadeStartTime; const fadeProgress = Math.min(1, elapsed / appSettings.quoteFadeDurationMs); quoteDrawState(currentQuote, 1.0 - fadeProgress); } else if (quoteState === 'typing' || quoteState === 'paused') { quoteDrawState(currentQuote, 1.0); } } else if (quoteState === 'loading') { quoteDisplayStatusMessage("Loading quotes..."); }
              gameAnimationFrameId = requestAnimationFrame(gameLoop);
          }
 
-        function initializeGame(isResize = false) {
-            console.log(`GAME: Init ${isResize ? '(Resize)' : ''}`);
-            if (gameAnimationFrameId) { cancelAnimationFrame(gameAnimationFrameId); gameAnimationFrameId = null; }
-            if (!canvas || !ctx) { console.error("CRITICAL: Canvas/context missing!"); return; }
-            const prevWidth = typeof canvasWidth !== 'undefined' ? canvasWidth : window.innerWidth; const prevHeight = typeof canvasHeight !== 'undefined' ? canvasHeight : window.innerHeight;
-            try { canvasWidth = window.innerWidth; canvasHeight = window.innerHeight; canvas.width = canvasWidth; canvas.height = canvasHeight; ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; ctx.textBaseline = 'top'; ctx.lineJoin = 'round'; ctx.globalAlpha = 1.0; ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; } catch (e) { console.error("Error setting canvas dimensions:", e); return; }
-
-            // --- CHANGE: Explicitly reset playerAbsorbed on *any* init call ---
-            playerAbsorbed = false;
-            // --- END CHANGE ---
-
-            if (!isResize || !player) { // Force full reset if player doesn't exist (covers initial load and resets)
-                console.log("GAME: Full reset.");
-                orbs = [];
-                player = null;
-                activeAbsorptions.clear();
-                orbsToRemove.clear();
-                player = createOrb(canvasWidth / 2, canvasHeight / 2, 20, 0, 0, appSettings.playerOrbColor);
-                if (!player) { console.error("CRITICAL: Player creation failed!"); return; }
-                player.isPlayer = true;
-                spawnOrbs(INITIAL_ORBS);
-            } else { // Handle resize specifically
-                console.log(`GAME: Resizing ${prevWidth}x${prevHeight} -> ${canvasWidth}x${canvasHeight}`);
-                if (player) {
-                     // Recenter player on resize if they exist
-                    player.x = canvasWidth / 2;
-                    player.y = canvasHeight / 2;
-                    // Optional: Dampen velocity on resize? Or keep it? Current keeps it.
-                }
-                // Clear absorptions on resize as positions change drastically
-                activeAbsorptions.clear();
-                // Orbs to remove should already be handled by game loop, but clear just in case
-                orbsToRemove.clear();
-                // Keep existing orbs, just recenter player. Orbs will wrap correctly.
-            }
-            isInteractionActive = false;
-            lastInteractionX = 0;
-            lastInteractionY = 0;
-            lastPropulsionTime = 0;
-            gameLastTimestamp = 0;
-            gameTimeAccumulator = 0;
-            // playerAbsorbed = false; // Moved higher up
-            if (player) player.color = appSettings.playerOrbColor; // Ensure player color is correct
-            console.log("GAME: Init complete, requesting loop...");
-            if (gameAnimationFrameId) cancelAnimationFrame(gameAnimationFrameId); // Ensure no duplicate loops
-            gameAnimationFrameId = requestAnimationFrame(gameLoop);
-        }
-
-        function setupAudioAnalysis() { if (!audioContext) { try { audioContext = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { console.error("Web Audio API not supported", e); return; } } if (audioContext.state === 'suspended') audioContext.resume(); if (audioContext && !sourceNode) { try { sourceNode = audioContext.createMediaElementSource(bgMusic); analyser = audioContext.createAnalyser(); analyser.fftSize = ANALYSER_FFT_SIZE; analyser.smoothingTimeConstant = ANALYSER_SMOOTHING; audioDataArray = new Uint8Array(analyser.frequencyBinCount); sourceNode.connect(analyser); analyser.connect(audioContext.destination); console.log("Audio analysis nodes connected."); } catch (e) { console.error("Error setting up audio analysis:", e); sourceNode = null; analyser = null; audioDataArray = null; } } }
+        function initializeGame(isResize = false) { console.log(`GAME: Init ${isResize ? '(Resize)' : ''}`); if (gameAnimationFrameId) { cancelAnimationFrame(gameAnimationFrameId); gameAnimationFrameId = null; } if (!canvas || !ctx) { return; } const prevWidth = typeof canvasWidth !== 'undefined' ? canvasWidth : window.innerWidth; const prevHeight = typeof canvasHeight !== 'undefined' ? canvasHeight : window.innerHeight; try { canvasWidth = window.innerWidth; canvasHeight = window.innerHeight; canvas.width = canvasWidth; canvas.height = canvasHeight; ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; ctx.textBaseline = 'top'; ctx.lineJoin = 'round'; ctx.globalAlpha = 1.0; ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; } catch (e) { return; } playerAbsorbed = false; if (!isResize || !player) { console.log("GAME: Full reset."); orbs = []; player = null; activeAbsorptions.clear(); orbsToRemove.clear(); player = createOrb(canvasWidth / 2, canvasHeight / 2, 20, 0, 0, appSettings.playerOrbColor); if (!player) { return; } player.isPlayer = true; player.color = appSettings.playerOrbColor; spawnOrbs(INITIAL_ORBS); const initialSaturationFactor = appSettings.otherOrbSaturation; orbs.forEach(orb => { if (!orb.isPlayer && orb.originalColor) { orb.color = adjustSaturation(orb.originalColor, initialSaturationFactor); } }); } else { if (player) { player.x = canvasWidth / 2; player.y = canvasHeight / 2; } activeAbsorptions.clear(); orbsToRemove.clear(); } isInteractionActive = false; lastInteractionX = 0; lastInteractionY = 0; lastPropulsionTime = 0; gameLastTimestamp = 0; gameTimeAccumulator = 0; if (player) player.color = appSettings.playerOrbColor; if (gameAnimationFrameId) cancelAnimationFrame(gameAnimationFrameId); gameAnimationFrameId = requestAnimationFrame(gameLoop); }
+        function setupAudioAnalysis() { if (!audioContext) { try { audioContext = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; } } if (audioContext.state === 'suspended') audioContext.resume(); if (audioContext && !sourceNode) { try { sourceNode = audioContext.createMediaElementSource(bgMusic); analyser = audioContext.createAnalyser(); analyser.fftSize = ANALYSER_FFT_SIZE; analyser.smoothingTimeConstant = ANALYSER_SMOOTHING; audioDataArray = new Uint8Array(analyser.frequencyBinCount); sourceNode.connect(analyser); analyser.connect(audioContext.destination); } catch (e) { sourceNode = null; analyser = null; audioDataArray = null; } } }
         function getCanvasCoordinates(event) { const targetElement = event.target; if (targetElement && targetElement.closest && (targetElement.closest('#settings-popup') || targetElement.closest('#hamburger-menu'))) return null; const rect = canvas.getBoundingClientRect(); let clientX, clientY; if (event.touches && event.touches.length > 0) { clientX = event.touches[0].clientX; clientY = event.touches[0].clientY; } else if (event.changedTouches && event.changedTouches.length > 0) { clientX = event.changedTouches[0].clientX; clientY = event.changedTouches[0].clientY; } else { clientX = event.clientX; clientY = event.clientY; } if (clientX === undefined || clientY === undefined) return null; return { x: clientX - rect.left, y: clientY - rect.top }; }
-        function handleInteractionStart(event) {
-            const coords = getCanvasCoordinates(event);
-            if (!coords) { const targetElement = event.target; if (settingsPopup.classList.contains('visible') && targetElement && !targetElement.closest('#settings-popup') && !targetElement.closest('#hamburger-menu')) { closeSettingsPopup(); } return; }
-             if (!musicStarted && bgMusic) {
-                 console.log("First interaction, starting music...");
-                 const playPromise = bgMusic.play();
-                 if (playPromise) {
-                     playPromise.then(() => {
-                         musicStarted = true;
-                         setupAudioAnalysis();
-                     }).catch(e => console.warn("Music play failed on first interaction:", e));
-                 } else {
-                     musicStarted = true;
-                     setupAudioAnalysis();
-                 }
-             } else if (musicStarted && audioContext && audioContext.state === 'suspended') {
-                 audioContext.resume().catch(e => console.error("AudioContext resume failed", e));
-             }
-             if (quoteTypingSound && quoteTypingSound.paused) { quoteTypingSound.play().then(()=>quoteTypingSound.pause()).catch(()=>{/* Ignore */}); }
-             if (event.type === 'touchstart') event.preventDefault();
-             isInteractionActive = true; lastInteractionX = coords.x; lastInteractionY = coords.y;
-             if (player && !playerAbsorbed && Date.now() - lastPropulsionTime > PROPULSION_COOLDOWN) { if (propelPlayer(lastInteractionX, lastInteractionY)) { lastPropulsionTime = Date.now(); } }
-        }
+        function handleInteractionStart(event) { const coords = getCanvasCoordinates(event); if (!coords) { const targetElement = event.target; if (settingsPopup.classList.contains('visible') && targetElement && !targetElement.closest('#settings-popup') && !targetElement.closest('#hamburger-menu')) { closeSettingsPopup(); } return; } if (!musicStarted && bgMusic) { const playPromise = bgMusic.play(); if (playPromise) { playPromise.then(() => { musicStarted = true; setupAudioAnalysis(); }).catch(e => {}); } else { musicStarted = true; setupAudioAnalysis(); } } else if (musicStarted && audioContext && audioContext.state === 'suspended') { audioContext.resume().catch(e => {}); } if (quoteTypingSound && quoteTypingSound.paused && !appSettings.typingMuted) { quoteTypingSound.play().then(()=>quoteTypingSound.pause()).catch(()=>{}); } if (event.type === 'touchstart') event.preventDefault(); isInteractionActive = true; lastInteractionX = coords.x; lastInteractionY = coords.y; if (player && !playerAbsorbed && Date.now() - lastPropulsionTime > PROPULSION_COOLDOWN) { if (propelPlayer(lastInteractionX, lastInteractionY)) { lastPropulsionTime = Date.now(); } } }
         function handleInteractionMove(event) { if (!isInteractionActive) return; const coords = getCanvasCoordinates(event); if (!coords) return; if (event.type === 'touchmove') event.preventDefault(); lastInteractionX = coords.x; lastInteractionY = coords.y; }
         function handleInteractionEnd(event) { const targetIsCanvas = event.target === canvas; if (targetIsCanvas && (event.type === 'touchend' || event.type === 'touchcancel') && event.cancelable) { event.preventDefault(); } isInteractionActive = false; }
-
-        // Event Listeners Setup
-        canvas.addEventListener('mousedown', handleInteractionStart);
-        canvas.addEventListener('mousemove', handleInteractionMove);
-        window.addEventListener('mouseup', handleInteractionEnd);
-        window.addEventListener('mouseleave', handleInteractionEnd);
-        canvas.addEventListener('touchstart', handleInteractionStart, { passive: false });
-        canvas.addEventListener('touchmove', handleInteractionMove, { passive: false });
-        window.addEventListener('touchend', handleInteractionEnd, { passive: false });
-        window.addEventListener('touchcancel', handleInteractionEnd, { passive: false });
-        document.addEventListener('click', (event) => { if (settingsPopup.classList.contains('visible') && !settingsPopup.contains(event.target) && event.target !== hamburgerMenu && !hamburgerMenu.contains(event.target)) { closeSettingsPopup(); } });
-        let resizeTimeout; window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(() => { console.log("Window resize."); initializeGame(true); }, 250); });
-
-        // Fullscreen API
-        const docElement = document.documentElement; function isFullScreen() { return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement); } function toggleFullScreen() { if (!isFullScreen()) { console.log("Requesting fullscreen..."); if (docElement.requestFullscreen) docElement.requestFullscreen().catch(err => console.error(`FS Error: ${err.message}`)); else if (docElement.webkitRequestFullscreen) docElement.webkitRequestFullscreen().catch(err => console.error(`FS Error (webkit): ${err.message}`)); else if (docElement.msRequestFullscreen) docElement.msRequestFullscreen().catch(err => console.error(`FS Error (ms): ${err.message}`)); else console.warn("Fullscreen not supported."); } else { console.log("Exiting fullscreen..."); if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); else if (document.msExitFullscreen) document.msExitFullscreen(); else console.warn("Exit Fullscreen not supported?"); } }
-        document.addEventListener('fullscreenchange', updateFullscreenSetting); document.addEventListener('webkitfullscreenchange', updateFullscreenSetting); document.addEventListener('mozfullscreenchange', updateFullscreenSetting); document.addEventListener('MSFullscreenChange', updateFullscreenSetting);
-
-        // --- Settings Popup Logic ---
-        function toggleSettingsPopup() { settingsPopup.classList.toggle('visible'); }
-        function closeSettingsPopup() { settingsPopup.classList.remove('visible'); }
-        function updateFullscreenSetting() { const isCurrentlyFullScreen = isFullScreen(); appSettings.fullscreen = isCurrentlyFullScreen; const fsToggle = document.getElementById('fullscreen-toggle'); if (fsToggle) fsToggle.checked = isCurrentlyFullScreen; }
-
-        // --- Settings Load/Save/UI ---
-        function saveSettings() { try { localStorage.setItem('sysomosysSettings', JSON.stringify(appSettings)); } catch (e) { console.warn("Could not save settings:", e); } }
-        function loadSettings() { try { const savedSettings = localStorage.getItem('sysomosysSettings'); if (savedSettings) { const parsed = JSON.parse(savedSettings); delete parsed.quoteInstant; const mergedSettings = { ...defaultSettings, ...parsed }; appSettings = mergedSettings; console.log("Settings loaded."); } else { appSettings = JSON.parse(JSON.stringify(defaultSettings)); console.log("Using default settings."); } } catch (e) { console.warn("Could not load settings, using defaults:", e); appSettings = JSON.parse(JSON.stringify(defaultSettings)); } appSettings.quoteTypingSpeedMs = wpmToMs(appSettings.quoteWpm); }
-        function updateUIFromSettings() {
-            document.getElementById('fullscreen-toggle').checked = isFullScreen();
-            document.getElementById('font-family-select').value = appSettings.fontFamily;
-            document.getElementById('font-size-slider').value = appSettings.fontSize; updateSliderValueDisplay('font-size-slider', 'font-size-value', 'px', 0);
-            document.getElementById('font-color-picker').value = appSettings.fontColor;
-            document.getElementById('font-bold-toggle').checked = appSettings.fontBold;
-            document.getElementById('font-italic-toggle').checked = appSettings.fontItalic;
-            document.getElementById('font-underline-toggle').checked = appSettings.fontUnderline;
-            document.getElementById('font-highlight-toggle').checked = appSettings.fontHighlightEnabled;
-            document.getElementById('font-highlight-color-picker').value = appSettings.fontHighlightColor; document.getElementById('font-highlight-color-picker').disabled = !appSettings.fontHighlightEnabled;
-            document.getElementById('random-font-toggle').checked = appSettings.randomFont;
-            document.getElementById('random-font-color-toggle').checked = appSettings.randomFontColor;
-            document.getElementById('quotes-toggle').checked = appSettings.quotesEnabled;
-            document.getElementById('quote-duration-slider').value = appSettings.quotePauseDurationMs / 1000; updateSliderValueDisplay('quote-duration-slider', 'quote-duration-value', 's', 0);
-            document.getElementById('quote-fade-slider').value = appSettings.quoteFadeDurationMs / 1000; updateSliderValueDisplay('quote-fade-slider', 'quote-fade-value', 's', 1);
-            document.getElementById('quote-interval-slider').value = appSettings.quoteIntervalMs / 1000; updateSliderValueDisplay('quote-interval-slider', 'quote-interval-value', 's', 0);
-            document.getElementById('quote-wpm-slider').value = appSettings.quoteWpm; updateSliderValueDisplay('quote-wpm-slider', 'quote-wpm-value', '', 0);
-
-            try { document.getElementById('orb-color-picker').value = parseRGBA(appSettings.playerOrbColor) ? `#${parseRGBA(appSettings.playerOrbColor).r.toString(16).padStart(2,'0')}${parseRGBA(appSettings.playerOrbColor).g.toString(16).padStart(2,'0')}${parseRGBA(appSettings.playerOrbColor).b.toString(16).padStart(2,'0')}` : '#ffffff'; } catch(e){ console.warn("Error setting orb color picker value", e); document.getElementById('orb-color-picker').value = '#ffffff';}
-            document.getElementById('orb-pulse-range-slider').value = appSettings.orbPulseRange * 100; updateSliderValueDisplay('orb-pulse-range-slider', 'orb-pulse-range-value', '%', 0);
-            document.getElementById('orb-pulse-music-toggle').checked = appSettings.orbPulseToMusic;
-            document.getElementById('orb-pulse-freq-toggle').checked = appSettings.orbPulseFreqEnabled; document.getElementById('orb-pulse-freq-toggle').disabled = appSettings.orbPulseToMusic;
-            document.getElementById('orb-pulse-freq-slider').value = appSettings.orbPulseFreqHz; updateSliderValueDisplay('orb-pulse-freq-slider', 'orb-pulse-freq-value', 'Hz', 1); document.getElementById('orb-pulse-freq-slider').disabled = appSettings.orbPulseToMusic || !appSettings.orbPulseFreqEnabled;
-            document.getElementById('orb-saturation-slider').value = appSettings.otherOrbSaturation * 100; updateSliderValueDisplay('orb-saturation-slider', 'orb-saturation-value', '%', 0);
-            document.getElementById('music-volume-slider').value = appSettings.musicVolume * 100; updateSliderValueDisplay('music-volume-slider', 'music-volume-value', '%', 0); document.getElementById('music-mute-toggle').checked = appSettings.musicMuted; document.getElementById('music-volume-slider').disabled = appSettings.musicMuted;
-            document.getElementById('typing-volume-slider').value = appSettings.typingVolume * 100; updateSliderValueDisplay('typing-volume-slider', 'typing-volume-value', '%', 0); document.getElementById('typing-mute-toggle').checked = appSettings.typingMuted; document.getElementById('typing-volume-slider').disabled = appSettings.typingMuted;
-            bgMusic.volume = appSettings.musicVolume; bgMusic.muted = appSettings.musicMuted;
-            quoteTypingSound.volume = appSettings.typingVolume; quoteTypingSound.muted = appSettings.typingMuted;
-            ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4;
-            if(player) player.color = appSettings.playerOrbColor;
-        }
-
-        // Function to handle updates from the text input fields for sliders
-        function handleSliderTextInput(inputElement, sliderElement, settingKey, unit = '', decimals = 0, isMultiplier = false) {
-            let rawValue = inputElement.value.replace(unit, '');
-            let parsedValue = parseFloat(rawValue);
-            if (!isNaN(parsedValue)) {
-                const minValue = parseFloat(sliderElement.min);
-                const maxValue = parseFloat(sliderElement.max);
-                let clampedValue = Math.max(minValue, Math.min(maxValue, parsedValue));
-                let settingValue;
-                 if (unit === 's') { settingValue = clampedValue * 1000; }
-                 else if (isMultiplier) { settingValue = clampedValue / 100; }
-                 else { settingValue = clampedValue; }
-                appSettings[settingKey] = settingValue;
-                sliderElement.value = clampedValue;
-                sliderElement.dispatchEvent(new Event('input')); // Trigger input event for consistency
-                inputElement.value = clampedValue.toFixed(decimals) + unit; // Update display with clamped value
-
-                // --- CHANGE: Apply specific updates based on settingKey ---
-                if (settingKey === 'quoteWpm') {
-                    appSettings.quoteTypingSpeedMs = wpmToMs(settingValue);
-                } else if (settingKey === 'musicVolume') {
-                    bgMusic.volume = settingValue;
-                    if (!appSettings.musicMuted && settingValue > 0) {
-                        document.getElementById('music-mute-toggle').checked = false;
-                        document.getElementById('music-volume-slider').disabled = false;
-                    }
-                } else if (settingKey === 'typingVolume') {
-                    quoteTypingSound.volume = settingValue;
-                     if (!appSettings.typingMuted && settingValue > 0) {
-                         document.getElementById('typing-mute-toggle').checked = false;
-                         document.getElementById('typing-volume-slider').disabled = false;
-                     }
-                }
-                // --- END CHANGE ---
-
-                saveSettings();
-            } else {
-                 // If input is invalid, reset the input field to reflect the current slider value
-                 updateSliderValueDisplay(sliderElement.id, inputElement.id, unit, decimals);
-            }
-        }
-
+        canvas.addEventListener('mousedown', handleInteractionStart); canvas.addEventListener('mousemove', handleInteractionMove); window.addEventListener('mouseup', handleInteractionEnd); window.addEventListener('mouseleave', handleInteractionEnd); canvas.addEventListener('touchstart', handleInteractionStart, { passive: false }); canvas.addEventListener('touchmove', handleInteractionMove, { passive: false }); window.addEventListener('touchend', handleInteractionEnd, { passive: false }); window.addEventListener('touchcancel', handleInteractionEnd, { passive: false }); document.addEventListener('click', (event) => { if (settingsPopup.classList.contains('visible') && !settingsPopup.contains(event.target) && event.target !== hamburgerMenu && !hamburgerMenu.contains(event.target)) { closeSettingsPopup(); } }); let resizeTimeout; window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(() => { initializeGame(true); }, 250); });
+        const docElement = document.documentElement; function isFullScreen() { return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement); } function toggleFullScreen() { if (!isFullScreen()) { if (docElement.requestFullscreen) docElement.requestFullscreen().catch(err => {}); else if (docElement.webkitRequestFullscreen) docElement.webkitRequestFullscreen().catch(err => {}); else if (docElement.msRequestFullscreen) docElement.msRequestFullscreen().catch(err => {}); } else { if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); else if (document.msExitFullscreen) document.msExitFullscreen(); } } document.addEventListener('fullscreenchange', updateFullscreenSetting); document.addEventListener('webkitfullscreenchange', updateFullscreenSetting); document.addEventListener('mozfullscreenchange', updateFullscreenSetting); document.addEventListener('MSFullscreenChange', updateFullscreenSetting);
+        function toggleSettingsPopup() { settingsPopup.classList.toggle('visible'); } function closeSettingsPopup() { settingsPopup.classList.remove('visible'); } function updateFullscreenSetting() { const isCurrentlyFullScreen = isFullScreen(); appSettings.fullscreen = isCurrentlyFullScreen; const fsToggle = document.getElementById('fullscreen-toggle'); if (fsToggle) fsToggle.checked = isCurrentlyFullScreen; }
+        function saveSettings() { try { localStorage.setItem('sysomosysSettings', JSON.stringify(appSettings)); } catch (e) {} }
+        function loadSettings() { try { const savedSettings = localStorage.getItem('sysomosysSettings'); if (savedSettings) { const parsed = JSON.parse(savedSettings); delete parsed.quoteInstant; const mergedSettings = { ...defaultSettings, ...parsed }; appSettings = mergedSettings; } else { appSettings = JSON.parse(JSON.stringify(defaultSettings)); } } catch (e) { appSettings = JSON.parse(JSON.stringify(defaultSettings)); } appSettings.quoteTypingSpeedMs = wpmToMs(appSettings.quoteWpm); }
+        function updateUIFromSettings() { document.getElementById('fullscreen-toggle').checked = isFullScreen(); document.getElementById('font-family-select').value = appSettings.fontFamily; document.getElementById('font-size-slider').value = appSettings.fontSize; updateSliderValueDisplay('font-size-slider', 'font-size-value', 'px', 0); document.getElementById('font-color-picker').value = appSettings.fontColor; document.getElementById('font-bold-toggle').checked = appSettings.fontBold; document.getElementById('font-italic-toggle').checked = appSettings.fontItalic; document.getElementById('font-underline-toggle').checked = appSettings.fontUnderline; document.getElementById('font-highlight-toggle').checked = appSettings.fontHighlightEnabled; document.getElementById('font-highlight-color-picker').value = appSettings.fontHighlightColor; document.getElementById('font-highlight-color-picker').disabled = !appSettings.fontHighlightEnabled; document.getElementById('random-font-toggle').checked = appSettings.randomFont; document.getElementById('random-font-color-toggle').checked = appSettings.randomFontColor; document.getElementById('quotes-toggle').checked = appSettings.quotesEnabled; document.getElementById('quote-duration-slider').value = appSettings.quotePauseDurationMs / 1000; updateSliderValueDisplay('quote-duration-slider', 'quote-duration-value', 's', 0); document.getElementById('quote-fade-slider').value = appSettings.quoteFadeDurationMs / 1000; updateSliderValueDisplay('quote-fade-slider', 'quote-fade-value', 's', 1); document.getElementById('quote-interval-slider').value = appSettings.quoteIntervalMs / 1000; updateSliderValueDisplay('quote-interval-slider', 'quote-interval-value', 's', 0); document.getElementById('quote-wpm-slider').value = appSettings.quoteWpm; updateSliderValueDisplay('quote-wpm-slider', 'quote-wpm-value', '', 0); try { const rgba = parseRGBA(appSettings.playerOrbColor); if (rgba) { document.getElementById('orb-color-picker').value = `#${rgba.r.toString(16).padStart(2,'0')}${rgba.g.toString(16).padStart(2,'0')}${rgba.b.toString(16).padStart(2,'0')}`; } else { document.getElementById('orb-color-picker').value = '#ffffff';} } catch(e){ document.getElementById('orb-color-picker').value = '#ffffff';} document.getElementById('orb-pulse-range-slider').value = appSettings.orbPulseRange * 100; updateSliderValueDisplay('orb-pulse-range-slider', 'orb-pulse-range-value', '%', 0); document.getElementById('orb-pulse-music-toggle').checked = appSettings.orbPulseToMusic; document.getElementById('orb-pulse-freq-toggle').checked = appSettings.orbPulseFreqEnabled; document.getElementById('orb-pulse-freq-toggle').disabled = appSettings.orbPulseToMusic; document.getElementById('orb-pulse-freq-slider').value = appSettings.orbPulseFreqHz; updateSliderValueDisplay('orb-pulse-freq-slider', 'orb-pulse-freq-value', 'Hz', 1); document.getElementById('orb-pulse-freq-slider').disabled = appSettings.orbPulseToMusic || !appSettings.orbPulseFreqEnabled; document.getElementById('orb-saturation-slider').value = appSettings.otherOrbSaturation * 100; updateSliderValueDisplay('orb-saturation-slider', 'orb-saturation-value', '%', 0); document.getElementById('music-volume-slider').value = appSettings.musicVolume * 100; updateSliderValueDisplay('music-volume-slider', 'music-volume-value', '%', 0); document.getElementById('music-mute-toggle').checked = appSettings.musicMuted; document.getElementById('music-volume-slider').disabled = appSettings.musicMuted; document.getElementById('typing-volume-slider').value = appSettings.typingVolume * 100; updateSliderValueDisplay('typing-volume-slider', 'typing-volume-value', '%', 0); document.getElementById('typing-mute-toggle').checked = appSettings.typingMuted; document.getElementById('typing-volume-slider').disabled = appSettings.typingMuted; bgMusic.volume = appSettings.musicVolume; bgMusic.muted = appSettings.musicMuted; quoteTypingSound.volume = appSettings.typingVolume; quoteTypingSound.muted = appSettings.typingMuted; ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; if(player) player.color = appSettings.playerOrbColor; }
+        function handleSliderTextInput(inputElement, sliderElement, settingKey, unit = '', decimals = 0, isMultiplier = false) { let rawValue = inputElement.value.replace(unit, ''); let parsedValue = parseFloat(rawValue); if (!isNaN(parsedValue)) { const minValue = parseFloat(sliderElement.min); const maxValue = parseFloat(sliderElement.max); let clampedValue = Math.max(minValue, Math.min(maxValue, parsedValue)); let settingValue; if (unit === 's') { settingValue = clampedValue * 1000; } else if (isMultiplier) { settingValue = clampedValue / 100; } else { settingValue = clampedValue; } appSettings[settingKey] = settingValue; sliderElement.value = clampedValue; sliderElement.dispatchEvent(new Event('input')); inputElement.value = clampedValue.toFixed(decimals) + unit; if (settingKey === 'quoteWpm') { appSettings.quoteTypingSpeedMs = wpmToMs(settingValue); } else if (settingKey === 'musicVolume') { bgMusic.volume = settingValue; if (!appSettings.musicMuted && settingValue > 0) { document.getElementById('music-mute-toggle').checked = false; bgMusic.muted = false; appSettings.musicMuted = false; document.getElementById('music-volume-slider').disabled = false; } else if (settingValue === 0 && !appSettings.musicMuted) { document.getElementById('music-mute-toggle').checked = true; bgMusic.muted = true; appSettings.musicMuted = true; document.getElementById('music-volume-slider').disabled = true; } } else if (settingKey === 'typingVolume') { quoteTypingSound.volume = settingValue; if (!appSettings.typingMuted && settingValue > 0) { document.getElementById('typing-mute-toggle').checked = false; quoteTypingSound.muted = false; appSettings.typingMuted = false; document.getElementById('typing-volume-slider').disabled = false; } else if (settingValue === 0 && !appSettings.typingMuted) { document.getElementById('typing-mute-toggle').checked = true; quoteTypingSound.muted = true; appSettings.typingMuted = true; document.getElementById('typing-volume-slider').disabled = true; } } else if (settingKey === 'fontSize') { ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; updateCurrentQuoteFormatting(); } else if (settingKey === 'otherOrbSaturation') { const newSaturationFactor = settingValue; appSettings.otherOrbSaturation = newSaturationFactor; orbs.forEach(orb => { if (!orb.isPlayer && orb.originalColor) { orb.color = adjustSaturation(orb.originalColor, newSaturationFactor); } }); } saveSettings(); } else { updateSliderValueDisplay(sliderElement.id, inputElement.id, unit, decimals); } }
+        function updateCurrentQuoteFormatting() { if (!currentQuote || quoteState === 'fading' || quoteState === 'loading' || quoteState === 'disabled' || quoteState === 'error') { return; } if (!currentQuote.originalQuote || !currentQuote.originalAuthor) { return; } ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; const reFormatted = quoteFormatText(currentQuote.originalQuote, currentQuote.originalAuthor); if (!reFormatted || reFormatted.quoteLines.length === 0) { ctx.font = getFontString(); return; } currentQuote.quoteLines = reFormatted.quoteLines; currentQuote.authorLine = reFormatted.authorLine; currentQuote.fullText = reFormatted.fullText; currentQuote.maxQuoteLineWidth = reFormatted.maxQuoteLineWidth; currentQuote.authorLineWidth = reFormatted.authorLineWidth; currentQuote.totalQuoteLines = reFormatted.totalQuoteLines; currentQuote.appliedFontFamily = reFormatted.appliedFontFamily; currentQuote.appliedFontColor = reFormatted.appliedFontColor; }
 
         function setupSettingsListeners() {
             document.getElementById('fullscreen-toggle').addEventListener('change', toggleFullScreen);
-            document.getElementById('font-family-select').addEventListener('change', (e) => { appSettings.fontFamily = e.target.value; ctx.font = getFontString(); saveSettings(); });
-            document.getElementById('font-size-slider').addEventListener('input', (e) => { appSettings.fontSize = parseInt(e.target.value, 10); updateSliderValueDisplay('font-size-slider', 'font-size-value', 'px', 0); ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; saveSettings(); });
-            document.getElementById('font-color-picker').addEventListener('input', (e) => { appSettings.fontColor = e.target.value; saveSettings(); });
-            document.getElementById('font-bold-toggle').addEventListener('change', (e) => { appSettings.fontBold = e.target.checked; ctx.font = getFontString(); saveSettings(); });
-            document.getElementById('font-italic-toggle').addEventListener('change', (e) => { appSettings.fontItalic = e.target.checked; ctx.font = getFontString(); saveSettings(); });
-            document.getElementById('font-underline-toggle').addEventListener('change', (e) => { appSettings.fontUnderline = e.target.checked; saveSettings(); });
-            document.getElementById('font-highlight-toggle').addEventListener('change', (e) => { appSettings.fontHighlightEnabled = e.target.checked; document.getElementById('font-highlight-color-picker').disabled = !e.target.checked; saveSettings(); });
+            document.getElementById('font-family-select').addEventListener('change', (e) => { appSettings.fontFamily = e.target.value; ctx.font = getFontString(); updateCurrentQuoteFormatting(); saveSettings(); });
+            document.getElementById('font-size-slider').addEventListener('input', (e) => { appSettings.fontSize = parseInt(e.target.value, 10); updateSliderValueDisplay('font-size-slider', 'font-size-value', 'px', 0); ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; updateCurrentQuoteFormatting(); saveSettings(); });
+            document.getElementById('font-color-picker').addEventListener('input', (e) => { appSettings.fontColor = e.target.value; updateCurrentQuoteFormatting(); saveSettings(); });
+            document.getElementById('font-bold-toggle').addEventListener('change', (e) => { appSettings.fontBold = e.target.checked; ctx.font = getFontString(); updateCurrentQuoteFormatting(); saveSettings(); });
+            document.getElementById('font-italic-toggle').addEventListener('change', (e) => { appSettings.fontItalic = e.target.checked; ctx.font = getFontString(); updateCurrentQuoteFormatting(); saveSettings(); });
+            document.getElementById('font-underline-toggle').addEventListener('change', (e) => { appSettings.fontUnderline = e.target.checked; updateCurrentQuoteFormatting(); saveSettings(); });
+            document.getElementById('font-highlight-toggle').addEventListener('change', (e) => { appSettings.fontHighlightEnabled = e.target.checked; document.getElementById('font-highlight-color-picker').disabled = !e.target.checked; updateCurrentQuoteFormatting(); saveSettings(); });
             document.getElementById('font-highlight-color-picker').addEventListener('input', (e) => { appSettings.fontHighlightColor = e.target.value; saveSettings(); });
-            document.getElementById('random-font-toggle').addEventListener('change', (e) => { appSettings.randomFont = e.target.checked; saveSettings(); });
-            document.getElementById('random-font-color-toggle').addEventListener('change', (e) => { appSettings.randomFontColor = e.target.checked; saveSettings(); });
-
-            document.getElementById('quotes-toggle').addEventListener('change', (e) => {
-                const enabled = e.target.checked;
-                appSettings.quotesEnabled = enabled;
-                saveSettings();
-
-                if (enabled) {
-                     console.log("QUOTE: Re-enabled by user.");
-                     if (!currentQuote && quoteState !== 'loading' && quoteState !== 'typing' && quoteState !== 'waiting_for_next') {
-                        console.log("QUOTE: Setting state to idle to allow restart.");
-                         quoteState = 'idle'; // Reset state to allow next quote
-                         if (quoteNextQuoteTimeoutId) {
-                             clearTimeout(quoteNextQuoteTimeoutId);
-                             quoteNextQuoteTimeoutId = null;
-                         }
-                     }
-                } else {
-                    console.log("QUOTE: Disabled by user.");
-                    // quoteState = 'disabled'; // Setting this state is complex; manage via fading/timers
-                    if (currentQuote && quoteState !== 'fading') {
-                        console.log("QUOTE: Fading out current quote due to disable.");
-                        currentQuote.fadeStartTime = Date.now();
-                        quoteState = 'fading'; // Start fading immediately
-                    } else if (!currentQuote) {
-                        // If no quote is showing, just prevent new ones from starting
-                        quoteState = 'disabled'; // Can safely set to disabled if nothing active
-                    }
-                    if (!quoteTypingSound.paused) {
-                        quoteTypingSound.pause();
-                    }
-                    if (quoteNextQuoteTimeoutId) {
-                        clearTimeout(quoteNextQuoteTimeoutId);
-                        quoteNextQuoteTimeoutId = null;
-                        // If we were waiting for the next quote, set state back to disabled/idle
-                        if (quoteState === 'waiting_for_next') quoteState = 'disabled';
-                    }
-                }
-            });
-
+            document.getElementById('random-font-toggle').addEventListener('change', (e) => { appSettings.randomFont = e.target.checked; updateCurrentQuoteFormatting(); saveSettings(); });
+            document.getElementById('random-font-color-toggle').addEventListener('change', (e) => { appSettings.randomFontColor = e.target.checked; updateCurrentQuoteFormatting(); saveSettings(); });
+            document.getElementById('quotes-toggle').addEventListener('change', (e) => { const enabled = e.target.checked; appSettings.quotesEnabled = enabled; saveSettings(); if (enabled) { if (quoteState === 'disabled') { quoteState = 'idle'; if (quoteNextQuoteTimeoutId) { clearTimeout(quoteNextQuoteTimeoutId); quoteNextQuoteTimeoutId = null; } console.log("QUOTE: Enabled. Will schedule next quote."); } } else { quoteState = 'disabled'; if (!quoteTypingSound.paused) { quoteTypingSound.pause(); quoteTypingSound.currentTime = 0; console.log("QUOTE: Typing sound stopped."); } if (quoteNextQuoteTimeoutId) { clearTimeout(quoteNextQuoteTimeoutId); quoteNextQuoteTimeoutId = null; } if (currentQuote) { console.log("QUOTE: Disabled. Clearing current quote."); currentQuote = null; } } });
             document.getElementById('quote-duration-slider').addEventListener('input', (e) => { appSettings.quotePauseDurationMs = parseInt(e.target.value, 10) * 1000; updateSliderValueDisplay('quote-duration-slider', 'quote-duration-value', 's', 0); saveSettings(); });
             document.getElementById('quote-fade-slider').addEventListener('input', (e) => { appSettings.quoteFadeDurationMs = parseFloat(e.target.value) * 1000; updateSliderValueDisplay('quote-fade-slider', 'quote-fade-value', 's', 1); saveSettings(); });
             document.getElementById('quote-interval-slider').addEventListener('input', (e) => { appSettings.quoteIntervalMs = parseInt(e.target.value, 10) * 1000; updateSliderValueDisplay('quote-interval-slider', 'quote-interval-value', 's', 0); saveSettings(); });
@@ -894,35 +408,11 @@
             document.getElementById('orb-pulse-music-toggle').addEventListener('change', (e) => { appSettings.orbPulseToMusic = e.target.checked; document.getElementById('orb-pulse-freq-toggle').disabled = appSettings.orbPulseToMusic; document.getElementById('orb-pulse-freq-slider').disabled = appSettings.orbPulseToMusic || !appSettings.orbPulseFreqEnabled; saveSettings(); });
             document.getElementById('orb-pulse-freq-toggle').addEventListener('change', (e) => { appSettings.orbPulseFreqEnabled = e.target.checked; document.getElementById('orb-pulse-freq-slider').disabled = appSettings.orbPulseToMusic || !appSettings.orbPulseFreqEnabled; saveSettings(); });
             document.getElementById('orb-pulse-freq-slider').addEventListener('input', (e) => { appSettings.orbPulseFreqHz = parseFloat(e.target.value); updateSliderValueDisplay('orb-pulse-freq-slider', 'orb-pulse-freq-value', 'Hz', 1); saveSettings(); });
-            document.getElementById('orb-saturation-slider').addEventListener('input', (e) => { appSettings.otherOrbSaturation = parseInt(e.target.value, 10) / 100; updateSliderValueDisplay('orb-saturation-slider', 'orb-saturation-value', '%', 0); saveSettings(); });
-            document.getElementById('music-volume-slider').addEventListener('input', (e) => { appSettings.musicVolume = parseInt(e.target.value, 10) / 100; bgMusic.volume = appSettings.musicVolume; updateSliderValueDisplay('music-volume-slider', 'music-volume-value', '%', 0); if (!appSettings.musicMuted && appSettings.musicVolume > 0) { // Unmute if volume > 0 and was muted
-                document.getElementById('music-mute-toggle').checked = false;
-                bgMusic.muted = false;
-                appSettings.musicMuted = false;
-                document.getElementById('music-volume-slider').disabled = false;
-            } else if (appSettings.musicVolume === 0 && !appSettings.musicMuted) { // Auto-mute if volume is 0
-                 document.getElementById('music-mute-toggle').checked = true;
-                 bgMusic.muted = true;
-                 appSettings.musicMuted = true;
-                 document.getElementById('music-volume-slider').disabled = true;
-            }
-            saveSettings(); });
+            document.getElementById('orb-saturation-slider').addEventListener('input', (e) => { const newSaturationFactor = parseInt(e.target.value, 10) / 100; appSettings.otherOrbSaturation = newSaturationFactor; orbs.forEach(orb => { if (!orb.isPlayer && orb.originalColor) { orb.color = adjustSaturation(orb.originalColor, newSaturationFactor); } }); updateSliderValueDisplay('orb-saturation-slider', 'orb-saturation-value', '%', 0); saveSettings(); });
+            document.getElementById('music-volume-slider').addEventListener('input', (e) => { appSettings.musicVolume = parseInt(e.target.value, 10) / 100; bgMusic.volume = appSettings.musicVolume; updateSliderValueDisplay('music-volume-slider', 'music-volume-value', '%', 0); if (!appSettings.musicMuted && appSettings.musicVolume > 0) { document.getElementById('music-mute-toggle').checked = false; bgMusic.muted = false; appSettings.musicMuted = false; document.getElementById('music-volume-slider').disabled = false; } else if (appSettings.musicVolume === 0 && !appSettings.musicMuted) { document.getElementById('music-mute-toggle').checked = true; bgMusic.muted = true; appSettings.musicMuted = true; document.getElementById('music-volume-slider').disabled = true; } saveSettings(); });
             document.getElementById('music-mute-toggle').addEventListener('change', (e) => { appSettings.musicMuted = e.target.checked; bgMusic.muted = appSettings.musicMuted; document.getElementById('music-volume-slider').disabled = appSettings.musicMuted; saveSettings(); });
-            document.getElementById('typing-volume-slider').addEventListener('input', (e) => { appSettings.typingVolume = parseInt(e.target.value, 10) / 100; quoteTypingSound.volume = appSettings.typingVolume; updateSliderValueDisplay('typing-volume-slider', 'typing-volume-value', '%', 0); if (!appSettings.typingMuted && appSettings.typingVolume > 0) { // Unmute if volume > 0 and was muted
-                 document.getElementById('typing-mute-toggle').checked = false;
-                 quoteTypingSound.muted = false;
-                 appSettings.typingMuted = false;
-                 document.getElementById('typing-volume-slider').disabled = false;
-            } else if (appSettings.typingVolume === 0 && !appSettings.typingMuted) { // Auto-mute if volume is 0
-                 document.getElementById('typing-mute-toggle').checked = true;
-                 quoteTypingSound.muted = true;
-                 appSettings.typingMuted = true;
-                 document.getElementById('typing-volume-slider').disabled = true;
-            }
-            saveSettings(); });
+            document.getElementById('typing-volume-slider').addEventListener('input', (e) => { appSettings.typingVolume = parseInt(e.target.value, 10) / 100; quoteTypingSound.volume = appSettings.typingVolume; updateSliderValueDisplay('typing-volume-slider', 'typing-volume-value', '%', 0); if (!appSettings.typingMuted && appSettings.typingVolume > 0) { document.getElementById('typing-mute-toggle').checked = false; quoteTypingSound.muted = false; appSettings.typingMuted = false; document.getElementById('typing-volume-slider').disabled = false; } else if (appSettings.typingVolume === 0 && !appSettings.typingMuted) { document.getElementById('typing-mute-toggle').checked = true; quoteTypingSound.muted = true; appSettings.typingMuted = true; document.getElementById('typing-volume-slider').disabled = true; } saveSettings(); });
             document.getElementById('typing-mute-toggle').addEventListener('change', (e) => { appSettings.typingMuted = e.target.checked; quoteTypingSound.muted = appSettings.typingMuted; document.getElementById('typing-volume-slider').disabled = appSettings.typingMuted; saveSettings(); });
-
-            // Link text inputs back to sliders
             document.getElementById('font-size-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('font-size-slider'), 'fontSize', 'px', 0, false));
             document.getElementById('quote-duration-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('quote-duration-slider'), 'quotePauseDurationMs', 's', 0, false));
             document.getElementById('quote-fade-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('quote-fade-slider'), 'quoteFadeDurationMs', 's', 1, false));
@@ -933,19 +423,8 @@
             document.getElementById('orb-saturation-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('orb-saturation-slider'), 'otherOrbSaturation', '%', 0, true));
             document.getElementById('music-volume-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('music-volume-slider'), 'musicVolume', '%', 0, true));
             document.getElementById('typing-volume-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('typing-volume-slider'), 'typingVolume', '%', 0, true));
-
-            // Reset buttons
-            document.getElementById('reset-settings-button').addEventListener('click', () => { if (confirm("Reset all settings to defaults?")) { appSettings = JSON.parse(JSON.stringify(defaultSettings)); appSettings.quoteTypingSpeedMs = wpmToMs(appSettings.quoteWpm); saveSettings(); updateUIFromSettings(); ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; if(player) player.color = appSettings.playerOrbColor; console.log("Settings reset to default."); } });
-            // --- ADDED: Reset Game Button Listener ---
-            document.getElementById('reset-game-button').addEventListener('click', () => {
-                console.log("GAME: Reset Orbs button clicked.");
-                // Call the same initialization function used on player death (false indicates not just a resize)
-                initializeGame(false);
-                // Optionally close the settings menu after resetting
-                closeSettingsPopup();
-            });
-            // --- END ADD ---
-
+            document.getElementById('reset-settings-button').addEventListener('click', () => { if (confirm("Reset all settings to defaults?")) { appSettings = JSON.parse(JSON.stringify(defaultSettings)); appSettings.quoteTypingSpeedMs = wpmToMs(appSettings.quoteWpm); saveSettings(); updateUIFromSettings(); ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; if(player) player.color = appSettings.playerOrbColor; updateCurrentQuoteFormatting(); const defaultSaturation = defaultSettings.otherOrbSaturation; orbs.forEach(orb => { if (!orb.isPlayer && orb.originalColor) { orb.color = adjustSaturation(orb.originalColor, defaultSaturation); } }); console.log("Settings reset to default."); } });
+            document.getElementById('reset-game-button').addEventListener('click', () => { initializeGame(false); closeSettingsPopup(); });
             console.log("Settings listeners attached.");
         }
 
@@ -956,8 +435,8 @@
             loadSettings();
             setupSettingsListeners();
             updateUIFromSettings();
-            initializeGame(false); // Initial game setup
-            initializeQuotes();
+            initializeGame(false);
+            initializeQuotes(); // Will attempt first quote start after interval
         });
 
     </script>
