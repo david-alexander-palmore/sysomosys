@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- Favicon -->
@@ -29,7 +29,11 @@
             position: fixed;
             top: 55px; /* Below hamburger */
             right: 15px;
-            width: 350px;
+            /* --- CHANGE: Responsive Width --- */
+            width: calc(100% - 30px); /* Occupy screen width minus padding */
+            max-width: 350px;       /* But don't exceed 350px on wider screens */
+            box-sizing: border-box; /* Ensure padding is included in width calculation */
+            /* --- END CHANGE --- */
             max-height: calc(100vh - 70px); /* Avoid overflow */
             overflow-y: auto;
             background-color: rgba(30, 30, 40, 0.95);
@@ -114,15 +118,20 @@
              align-items: center;
              justify-content: space-between;
              margin-bottom: 8px;
+             flex-wrap: wrap; /* Allow controls to wrap on narrow screens if needed */
          }
          #settings-popup .control-row label {
-             flex-basis: 40%; /* Adjust as needed */
+             /* flex-basis: 40%; */ /* Removing fixed basis for better wrap */
+             margin-right: 10px; /* Add some space */
              margin-bottom: 0;
              white-space: nowrap;
+             flex-shrink: 0; /* Prevent label from shrinking */
          }
          #settings-popup .control-row .controls {
-             flex-basis: 60%; /* Adjust as needed */
+             /* flex-basis: 60%; */ /* Removing fixed basis */
              text-align: right;
+             flex-grow: 1; /* Allow controls to take remaining space */
+             min-width: 150px; /* Give controls minimum space */
          }
          #settings-popup button {
              padding: 5px 10px;
@@ -326,9 +335,12 @@
             </div>
         </div>
 
-        <!-- Reset Settings -->
+        <!-- Reset Settings / Game -->
         <div class="setting-group" style="text-align: center;">
-             <button id="reset-settings-button">Reset to Defaults</button>
+             <button id="reset-settings-button">Reset Settings</button>
+             <!-- --- ADDED: Reset Game Button --- -->
+             <button id="reset-game-button" style="margin-left: 10px;">Reset Orbs</button>
+             <!-- --- END ADD --- -->
         </div>
 
     </div>
@@ -598,18 +610,23 @@
              checkCollisions();
              if (orbsToRemove.size > 0) { orbs = orbs.filter(orb => !orbsToRemove.has(orb.id)); activeAbsorptions.forEach((value, key) => { if (orbsToRemove.has(key)) { activeAbsorptions.delete(key); } }); orbsToRemove.clear(); }
 
+             // --- CHANGE: Moved playerAbsorbed check to after cleanup ---
              if (playerAbsorbed) {
                  console.log("GAME: Resetting due to player absorption. Music should continue.");
                  if (quoteTypingSound && !quoteTypingSound.paused) { quoteTypingSound.pause(); }
                  if (gameAnimationFrameId) { cancelAnimationFrame(gameAnimationFrameId); gameAnimationFrameId = null; }
                  const wasMusicPlaying = bgMusic && !bgMusic.paused && musicStarted;
+                 // Trigger a full game reset, but keep the music state
                  initializeGame(false);
-                 if (wasMusicPlaying && bgMusic.paused) {
+                 if (wasMusicPlaying && bgMusic.paused && !appSettings.musicMuted) { // Check mute setting too
                     console.log("GAME: Music was paused unexpectedly during reset, restarting playback.");
                     bgMusic.play().catch(e => console.warn("Error restarting music after reset:", e));
                  }
+                 // Crucial: Stop this loop iteration immediately after initiating the reset
                  return;
              }
+             // --- END CHANGE ---
+
 
              // Quote State Machine
               if (currentQuote) {
@@ -648,8 +665,13 @@
             if (!canvas || !ctx) { console.error("CRITICAL: Canvas/context missing!"); return; }
             const prevWidth = typeof canvasWidth !== 'undefined' ? canvasWidth : window.innerWidth; const prevHeight = typeof canvasHeight !== 'undefined' ? canvasHeight : window.innerHeight;
             try { canvasWidth = window.innerWidth; canvasHeight = window.innerHeight; canvas.width = canvasWidth; canvas.height = canvasHeight; ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; ctx.textBaseline = 'top'; ctx.lineJoin = 'round'; ctx.globalAlpha = 1.0; ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; } catch (e) { console.error("Error setting canvas dimensions:", e); return; }
-            if (!isResize || !player || playerAbsorbed) {
-                console.log("GAME: Full reset. Music should continue.");
+
+            // --- CHANGE: Explicitly reset playerAbsorbed on *any* init call ---
+            playerAbsorbed = false;
+            // --- END CHANGE ---
+
+            if (!isResize || !player) { // Force full reset if player doesn't exist (covers initial load and resets)
+                console.log("GAME: Full reset.");
                 orbs = [];
                 player = null;
                 activeAbsorptions.clear();
@@ -658,11 +680,19 @@
                 if (!player) { console.error("CRITICAL: Player creation failed!"); return; }
                 player.isPlayer = true;
                 spawnOrbs(INITIAL_ORBS);
-            } else {
+            } else { // Handle resize specifically
                 console.log(`GAME: Resizing ${prevWidth}x${prevHeight} -> ${canvasWidth}x${canvasHeight}`);
-                if (player) { player.x = canvasWidth / 2; player.y = canvasHeight / 2; }
+                if (player) {
+                     // Recenter player on resize if they exist
+                    player.x = canvasWidth / 2;
+                    player.y = canvasHeight / 2;
+                    // Optional: Dampen velocity on resize? Or keep it? Current keeps it.
+                }
+                // Clear absorptions on resize as positions change drastically
                 activeAbsorptions.clear();
+                // Orbs to remove should already be handled by game loop, but clear just in case
                 orbsToRemove.clear();
+                // Keep existing orbs, just recenter player. Orbs will wrap correctly.
             }
             isInteractionActive = false;
             lastInteractionX = 0;
@@ -670,10 +700,10 @@
             lastPropulsionTime = 0;
             gameLastTimestamp = 0;
             gameTimeAccumulator = 0;
-            playerAbsorbed = false;
-            if (player) player.color = appSettings.playerOrbColor;
+            // playerAbsorbed = false; // Moved higher up
+            if (player) player.color = appSettings.playerOrbColor; // Ensure player color is correct
             console.log("GAME: Init complete, requesting loop...");
-            if (gameAnimationFrameId) cancelAnimationFrame(gameAnimationFrameId);
+            if (gameAnimationFrameId) cancelAnimationFrame(gameAnimationFrameId); // Ensure no duplicate loops
             gameAnimationFrameId = requestAnimationFrame(gameLoop);
         }
 
@@ -775,13 +805,34 @@
                  else { settingValue = clampedValue; }
                 appSettings[settingKey] = settingValue;
                 sliderElement.value = clampedValue;
-                sliderElement.dispatchEvent(new Event('input'));
-                inputElement.value = clampedValue.toFixed(decimals) + unit;
+                sliderElement.dispatchEvent(new Event('input')); // Trigger input event for consistency
+                inputElement.value = clampedValue.toFixed(decimals) + unit; // Update display with clamped value
+
+                // --- CHANGE: Apply specific updates based on settingKey ---
+                if (settingKey === 'quoteWpm') {
+                    appSettings.quoteTypingSpeedMs = wpmToMs(settingValue);
+                } else if (settingKey === 'musicVolume') {
+                    bgMusic.volume = settingValue;
+                    if (!appSettings.musicMuted && settingValue > 0) {
+                        document.getElementById('music-mute-toggle').checked = false;
+                        document.getElementById('music-volume-slider').disabled = false;
+                    }
+                } else if (settingKey === 'typingVolume') {
+                    quoteTypingSound.volume = settingValue;
+                     if (!appSettings.typingMuted && settingValue > 0) {
+                         document.getElementById('typing-mute-toggle').checked = false;
+                         document.getElementById('typing-volume-slider').disabled = false;
+                     }
+                }
+                // --- END CHANGE ---
+
                 saveSettings();
             } else {
+                 // If input is invalid, reset the input field to reflect the current slider value
                  updateSliderValueDisplay(sliderElement.id, inputElement.id, unit, decimals);
             }
         }
+
 
         function setupSettingsListeners() {
             document.getElementById('fullscreen-toggle').addEventListener('change', toggleFullScreen);
@@ -796,47 +847,43 @@
             document.getElementById('random-font-toggle').addEventListener('change', (e) => { appSettings.randomFont = e.target.checked; saveSettings(); });
             document.getElementById('random-font-color-toggle').addEventListener('change', (e) => { appSettings.randomFontColor = e.target.checked; saveSettings(); });
 
-            // --- CHANGE: Updated Quotes Toggle Listener ---
             document.getElementById('quotes-toggle').addEventListener('change', (e) => {
                 const enabled = e.target.checked;
                 appSettings.quotesEnabled = enabled;
                 saveSettings();
 
                 if (enabled) {
-                     // Re-enabling quotes
                      console.log("QUOTE: Re-enabled by user.");
-                     // Check if we need to kickstart the process
-                     if (!currentQuote && quoteState !== 'loading' && quoteState !== 'typing') {
+                     if (!currentQuote && quoteState !== 'loading' && quoteState !== 'typing' && quoteState !== 'waiting_for_next') {
                         console.log("QUOTE: Setting state to idle to allow restart.");
-                         quoteState = 'idle'; // Reset state
-                         // Clear any potential leftover timer from a disable/fade cycle
+                         quoteState = 'idle'; // Reset state to allow next quote
                          if (quoteNextQuoteTimeoutId) {
                              clearTimeout(quoteNextQuoteTimeoutId);
                              quoteNextQuoteTimeoutId = null;
                          }
-                         // The game loop will now pick up the 'idle' state and schedule normally
                      }
                 } else {
-                    // Disabling quotes
                     console.log("QUOTE: Disabled by user.");
-                    quoteState = 'disabled'; // Set state explicitly
-                    // If a quote is showing or typing, start fading it out
+                    // quoteState = 'disabled'; // Setting this state is complex; manage via fading/timers
                     if (currentQuote && quoteState !== 'fading') {
+                        console.log("QUOTE: Fading out current quote due to disable.");
                         currentQuote.fadeStartTime = Date.now();
-                        quoteState = 'fading';
+                        quoteState = 'fading'; // Start fading immediately
+                    } else if (!currentQuote) {
+                        // If no quote is showing, just prevent new ones from starting
+                        quoteState = 'disabled'; // Can safely set to disabled if nothing active
                     }
-                    // Stop the typing sound if it's playing
                     if (!quoteTypingSound.paused) {
                         quoteTypingSound.pause();
                     }
-                    // Cancel any scheduled next quote
                     if (quoteNextQuoteTimeoutId) {
                         clearTimeout(quoteNextQuoteTimeoutId);
                         quoteNextQuoteTimeoutId = null;
+                        // If we were waiting for the next quote, set state back to disabled/idle
+                        if (quoteState === 'waiting_for_next') quoteState = 'disabled';
                     }
                 }
             });
-            // --- End Change ---
 
             document.getElementById('quote-duration-slider').addEventListener('input', (e) => { appSettings.quotePauseDurationMs = parseInt(e.target.value, 10) * 1000; updateSliderValueDisplay('quote-duration-slider', 'quote-duration-value', 's', 0); saveSettings(); });
             document.getElementById('quote-fade-slider').addEventListener('input', (e) => { appSettings.quoteFadeDurationMs = parseFloat(e.target.value) * 1000; updateSliderValueDisplay('quote-fade-slider', 'quote-fade-value', 's', 1); saveSettings(); });
@@ -848,11 +895,34 @@
             document.getElementById('orb-pulse-freq-toggle').addEventListener('change', (e) => { appSettings.orbPulseFreqEnabled = e.target.checked; document.getElementById('orb-pulse-freq-slider').disabled = appSettings.orbPulseToMusic || !appSettings.orbPulseFreqEnabled; saveSettings(); });
             document.getElementById('orb-pulse-freq-slider').addEventListener('input', (e) => { appSettings.orbPulseFreqHz = parseFloat(e.target.value); updateSliderValueDisplay('orb-pulse-freq-slider', 'orb-pulse-freq-value', 'Hz', 1); saveSettings(); });
             document.getElementById('orb-saturation-slider').addEventListener('input', (e) => { appSettings.otherOrbSaturation = parseInt(e.target.value, 10) / 100; updateSliderValueDisplay('orb-saturation-slider', 'orb-saturation-value', '%', 0); saveSettings(); });
-            document.getElementById('music-volume-slider').addEventListener('input', (e) => { appSettings.musicVolume = parseInt(e.target.value, 10) / 100; bgMusic.volume = appSettings.musicVolume; updateSliderValueDisplay('music-volume-slider', 'music-volume-value', '%', 0); if (appSettings.musicMuted && appSettings.musicVolume > 0) { appSettings.musicMuted = false; bgMusic.muted = false; document.getElementById('music-mute-toggle').checked = false; document.getElementById('music-volume-slider').disabled = false; } saveSettings(); });
+            document.getElementById('music-volume-slider').addEventListener('input', (e) => { appSettings.musicVolume = parseInt(e.target.value, 10) / 100; bgMusic.volume = appSettings.musicVolume; updateSliderValueDisplay('music-volume-slider', 'music-volume-value', '%', 0); if (!appSettings.musicMuted && appSettings.musicVolume > 0) { // Unmute if volume > 0 and was muted
+                document.getElementById('music-mute-toggle').checked = false;
+                bgMusic.muted = false;
+                appSettings.musicMuted = false;
+                document.getElementById('music-volume-slider').disabled = false;
+            } else if (appSettings.musicVolume === 0 && !appSettings.musicMuted) { // Auto-mute if volume is 0
+                 document.getElementById('music-mute-toggle').checked = true;
+                 bgMusic.muted = true;
+                 appSettings.musicMuted = true;
+                 document.getElementById('music-volume-slider').disabled = true;
+            }
+            saveSettings(); });
             document.getElementById('music-mute-toggle').addEventListener('change', (e) => { appSettings.musicMuted = e.target.checked; bgMusic.muted = appSettings.musicMuted; document.getElementById('music-volume-slider').disabled = appSettings.musicMuted; saveSettings(); });
-            document.getElementById('typing-volume-slider').addEventListener('input', (e) => { appSettings.typingVolume = parseInt(e.target.value, 10) / 100; quoteTypingSound.volume = appSettings.typingVolume; updateSliderValueDisplay('typing-volume-slider', 'typing-volume-value', '%', 0); if (appSettings.typingMuted && appSettings.typingVolume > 0) { appSettings.typingMuted = false; quoteTypingSound.muted = false; document.getElementById('typing-mute-toggle').checked = false; document.getElementById('typing-volume-slider').disabled = false; } saveSettings(); });
+            document.getElementById('typing-volume-slider').addEventListener('input', (e) => { appSettings.typingVolume = parseInt(e.target.value, 10) / 100; quoteTypingSound.volume = appSettings.typingVolume; updateSliderValueDisplay('typing-volume-slider', 'typing-volume-value', '%', 0); if (!appSettings.typingMuted && appSettings.typingVolume > 0) { // Unmute if volume > 0 and was muted
+                 document.getElementById('typing-mute-toggle').checked = false;
+                 quoteTypingSound.muted = false;
+                 appSettings.typingMuted = false;
+                 document.getElementById('typing-volume-slider').disabled = false;
+            } else if (appSettings.typingVolume === 0 && !appSettings.typingMuted) { // Auto-mute if volume is 0
+                 document.getElementById('typing-mute-toggle').checked = true;
+                 quoteTypingSound.muted = true;
+                 appSettings.typingMuted = true;
+                 document.getElementById('typing-volume-slider').disabled = true;
+            }
+            saveSettings(); });
             document.getElementById('typing-mute-toggle').addEventListener('change', (e) => { appSettings.typingMuted = e.target.checked; quoteTypingSound.muted = appSettings.typingMuted; document.getElementById('typing-volume-slider').disabled = appSettings.typingMuted; saveSettings(); });
 
+            // Link text inputs back to sliders
             document.getElementById('font-size-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('font-size-slider'), 'fontSize', 'px', 0, false));
             document.getElementById('quote-duration-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('quote-duration-slider'), 'quotePauseDurationMs', 's', 0, false));
             document.getElementById('quote-fade-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('quote-fade-slider'), 'quoteFadeDurationMs', 's', 1, false));
@@ -864,7 +934,18 @@
             document.getElementById('music-volume-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('music-volume-slider'), 'musicVolume', '%', 0, true));
             document.getElementById('typing-volume-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('typing-volume-slider'), 'typingVolume', '%', 0, true));
 
+            // Reset buttons
             document.getElementById('reset-settings-button').addEventListener('click', () => { if (confirm("Reset all settings to defaults?")) { appSettings = JSON.parse(JSON.stringify(defaultSettings)); appSettings.quoteTypingSpeedMs = wpmToMs(appSettings.quoteWpm); saveSettings(); updateUIFromSettings(); ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; if(player) player.color = appSettings.playerOrbColor; console.log("Settings reset to default."); } });
+            // --- ADDED: Reset Game Button Listener ---
+            document.getElementById('reset-game-button').addEventListener('click', () => {
+                console.log("GAME: Reset Orbs button clicked.");
+                // Call the same initialization function used on player death (false indicates not just a resize)
+                initializeGame(false);
+                // Optionally close the settings menu after resetting
+                closeSettingsPopup();
+            });
+            // --- END ADD ---
+
             console.log("Settings listeners attached.");
         }
 
@@ -875,7 +956,7 @@
             loadSettings();
             setupSettingsListeners();
             updateUIFromSettings();
-            initializeGame(false);
+            initializeGame(false); // Initial game setup
             initializeQuotes();
         });
 
