@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- Favicon -->
@@ -12,24 +12,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Sysomosys</title>
     <style>
-        /* Basic body and canvas styles */
         body { margin: 0; overflow: hidden; background-color: #000510; display: flex; justify-content: center; align-items: center; height: 100vh; position: relative; font-family: sans-serif; }
         canvas {
             display: block;
             -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
             touch-action: none;
          }
-         /* --- Hamburger Menu Icon Styles --- */
-         #hamburger-menu { position: fixed; top: 15px; right: 15px; width: 30px; height: 25px; cursor: pointer; z-index: 1010; /* Higher than popup */ display: flex; flex-direction: column; justify-content: space-between; padding: 5px; box-sizing: border-box; }
-         /* Hamburger Color */
+         #hamburger-menu { position: fixed; top: 15px; right: 15px; width: 30px; height: 25px; cursor: pointer; z-index: 1010; display: flex; flex-direction: column; justify-content: space-between; padding: 5px; box-sizing: border-box; }
          #hamburger-menu span { display: block; width: 100%; height: 3px; background-color: #555555; border-radius: 2px; transition: background-color 0.2s ease-in-out; }
          #hamburger-menu:hover span { background-color: #777777; }
-         /* --- END --- */
 
-         /* --- Settings Popup Menu Styles --- */
          #settings-popup {
             position: fixed;
-            top: 55px; /* Below hamburger */
+            top: 55px;
             right: 15px;
             width: calc(100% - 30px);
             max-width: 350px;
@@ -185,17 +180,6 @@
         <div class="setting-group">
             <h3>Orbs</h3>
             <div class="control-row">
-                <label>Appearance:</label>
-                <div class="controls">
-                    <input type="radio" id="orb-appearance-solid" name="orb-appearance" value="solid" checked>
-                    <label for="orb-appearance-solid" class="inline-label">Solid</label>
-                    <input type="radio" id="orb-appearance-waveform" name="orb-appearance" value="waveform">
-                    <label for="orb-appearance-waveform" class="inline-label">Waveform</label>
-                    <input type="radio" id="orb-appearance-spiral" name="orb-appearance" value="spiral">
-                    <label for="orb-appearance-spiral" class="inline-label">Spiral</label>
-                </div>
-            </div>
-            <div class="control-row">
                 <label for="orb-color-picker">Player Color:</label>
                 <div class="controls">
                     <input type="color" id="orb-color-picker" value="#64C8FF">
@@ -277,13 +261,8 @@
             fullscreen: false, fontFamily: 'monospace', fontSize: 24, fontColor: '#FFFFFF', fontBold: false, fontItalic: false, fontUnderline: false,
             fontHighlightEnabled: true, fontHighlightColor: '#000000', fontHighlightWidth: 3, randomFont: false, randomFontColor: false,
             quotesEnabled: true, quotePauseDurationMs: 3000, quoteFadeDurationMs: 3000, quoteIntervalMs: 15000, quoteWpm: 90, quoteTypingSpeedMs: 133,
-            playerOrbAppearance: 'solid', // Default appearance
             playerOrbColor: 'rgba(100, 200, 255, 0.9)', orbPulseRange: 0.25, orbPulseToMusic: true, orbPulseFreqEnabled: false, orbPulseFreqHz: 1.0,
             otherOrbSaturation: 0.5, musicVolume: 0.75, musicMuted: false, typingVolume: 0.75, typingMuted: false,
-            // Spiral settings
-            spiralCount: 15, spiralMinRadiusFactor: 0.08, spiralMaxRadiusFactor: 0.25,
-            spiralBaseSpeedMin: 0.5, spiralBaseSpeedMax: 2.0, spiralTurnsMin: 2, spiralTurnsMax: 5,
-            spiralBeatBoost: 15.0, spiralSpeedDecay: 0.95
         };
         appSettings.quoteTypingSpeedMs = wpmToMs(appSettings.quoteWpm);
         const defaultSettings = JSON.parse(JSON.stringify(appSettings));
@@ -303,7 +282,7 @@
 
         // --- Helper Functions ---
         function getRandomColor() { const r = Math.floor(Math.random() * 155) + 100; const g = Math.floor(Math.random() * 155) + 100; const b = Math.floor(Math.random() * 155) + 100; const a = (Math.random() * 0.3 + 0.6).toFixed(2); return `rgba(${r}, ${g}, ${b}, ${a})`; }
-        function parseRGBA(rgbaString) { if (!rgbaString) return { r: 128, g: 128, b: 128, a: 0.8 }; const match = rgbaString.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/); if (match) { return { r: parseInt(match[1], 10), g: parseInt(match[2], 10), b: parseInt(match[3], 10), a: match[4] !== undefined ? parseFloat(match[4]) : 1.0 }; } console.warn("Could not parse RGBA string:", rgbaString); return { r: 128, g: 128, b: 128, a: 0.8 }; }
+        function parseRGBA(rgbaString) { if (!rgbaString) return { r: 128, g: 128, b: 128, a: 0.8 }; const match = rgbaString.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/); if (match) { return { r: parseInt(match[1], 10), g: parseInt(match[2], 10), b: parseInt(match[3], 10), a: match[4] !== undefined ? parseFloat(match[4]) : 1.0 }; } return { r: 128, g: 128, b: 128, a: 0.8 }; }
         function wrappedDistance(x1, y1, x2, y2, width, height) { let dx = Math.abs(x1 - x2); let dy = Math.abs(y1 - y2); if (dx > width / 2) { dx = width - dx; } if (dy > height / 2) { dy = height - dy; } return Math.sqrt(dx * dx + dy * dy); }
         function getWrappedVector(x1, y1, x2, y2, width, height) { let dx = x2 - x1; let dy = y2 - y1; if (Math.abs(dx) > width / 2) { dx = dx > 0 ? dx - width : dx + width; } if (Math.abs(dy) > height / 2) { dy = dy > 0 ? dy - height : dy + height; } return { dx, dy }; }
         function wpmToMs(wpm) { if (wpm <= 0) return 5000; const avgCharsPerWord = 5; const ms = (60 * 1000) / (wpm * avgCharsPerWord); return Math.max(1, ms); }
@@ -313,7 +292,7 @@
         function hslaToRgba(h, s, l, a) { let r, g, b; h /= 360; s /= 100; l /= 100; if (s === 0) { r = g = b = l; } else { const hue2rgb = (p, q, t) => { if (t < 0) t += 1; if (t > 1) t -= 1; if (t < 1 / 6) return p + (q - p) * 6 * t; if (t < 1 / 2) return q; if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6; return p; }; const q = l < 0.5 ? l * (1 + s) : l + s - l * s; const p = 2 * l - q; r = hue2rgb(p, q, h + 1 / 3); g = hue2rgb(p, q, h); b = hue2rgb(p, q, h - 1 / 3); } return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255), a: a }; }
         function adjustSaturation(rgbaString, saturationFactor) { const original = parseRGBA(rgbaString); if (!original) return rgbaString; const hsla = rgbaToHsla(original.r, original.g, original.b, original.a); hsla.s *= saturationFactor; hsla.s = Math.max(0, Math.min(100, hsla.s)); const adjustedRgba = hslaToRgba(hsla.h, hsla.s, hsla.l, hsla.a); return `rgba(${adjustedRgba.r}, ${adjustedRgba.g}, ${adjustedRgba.b}, ${adjustedRgba.a.toFixed(2)})`; }
 
-        // --- QUOTE Functions --- (No changes needed)
+        // --- QUOTE Functions ---
         function quoteParseCSV(csvText) { const lines = csvText.trim().split('\n'); const parsedQuotes = []; lines.forEach((line, index) => { line = line.trim(); if (!line) return; const firstCommaIndex = line.indexOf(','); if (firstCommaIndex === -1) { return; } let authorRaw = line.substring(0, firstCommaIndex); let quoteRaw = line.substring(firstCommaIndex + 1); const cleanField = (str) => { let cleaned = str.trim(); if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || (cleaned.startsWith("'") && cleaned.endsWith("'"))) cleaned = cleaned.substring(1, cleaned.length - 1); cleaned = cleaned.replace(/""/g, '"'); return cleaned; }; let author = cleanField(authorRaw); let quote = cleanField(quoteRaw); if (!author) author = "Anonymous"; if (!quote) { return; } parsedQuotes.push({ author, quote }); }); return parsedQuotes; }
         function quoteFormatText(quote, author) { ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; let formatFontFamily = appSettings.fontFamily; let formatFontColor = appSettings.fontColor; if (appSettings.randomFont) { const fonts = document.getElementById('font-family-select').options; const randomFontIndex = Math.floor(Math.random() * fonts.length); formatFontFamily = fonts[randomFontIndex].value; } if (appSettings.randomFontColor) { const r = Math.floor(Math.random() * 256); const g = Math.floor(Math.random() * 256); const b = Math.floor(Math.random() * 256); formatFontColor = `rgb(${r}, ${g}, ${b})`; } let measureFont = getFontString(); if (appSettings.randomFont) { let fontStyle = ''; if (appSettings.fontItalic) fontStyle += 'italic '; if (appSettings.fontBold) fontStyle += 'bold '; measureFont = `${fontStyle}${appSettings.fontSize}px ${formatFontFamily}`; } ctx.save(); ctx.font = measureFont; const words = quote.split(' '); const quoteLines = []; let currentLine = ''; const maxWidth = canvasWidth - QUOTE_PADDING * 2; for (let i = 0; i < words.length; i++) { const word = words[i]; if (!word) continue; const potentialLine = currentLine ? `${currentLine} ${word}` : word; if (ctx.measureText(potentialLine).width <= maxWidth && potentialLine.length <= QUOTE_MAX_CHARS_PER_LINE ) { currentLine = potentialLine; } else { if (currentLine.length > 0) { quoteLines.push(currentLine); } currentLine = word; if (ctx.measureText(word).width > maxWidth || word.length > QUOTE_MAX_CHARS_PER_LINE) { if (currentLine.length > QUOTE_MAX_CHARS_PER_LINE) { currentLine = currentLine.substring(0, QUOTE_MAX_CHARS_PER_LINE); } } } } if (currentLine) { quoteLines.push(currentLine); } if (quoteLines.length === 0 && quote) { let truncatedQuote = quote.substring(0, QUOTE_MAX_CHARS_PER_LINE); if (ctx.measureText(truncatedQuote).width > maxWidth) { while(ctx.measureText(truncatedQuote).width > maxWidth && truncatedQuote.length > 0) { truncatedQuote = truncatedQuote.slice(0,-1); } } quoteLines.push(truncatedQuote); } const authorLine = `— ${author}`; let maxQuoteLineWidth = 0; quoteLines.forEach(line => { const lineWidth = ctx.measureText(line).width; if (lineWidth > maxQuoteLineWidth) maxQuoteLineWidth = lineWidth; }); const authorLineWidth = ctx.measureText(authorLine).width; ctx.restore(); return { quoteLines, authorLine, fullText: quoteLines.join('\n') + '\n' + authorLine, maxQuoteLineWidth, authorLineWidth, totalQuoteLines: quoteLines.length, appliedFontFamily: formatFontFamily, appliedFontColor: formatFontColor }; }
         function quoteDrawTextWithOutline(text, x, y, quoteObj) { ctx.strokeStyle = appSettings.fontHighlightEnabled ? appSettings.fontHighlightColor : 'transparent'; ctx.lineWidth = appSettings.fontHighlightEnabled ? appSettings.fontHighlightWidth : 0; ctx.strokeText(text, x, y); ctx.fillStyle = quoteObj.appliedFontColor; ctx.fillText(text, x, y); if (appSettings.fontUnderline) { const metrics = ctx.measureText(text); const underlineY = y + appSettings.fontSize * 1.1; ctx.beginPath(); ctx.strokeStyle = quoteObj.appliedFontColor; ctx.lineWidth = Math.max(1, Math.floor(appSettings.fontSize / 12)); ctx.moveTo(x, underlineY); ctx.lineTo(x + metrics.width, underlineY); ctx.stroke(); } }
@@ -333,113 +312,6 @@
         function createOrb(x, y, radius, dx = 0, dy = 0, initialColor = getRandomColor()) { const validRadius = Math.max(MIN_ABSORB_COMPLETE_RADIUS, radius); if (isNaN(validRadius)) { return undefined; } const mass = validRadius * validRadius; const originalColor = initialColor; return { id: Math.random().toString(36).substring(2, 9) + Date.now(), x, y, radius: validRadius, dx, dy, color: originalColor, originalColor: originalColor, mass: mass, isPlayer: false }; }
         function _drawSingleOrbInstance(drawX, drawY, radius, color, shadowColor, shadowBlur) { if (radius < MIN_ABSORB_COMPLETE_RADIUS || drawX + radius < 0 || drawX - radius > canvasWidth || drawY + radius < 0 || drawY - radius > canvasHeight) return; ctx.beginPath(); ctx.arc(drawX, drawY, radius, 0, Math.PI * 2); ctx.shadowColor = shadowColor; ctx.shadowBlur = shadowBlur; ctx.fillStyle = color; ctx.fill(); }
 
-        // Updated Waveform Drawing Helper (Stretched Quadrant Segments)
-        function _drawWaveformInstance(drawX, drawY, orb, pulsedColor) {
-             if (!analyser || !audioDataArray) return;
-
-             const boundaryRadius = orb.radius;
-             const maxBarExtension = boundaryRadius * 0.5; // Max height bars extend OUT from boundary
-             const totalBins = analyser.frequencyBinCount; // e.g., 128
-             // Bins representing the first quadrant (12-3 o'clock)
-             const numSourceBins = Math.max(1, Math.floor(totalBins / 4)); // e.g., 32
-             const barLineWidth = 1.5;
-
-             // Define the approximate end indices for the three segments within the source bins
-             const seg1EndIndex = Math.max(1, Math.floor(numSourceBins / 3)); // End of "12-1" bins
-             const seg2EndIndex = Math.max(seg1EndIndex, Math.floor(2 * numSourceBins / 3)); // End of "1-2" bins
-
-             const seg1BinCount = seg1EndIndex;
-             const seg2BinCount = seg2EndIndex - seg1EndIndex;
-             const seg3BinCount = numSourceBins - seg2EndIndex;
-
-             // --- Draw Boundary Circle FIRST ---
-             ctx.strokeStyle = pulsedColor;
-             ctx.lineWidth = 0.75; // Fine line
-             ctx.beginPath();
-             ctx.arc(drawX, drawY, boundaryRadius, 0, Math.PI * 2);
-             ctx.stroke();
-             // --- End Boundary Circle ---
-
-             // --- Draw Waveform Bars (Stretching segments) ---
-             ctx.lineWidth = barLineWidth;
-             ctx.lineCap = 'round';
-
-             const numVisualBars = totalBins; // Draw this many bars visually around the circle
-             for (let i = 0; i < numVisualBars; i++) {
-                 const angle = (i / numVisualBars) * (Math.PI * 2) - (Math.PI / 2); // Angle for this visual bar
-                 const normalizedCirclePos = i / numVisualBars; // 0 to almost 1
-
-                 let sourceBinIndex = 0; // Default to bin 0
-
-                 // Determine which segment of the circle this visual bar falls into (0, 1, or 2)
-                 const targetSegment = Math.floor(normalizedCirclePos * 3);
-                 // Determine the normalized position *within* that target segment (0 to almost 1)
-                 const normalizedPosInTargetSegment = (normalizedCirclePos * 3) % 1.0;
-
-                 // Map the position within the target segment back to the corresponding source bin segment
-                 if (targetSegment === 0 && seg1BinCount > 0) { // Map to 12-1 o'clock bins (stretched to 12-4)
-                     sourceBinIndex = Math.floor(normalizedPosInTargetSegment * seg1BinCount);
-                 } else if (targetSegment === 1 && seg2BinCount > 0) { // Map to 1-2 o'clock bins (stretched to 4-8)
-                     sourceBinIndex = seg1EndIndex + Math.floor(normalizedPosInTargetSegment * seg2BinCount);
-                 } else if (targetSegment === 2 && seg3BinCount > 0) { // Map to 2-3 o'clock bins (stretched to 8-12)
-                     sourceBinIndex = seg2EndIndex + Math.floor(normalizedPosInTargetSegment * seg3BinCount);
-                 }
-
-                 // Clamp index just in case of floating point issues near edges
-                 sourceBinIndex = Math.max(0, Math.min(numSourceBins - 1, sourceBinIndex));
-
-                 const dataValue = audioDataArray[sourceBinIndex];
-
-                 // Scale the value (0-1) and apply non-linear boost
-                 const normalizedValue = dataValue / 255;
-                 const scaledValue = Math.pow(normalizedValue, 0.6); // Boost lows
-
-                 // Calculate how far the bar extends *beyond* the boundary
-                 const barExtension = scaledValue * maxBarExtension;
-                 const currentBarExtension = Math.max(0.5, barExtension); // Minimum extension
-
-                 // Start point IS ON the boundary circle
-                 const startX = drawX + Math.cos(angle) * boundaryRadius;
-                 const startY = drawY + Math.sin(angle) * boundaryRadius;
-
-                 // End point is further OUT
-                 const endX = drawX + Math.cos(angle) * (boundaryRadius + currentBarExtension);
-                 const endY = drawY + Math.sin(angle) * (boundaryRadius + currentBarExtension);
-
-                 ctx.beginPath();
-                 ctx.moveTo(startX, startY);
-                 ctx.lineTo(endX, endY);
-                 ctx.stroke();
-             }
-             // --- End Waveform Bars ---
-        }
-
-        // --- Helper to Draw a Single Spiral ---
-        function _drawSpiralInstance(centerX, centerY, maxRadius, startAngle, totalTurns, color, lineWidth) {
-            ctx.strokeStyle = color;
-            ctx.lineWidth = lineWidth;
-            ctx.beginPath();
-
-            const pointDensity = 30; // Points per turn
-            const totalPoints = Math.max(10, Math.ceil(totalTurns * pointDensity));
-            const maxTheta = totalTurns * Math.PI * 2;
-
-            let firstPoint = true;
-            for (let i = 0; i <= totalPoints; i++) {
-                const theta = (i / totalPoints) * maxTheta;
-                const r = (theta / maxTheta) * maxRadius; // Linear radius increase
-
-                const currentAngle = startAngle + theta;
-                const x = centerX + Math.cos(currentAngle) * r;
-                const y = centerY + Math.sin(currentAngle) * r;
-
-                if (firstPoint) { ctx.moveTo(x, y); firstPoint = false; }
-                else { ctx.lineTo(x, y); }
-            }
-            ctx.stroke();
-        }
-
-        // Updated drawOrbWithWrapping
         function drawOrbWithWrapping(orb, drawOffsetX, drawOffsetY) {
             if (!orb || orb.radius < MIN_ABSORB_COMPLETE_RADIUS || orbsToRemove.has(orb.id)) return;
             const drawX = orb.x - drawOffsetX;
@@ -448,8 +320,7 @@
             let drawColor = orb.color;
             let baseShadowColor = orb.color;
             let pulsedDrawColor = orb.color;
-
-            let brightnessPulse = 0; // Used for pulsing AND spiral speed boost
+            let brightnessPulse = 0;
             if (orb.isPlayer) {
                  const baseColor = parseRGBA(appSettings.playerOrbColor);
                  if (appSettings.orbPulseToMusic && analyser && audioDataArray) {
@@ -461,175 +332,106 @@
                  }
                  brightnessPulse *= appSettings.orbPulseRange;
                  brightnessPulse = Math.max(0, Math.min(1, brightnessPulse));
-
                  const pulseAmount = brightnessPulse;
                  const newR = Math.max(0, Math.min(255, Math.round(baseColor.r + (255 - baseColor.r) * pulseAmount))); const newG = Math.max(0, Math.min(255, Math.round(baseColor.g + (255 - baseColor.g) * pulseAmount))); const newB = Math.max(0, Math.min(255, Math.round(baseColor.b + (255 - baseColor.b) * pulseAmount)));
                  const currentAlpha = parseRGBA(orb.color)?.a || baseColor.a;
                  pulsedDrawColor = `rgba(${newR}, ${newG}, ${newB}, ${currentAlpha.toFixed(2)})`;
                  baseShadowColor = pulsedDrawColor;
             }
-
-            // --- Drawing based on Appearance ---
-            if (orb.isPlayer && appSettings.playerOrbAppearance === 'spiral') {
-                const spiralColor = pulsedDrawColor;
-                const spiralLineWidth = 1;
-                 const drawSpiralSet = (cx, cy) => {
-                     if (!orb.spirals) return;
-                     orb.spirals.forEach(spiral => {
-                         _drawSpiralInstance(cx + spiral.x, cy + spiral.y, spiral.radius, spiral.angle, spiral.turns, spiralColor, spiralLineWidth);
-                     });
-                 };
-                drawSpiralSet(drawX, drawY);
-                const worldWidth = canvasWidth; const worldHeight = canvasHeight; const visualRadius = orb.radius; let wrappedHorizontal = false, wrappedVertical = false; if (drawX - visualRadius < 0) { drawSpiralSet(drawX + worldWidth, drawY); wrappedHorizontal = true; } if (drawX + visualRadius > canvasWidth) { drawSpiralSet(drawX - worldWidth, drawY); wrappedHorizontal = true; } if (drawY - visualRadius < 0) { drawSpiralSet(drawX, drawY + worldHeight); wrappedVertical = true; } if (drawY + visualRadius > canvasHeight) { drawSpiralSet(drawX, drawY - worldHeight); wrappedVertical = true; } if (wrappedHorizontal && wrappedVertical) { const cornerX = (drawX - visualRadius < 0) ? drawX + worldWidth : drawX - worldWidth; const cornerY = (drawY - visualRadius < 0) ? drawY + worldHeight : drawY - worldHeight; drawSpiralSet(cornerX, cornerY); }
-
-            } else if (orb.isPlayer && appSettings.playerOrbAppearance === 'waveform') {
-                _drawWaveformInstance(drawX, drawY, orb, pulsedDrawColor);
-                const worldWidth = canvasWidth; const worldHeight = canvasHeight; const collisionRadius = orb.radius; const maxBarExtension = collisionRadius * 0.5; const visualRadius = collisionRadius + maxBarExtension; let wrappedHorizontal = false, wrappedVertical = false; if (drawX - visualRadius < 0) { _drawWaveformInstance(drawX + worldWidth, drawY, orb, pulsedDrawColor); wrappedHorizontal = true; } if (drawX + visualRadius > canvasWidth) { _drawWaveformInstance(drawX - worldWidth, drawY, orb, pulsedDrawColor); wrappedHorizontal = true; } if (drawY - visualRadius < 0) { _drawWaveformInstance(drawX, drawY + worldHeight, orb, pulsedDrawColor); wrappedVertical = true; } if (drawY + visualRadius > canvasHeight) { _drawWaveformInstance(drawX, drawY - worldHeight, orb, pulsedDrawColor); wrappedVertical = true; } if (wrappedHorizontal && wrappedVertical) { const cornerX = (drawX - visualRadius < 0) ? drawX + worldWidth : drawX - worldWidth; const cornerY = (drawY - visualRadius < 0) ? drawY + worldHeight : drawY - worldHeight; _drawWaveformInstance(cornerX, cornerY, orb, pulsedDrawColor); }
-
-            } else { // Solid Orb
-                 drawColor = orb.isPlayer ? pulsedDrawColor : orb.color;
-                 const glowAmount = Math.min(drawRadius * 0.7, 15); const shadowBlur = glowAmount > 1 ? glowAmount : 0; const shadowColor = baseShadowColor;
-                 _drawSingleOrbInstance(drawX, drawY, drawRadius, drawColor, shadowColor, shadowBlur);
-                 const worldWidth = canvasWidth; const worldHeight = canvasHeight; let wrappedHorizontal = false, wrappedVertical = false; if (drawX - drawRadius < 0) { _drawSingleOrbInstance(drawX + worldWidth, drawY, drawRadius, drawColor, shadowColor, shadowBlur); wrappedHorizontal = true; } if (drawX + drawRadius > canvasWidth) { _drawSingleOrbInstance(drawX - worldWidth, drawY, drawRadius, drawColor, shadowColor, shadowBlur); wrappedHorizontal = true; } if (drawY - drawRadius < 0) { _drawSingleOrbInstance(drawX, drawY + worldHeight, drawRadius, drawColor, shadowColor, shadowBlur); wrappedVertical = true; } if (drawY + drawRadius > canvasHeight) { _drawSingleOrbInstance(drawX, drawY - worldHeight, drawRadius, drawColor, shadowColor, shadowBlur); wrappedVertical = true; } if (wrappedHorizontal && wrappedVertical) { const cornerX = (drawX - drawRadius < 0) ? drawX + worldWidth : drawX - worldWidth; const cornerY = (drawY - drawRadius < 0) ? drawY + worldHeight : drawY - worldHeight; _drawSingleOrbInstance(cornerX, cornerY, drawRadius, drawColor, shadowColor, shadowBlur); }
-            }
-
+             drawColor = orb.isPlayer ? pulsedDrawColor : orb.color;
+             const glowAmount = Math.min(drawRadius * 0.7, 15);
+             const shadowBlur = glowAmount > 1 ? glowAmount : 0;
+             const shadowColor = baseShadowColor;
+             _drawSingleOrbInstance(drawX, drawY, drawRadius, drawColor, shadowColor, shadowBlur);
+             const worldWidth = canvasWidth; const worldHeight = canvasHeight;
+             let wrappedHorizontal = false, wrappedVertical = false;
+             if (drawX - drawRadius < 0) { _drawSingleOrbInstance(drawX + worldWidth, drawY, drawRadius, drawColor, shadowColor, shadowBlur); wrappedHorizontal = true; }
+             if (drawX + drawRadius > canvasWidth) { _drawSingleOrbInstance(drawX - worldWidth, drawY, drawRadius, drawColor, shadowColor, shadowBlur); wrappedHorizontal = true; }
+             if (drawY - drawRadius < 0) { _drawSingleOrbInstance(drawX, drawY + worldHeight, drawRadius, drawColor, shadowColor, shadowBlur); wrappedVertical = true; }
+             if (drawY + drawRadius > canvasHeight) { _drawSingleOrbInstance(drawX, drawY - worldHeight, drawRadius, drawColor, shadowColor, shadowBlur); wrappedVertical = true; }
+             if (wrappedHorizontal && wrappedVertical) { const cornerX = (drawX - drawRadius < 0) ? drawX + worldWidth : drawX - worldWidth; const cornerY = (drawY - drawRadius < 0) ? drawY + worldHeight : drawY - worldHeight; _drawSingleOrbInstance(cornerX, cornerY, drawRadius, drawColor, shadowColor, shadowBlur); }
             ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
         }
         function updateOrb(orb, dtSeconds) { if (!orb || dtSeconds <= 0) return; orb.x += orb.dx * dtSeconds; orb.y += orb.dy * dtSeconds; if (orb.x >= canvasWidth) orb.x -= canvasWidth; else if (orb.x < 0) orb.x += canvasWidth; if (orb.y >= canvasHeight) orb.y -= canvasHeight; else if (orb.y < 0) orb.y += canvasHeight; if (!orb.isPlayer && !activeAbsorptions.has(orb.id) && orb.mass < (MIN_ORB_RADIUS * MIN_ORB_RADIUS * 0.1)) { orb.mass = Math.max(0.01, orb.mass); orb.radius = Math.sqrt(orb.mass); } }
         function mixMomentumOnAbsorption(absorber, absorbed, absorbedOriginalMass) { if (!absorber || !absorbed || absorber.mass <= 0 || absorbedOriginalMass <= 0) return; const initialAbsorberMass = absorber.mass - absorbedOriginalMass; if (initialAbsorberMass <= 0.001) { absorber.dx = (absorbed.dx * absorbedOriginalMass) / absorber.mass; absorber.dy = (absorbed.dy * absorbedOriginalMass) / absorber.mass; } else { const absorbedDx = absorbed.dx || 0; const absorbedDy = absorbed.dy || 0; absorber.dx = (initialAbsorberMass * absorber.dx + absorbedOriginalMass * absorbedDx) / absorber.mass; absorber.dy = (initialAbsorberMass * absorber.dy + absorbedOriginalMass * absorbedDy) / absorber.mass; } if (isNaN(absorber.dx)) absorber.dx = 0; if (isNaN(absorber.dy)) absorber.dy = 0; }
         function updateAbsorptions(fixedTimestepMs) {
-            if (fixedTimestepMs <= 0) return;
-            const dtSeconds = fixedTimestepMs / 1000.0;
-            const COMMIT_ABSORB_RADIUS = 1.5; const MASS_THRESHOLD = MIN_ABSORB_COMPLETE_RADIUS * MIN_ABSORB_COMPLETE_RADIUS; const FORCE_COMPLETE_MASS_BUFFER = 0.02;
-            for (let [absorbedId, absorptionInfo] of activeAbsorptions) {
-                const { absorber, absorbed } = absorptionInfo;
-                const currentAbsorber = absorber.isPlayer ? player : orbs.find(o => o.id === absorber.id);
-                const currentAbsorbed = absorbed.isPlayer ? player : orbs.find(o => o.id === absorbed.id);
-                if (!currentAbsorber || orbsToRemove.has(absorber.id) || !currentAbsorbed || orbsToRemove.has(absorbed.id)) { activeAbsorptions.delete(absorbedId); continue; }
-                if (currentAbsorbed.mass <= 0 || currentAbsorbed.radius <= MIN_ABSORB_COMPLETE_RADIUS) { if (!orbsToRemove.has(absorbedId)) { orbsToRemove.add(absorbedId); } activeAbsorptions.delete(absorbedId); if (currentAbsorbed.isPlayer) { playerAbsorbed = true; } continue; }
-                const massRatioOK = currentAbsorber.mass > currentAbsorbed.mass * MASS_ABSORPTION_RATIO; if (!massRatioOK) { activeAbsorptions.delete(absorbedId); continue; }
-                const dist = wrappedDistance(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const radiiSum = currentAbsorber.radius + currentAbsorbed.radius; const overlap = radiiSum - dist; let continueAbsorption = (currentAbsorbed.radius < COMMIT_ABSORB_RADIUS || overlap >= -0.01); if (!continueAbsorption) { activeAbsorptions.delete(absorbedId); continue; }
-                if (currentAbsorbed.mass <= MASS_THRESHOLD + FORCE_COMPLETE_MASS_BUFFER) { const finalTransferredMass = currentAbsorbed.mass > 0 ? currentAbsorbed.mass : 0; if (finalTransferredMass > 0) { currentAbsorber.mass += finalTransferredMass; currentAbsorber.radius = Math.sqrt(currentAbsorber.mass); if (currentAbsorber.isPlayer && appSettings.playerOrbAppearance === 'spiral') { currentAbsorber.spirals = generateSpirals(currentAbsorber.radius, appSettings.spiralCount); } mixMomentumOnAbsorption(currentAbsorber, currentAbsorbed, finalTransferredMass); } if (currentAbsorbed.isPlayer) { playerAbsorbed = true; } orbsToRemove.add(absorbedId); activeAbsorptions.delete(absorbedId); currentAbsorbed.mass = 0; currentAbsorbed.radius = 0; currentAbsorbed.dx = 0; currentAbsorbed.dy = 0; continue; }
-                let approachSpeed = 0; if (dist > 0.1) { const v_rel_x = currentAbsorbed.dx - currentAbsorber.dx; const v_rel_y = currentAbsorbed.dy - currentAbsorber.dy; const disp = getWrappedVector(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const dispMag = Math.sqrt(disp.dx * disp.dx + disp.dy * disp.dy); if (dispMag > 0.01) { const unit_x = disp.dx / dispMag; const unit_y = disp.dy / dispMag; const v_radial = v_rel_x * unit_x + v_rel_y * unit_y; approachSpeed = Math.max(0, -v_radial); } }
-                const effectiveOverlap = Math.max(0, overlap); const overlapRatio = currentAbsorbed.radius > 0.1 ? Math.min(1, effectiveOverlap / currentAbsorbed.radius) : 1; const overlapFactor = overlapRatio * (MAX_OVERLAP_SPEED_FACTOR - 1.0); const velocityFactor = approachSpeed * (VELOCITY_ABSORPTION_FACTOR / BASE_ABSORPTION_RATE_PER_SECOND); const speedFactor = 1.0 + overlapFactor + velocityFactor; const effectiveAbsorptionRate = BASE_ABSORPTION_RATE_PER_SECOND * speedFactor; let massToTransfer = Math.min(effectiveAbsorptionRate * dtSeconds, currentAbsorbed.mass); massToTransfer = Math.max(0.00001, massToTransfer); const massBeingTransferred = massToTransfer; const oldAbsorberMass = currentAbsorber.mass;
+            if (fixedTimestepMs <= 0) return; const dtSeconds = fixedTimestepMs / 1000.0; const COMMIT_ABSORB_RADIUS = 1.5; const MASS_THRESHOLD = MIN_ABSORB_COMPLETE_RADIUS * MIN_ABSORB_COMPLETE_RADIUS; const FORCE_COMPLETE_MASS_BUFFER = 0.02; for (let [absorbedId, absorptionInfo] of activeAbsorptions) { const { absorber, absorbed } = absorptionInfo; const currentAbsorber = absorber.isPlayer ? player : orbs.find(o => o.id === absorber.id); const currentAbsorbed = absorbed.isPlayer ? player : orbs.find(o => o.id === absorbed.id); if (!currentAbsorber || orbsToRemove.has(absorber.id) || !currentAbsorbed || orbsToRemove.has(absorbed.id)) { activeAbsorptions.delete(absorbedId); continue; } if (currentAbsorbed.mass <= 0 || currentAbsorbed.radius <= MIN_ABSORB_COMPLETE_RADIUS) { if (!orbsToRemove.has(absorbedId)) { orbsToRemove.add(absorbedId); } activeAbsorptions.delete(absorbedId); if (currentAbsorbed.isPlayer) { playerAbsorbed = true; } continue; } const massRatioOK = currentAbsorber.mass > currentAbsorbed.mass * MASS_ABSORPTION_RATIO; if (!massRatioOK) { activeAbsorptions.delete(absorbedId); continue; } const dist = wrappedDistance(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const radiiSum = currentAbsorber.radius + currentAbsorbed.radius; const overlap = radiiSum - dist; let continueAbsorption = (currentAbsorbed.radius < COMMIT_ABSORB_RADIUS || overlap >= -0.01); if (!continueAbsorption) { activeAbsorptions.delete(absorbedId); continue; } if (currentAbsorbed.mass <= MASS_THRESHOLD + FORCE_COMPLETE_MASS_BUFFER) { const finalTransferredMass = currentAbsorbed.mass > 0 ? currentAbsorbed.mass : 0; if (finalTransferredMass > 0) { currentAbsorber.mass += finalTransferredMass; currentAbsorber.radius = Math.sqrt(currentAbsorber.mass); mixMomentumOnAbsorption(currentAbsorber, currentAbsorbed, finalTransferredMass); } if (currentAbsorbed.isPlayer) { playerAbsorbed = true; } orbsToRemove.add(absorbedId); activeAbsorptions.delete(absorbedId); currentAbsorbed.mass = 0; currentAbsorbed.radius = 0; currentAbsorbed.dx = 0; currentAbsorbed.dy = 0; continue; } let approachSpeed = 0; if (dist > 0.1) { const v_rel_x = currentAbsorbed.dx - currentAbsorber.dx; const v_rel_y = currentAbsorbed.dy - currentAbsorber.dy; const disp = getWrappedVector(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const dispMag = Math.sqrt(disp.dx * disp.dx + disp.dy * disp.dy); if (dispMag > 0.01) { const unit_x = disp.dx / dispMag; const unit_y = disp.dy / dispMag; const v_radial = v_rel_x * unit_x + v_rel_y * unit_y; approachSpeed = Math.max(0, -v_radial); } } const effectiveOverlap = Math.max(0, overlap); const overlapRatio = currentAbsorbed.radius > 0.1 ? Math.min(1, effectiveOverlap / currentAbsorbed.radius) : 1; const overlapFactor = overlapRatio * (MAX_OVERLAP_SPEED_FACTOR - 1.0); const velocityFactor = approachSpeed * (VELOCITY_ABSORPTION_FACTOR / BASE_ABSORPTION_RATE_PER_SECOND); const speedFactor = 1.0 + overlapFactor + velocityFactor; const effectiveAbsorptionRate = BASE_ABSORPTION_RATE_PER_SECOND * speedFactor; let massToTransfer = Math.min(effectiveAbsorptionRate * dtSeconds, currentAbsorbed.mass); massToTransfer = Math.max(0.00001, massToTransfer); const massBeingTransferred = massToTransfer; const oldAbsorberMass = currentAbsorber.mass;
                 if (massBeingTransferred > 0) {
-                    currentAbsorber.mass += massBeingTransferred;
-                    currentAbsorbed.mass -= massBeingTransferred;
-                    currentAbsorbed.mass = Math.max(0, currentAbsorbed.mass);
-                    currentAbsorber.radius = Math.sqrt(currentAbsorber.mass); // Radius updated
+                    const oldRadius = currentAbsorber.radius;
+                    currentAbsorber.mass += massBeingTransferred; currentAbsorbed.mass -= massBeingTransferred; currentAbsorbed.mass = Math.max(0, currentAbsorbed.mass);
+                    currentAbsorber.radius = Math.sqrt(currentAbsorber.mass);
                     currentAbsorbed.radius = Math.sqrt(currentAbsorbed.mass);
-
-                    // Regenerate Spirals AFTER radius update
-                    if (currentAbsorber.isPlayer && appSettings.playerOrbAppearance === 'spiral') {
-                         currentAbsorber.spirals = generateSpirals(currentAbsorber.radius, appSettings.spiralCount);
-                    }
-
-                    // COLOR MIXING
                     const c1 = parseRGBA(currentAbsorber.color); const c2 = parseRGBA(currentAbsorbed.color); const newTotalMass = currentAbsorber.mass; if (newTotalMass > 0 && oldAbsorberMass >= 0 && c1 && c2) { const newR = Math.round((c1.r * oldAbsorberMass + c2.r * massBeingTransferred) / newTotalMass); const newG = Math.round((c1.g * oldAbsorberMass + c2.g * massBeingTransferred) / newTotalMass); const newB = Math.round((c1.b * oldAbsorberMass + c2.b * massBeingTransferred) / newTotalMass); const newA = (c1.a * oldAbsorberMass + c2.a * massBeingTransferred) / newTotalMass; const finalColor = `rgba(${Math.max(0,Math.min(255,newR))}, ${Math.max(0,Math.min(255,newG))}, ${Math.max(0,Math.min(255,newB))}, ${Math.max(0.1,Math.min(1,newA)).toFixed(2)})`; currentAbsorber.color = finalColor; }
                 }
                 const newRadiiSum = currentAbsorber.radius + currentAbsorbed.radius; const newDist = wrappedDistance(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const penetration = newRadiiSum - newDist; if (penetration > 0.05 && newDist > 0.05) { const vector = getWrappedVector(currentAbsorber.x, currentAbsorber.y, currentAbsorbed.x, currentAbsorbed.y, canvasWidth, canvasHeight); const vectorMag = Math.sqrt(vector.dx * vector.dx + vector.dy * vector.dy); if (vectorMag > 0.01) { const nudgeFactor = penetration / vectorMag; const totalMassForNudge = currentAbsorber.mass + currentAbsorbed.mass; if (totalMassForNudge > 0.01) { const nudgeAbsorbedX = vector.dx * nudgeFactor * (currentAbsorber.mass / totalMassForNudge); const nudgeAbsorbedY = vector.dy * nudgeFactor * (currentAbsorber.mass / totalMassForNudge); const nudgeAbsorberX = -vector.dx * nudgeFactor * (currentAbsorbed.mass / totalMassForNudge); const nudgeAbsorberY = -vector.dy * nudgeFactor * (currentAbsorbed.mass / totalMassForNudge); currentAbsorbed.x = (currentAbsorbed.x + nudgeAbsorbedX + canvasWidth) % canvasWidth; currentAbsorbed.y = (currentAbsorbed.y + nudgeAbsorbedY + canvasHeight) % canvasHeight; currentAbsorber.x = (currentAbsorber.x + nudgeAbsorberX + canvasWidth) % canvasWidth; currentAbsorber.y = (currentAbsorber.y + nudgeAbsorberY + canvasHeight) % canvasHeight; } } }
             }
         }
         function resolveElasticCollision(orb1, orb2, dist, width, height) { if (dist < 0.01) { const angle = Math.random() * Math.PI * 2; const nudge = 0.1; orb1.x = (orb1.x - Math.cos(angle) * nudge + width) % width; orb1.y = (orb1.y - Math.sin(angle) * nudge + height) % height; orb2.x = (orb2.x + Math.cos(angle) * nudge + width) % width; orb2.y = (orb2.y + Math.sin(angle) * nudge + height) % height; return; } const vec = getWrappedVector(orb1.x, orb1.y, orb2.x, orb2.y, width, height); const nx = vec.dx / dist; const ny = vec.dy / dist; const rvx = orb2.dx - orb1.dx; const rvy = orb2.dy - orb1.dy; const velAlongNormal = rvx * nx + rvy * ny; if (velAlongNormal >= 0) return; const tx = -ny; const ty = nx; const v1n_scalar = orb1.dx * nx + orb1.dy * ny; const v1t_scalar = orb1.dx * tx + orb1.dy * ty; const v2n_scalar = orb2.dx * nx + orb2.dy * ny; const v2t_scalar = orb2.dx * tx + orb2.dy * ty; const v1n_scalar_new = v2n_scalar; const v2n_scalar_new = v1n_scalar; orb1.dx = (v1n_scalar_new * nx) + (v1t_scalar * tx); orb1.dy = (v1n_scalar_new * ny) + (v1t_scalar * ty); orb2.dx = (v2n_scalar_new * nx) + (v2t_scalar * tx); orb2.dy = (v2n_scalar_new * ny) + (v2t_scalar * ty); const radiiSum = orb1.radius + orb2.radius; const penetration = Math.max(0, radiiSum - dist); if (penetration > 0.01) { const nudgeAmount = (penetration / 2) + 0.01; orb1.x = (orb1.x - nx * nudgeAmount + width) % width; orb1.y = (orb1.y - ny * nudgeAmount + height) % height; orb2.x = (orb2.x + nx * nudgeAmount + width) % width; orb2.y = (orb2.y + ny * nudgeAmount + height) % height; } if (activeAbsorptions.has(orb1.id) && activeAbsorptions.get(orb1.id).absorber.id === orb2.id) activeAbsorptions.delete(orb1.id); if (activeAbsorptions.has(orb2.id) && activeAbsorptions.get(orb2.id).absorber.id === orb1.id) activeAbsorptions.delete(orb2.id); }
-        function checkCollisions() { if (!player && !playerAbsorbed) return; const width = canvasWidth; const height = canvasHeight; const allOrbs = player && !playerAbsorbed && player.mass > 0 ? [player, ...orbs.filter(o => !orbsToRemove.has(o.id))] : [...orbs.filter(o => !orbsToRemove.has(o.id))]; const checkedPairs = new Set(); for (let i = allOrbs.length - 1; i >= 0; i--) { const orb1 = allOrbs[i]; if (!orb1 || orb1.mass <= 0 || orbsToRemove.has(orb1.id)) continue; for (let j = i - 1; j >= 0; j--) { const orb2 = allOrbs[j]; if (!orb2 || orb2.mass <= 0 || orbsToRemove.has(orb2.id)) continue; const pairKey = orb1.id < orb2.id ? `${orb1.id}-${orb2.id}` : `${orb2.id}-${orb1.id}`; if (checkedPairs.has(pairKey)) continue; checkedPairs.add(pairKey); const dist = wrappedDistance(orb1.x, orb1.y, orb2.x, orb2.y, width, height); const radiiSum = orb1.radius + orb2.radius; if (dist <= radiiSum + 0.5) { let absorber = null, absorbed = null; if (orb1.mass > orb2.mass * MASS_ABSORPTION_RATIO && orb1.radius > orb2.radius) { absorber = orb1; absorbed = orb2; } else if (orb2.mass > orb1.mass * MASS_ABSORPTION_RATIO && orb2.radius > orb1.radius) { absorber = orb2; absorbed = orb1; } if (absorber && absorbed) { const reverseAbsorption = activeAbsorptions.get(absorber.id); if (reverseAbsorption && reverseAbsorption.absorber.id === absorbed.id) activeAbsorptions.delete(absorber.id); const existingAbsorption = activeAbsorptions.get(absorbed.id); if (!existingAbsorption || existingAbsorption.absorber.id !== absorber.id) { activeAbsorptions.set(absorbed.id, { absorber: absorber, absorbed: absorbed }); } } else { resolveElasticCollision(orb1, orb2, dist, width, height); } } else { const absorption12 = activeAbsorptions.get(orb2.id); if (absorption12 && absorption12.absorber.id === orb1.id) activeAbsorptions.delete(orb2.id); const absorption21 = activeAbsorptions.get(orb1.id); if (absorption21 && absorption21.absorber.id === orb2.id) activeAbsorptions.delete(orb1.id); } } } }
+        function checkCollisions() { if (!player && !playerAbsorbed) return; const width = canvasWidth; const height = canvasHeight; const allOrbs = player && !playerAbsorbed && player.mass > 0 ? [player, ...orbs.filter(o => !orbsToRemove.has(o.id))] : [...orbs.filter(o => !orbsToRemove.has(o.id))]; const checkedPairs = new Set(); for (let i = 0; i < allOrbs.length; i++) { const orb1 = allOrbs[i]; if (!orb1 || orb1.mass <= 0 || orbsToRemove.has(orb1.id)) continue; for (let j = i + 1; j < allOrbs.length; j++) { const orb2 = allOrbs[j]; if (!orb2 || orb2.mass <= 0 || orbsToRemove.has(orb2.id)) continue; const pairKey = orb1.id < orb2.id ? `${orb1.id}-${orb2.id}` : `${orb2.id}-${orb1.id}`; if (checkedPairs.has(pairKey)) continue; checkedPairs.add(pairKey); const dist = wrappedDistance(orb1.x, orb1.y, orb2.x, orb2.y, width, height); const radiiSum = orb1.radius + orb2.radius; if (dist <= radiiSum + 0.5) { let absorber = null, absorbed = null; if (orb1.mass > orb2.mass * MASS_ABSORPTION_RATIO && orb1.radius > orb2.radius) { absorber = orb1; absorbed = orb2; } else if (orb2.mass > orb1.mass * MASS_ABSORPTION_RATIO && orb2.radius > orb1.radius) { absorber = orb2; absorbed = orb1; } if (absorber && absorbed) { const reverseAbsorption = activeAbsorptions.get(absorber.id); if (reverseAbsorption && reverseAbsorption.absorber.id === absorbed.id) activeAbsorptions.delete(absorber.id); const existingAbsorption = activeAbsorptions.get(absorbed.id); if (!existingAbsorption || existingAbsorption.absorber.id !== absorber.id) { activeAbsorptions.set(absorbed.id, { absorber: absorber, absorbed: absorbed }); } } else { resolveElasticCollision(orb1, orb2, dist, width, height); } } else { const absorption12 = activeAbsorptions.get(orb2.id); if (absorption12 && absorption12.absorber.id === orb1.id) activeAbsorptions.delete(orb2.id); const absorption21 = activeAbsorptions.get(orb1.id); if (absorption21 && absorption21.absorber.id === orb2.id) activeAbsorptions.delete(orb1.id); } } } }
         function propelPlayer(targetScreenX, targetScreenY) {
-            if (!player || player.radius <= MIN_PLAYER_RADIUS || playerAbsorbed) return false;
-            const width = canvasWidth; const height = canvasHeight; const targetWorldX = player.x + (targetScreenX - width / 2); const targetWorldY = player.y + (targetScreenY - height / 2); const vec = getWrappedVector(player.x, player.y, targetWorldX, targetWorldY, width, height); if (Math.abs(vec.dx) < 0.1 && Math.abs(vec.dy) < 0.1) return false; const angleToTarget = Math.atan2(vec.dy, vec.dx); const ejectionAngle = angleToTarget; const propulsionAngle = angleToTarget + Math.PI; const massToEject = player.mass * EJECTION_MASS_RATIO; if (massToEject <= 0) return false; const radiusEjected = Math.sqrt(massToEject); if (radiusEjected < MIN_ORB_RADIUS * 0.5) return false; const potentialNewPlayerMass = player.mass - massToEject; if (potentialNewPlayerMass < (MIN_PLAYER_RADIUS * MIN_PLAYER_RADIUS)) return false; const baseEjectionSpeed = EJECTION_SPEED_MULTIPLIER; const ejectVelX = player.dx + Math.cos(ejectionAngle) * baseEjectionSpeed; const ejectVelY = player.dy + Math.sin(ejectionAngle) * baseEjectionSpeed; const playerNewRadiusIfEjected = Math.sqrt(potentialNewPlayerMass); const effectivePlayerRadiusForPlacement = Math.max(MIN_PLAYER_RADIUS, playerNewRadiusIfEjected); const startDist = effectivePlayerRadiusForPlacement + radiusEjected + 1.5; const ejectStartRawX = player.x + Math.cos(ejectionAngle) * startDist; const ejectStartRawY = player.y + Math.sin(ejectionAngle) * startDist; const ejectStartX = (ejectStartRawX % width + width) % width; const ejectStartY = (ejectStartRawY % height + height) % height; const ejectColor = player.color; const particle = createOrb(ejectStartX, ejectStartY, radiusEjected, ejectVelX, ejectVelY, ejectColor); if (!particle || particle.mass <= 0) { return false; } particle.color = adjustSaturation(particle.originalColor, appSettings.otherOrbSaturation); orbs.push(particle);
+            if (!player || player.radius <= MIN_PLAYER_RADIUS || playerAbsorbed) return false; const width = canvasWidth; const height = canvasHeight; const playerScreenX = width / 2; const playerScreenY = height / 2; let dx = targetScreenX - playerScreenX; let dy = targetScreenY - playerScreenY; if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) return false; const angleToTarget = Math.atan2(dy, dx); const ejectionAngle = angleToTarget; const propulsionAngle = angleToTarget + Math.PI; const massToEject = player.mass * EJECTION_MASS_RATIO; if (massToEject <= 0) return false; const radiusEjected = Math.sqrt(massToEject); if (radiusEjected < MIN_ORB_RADIUS * 0.5) return false; const potentialNewPlayerMass = player.mass - massToEject; if (potentialNewPlayerMass < (MIN_PLAYER_RADIUS * MIN_PLAYER_RADIUS)) return false; const baseEjectionSpeed = EJECTION_SPEED_MULTIPLIER; const ejectVelX = player.dx + Math.cos(ejectionAngle) * baseEjectionSpeed; const ejectVelY = player.dy + Math.sin(ejectionAngle) * baseEjectionSpeed; const playerNewRadiusIfEjected = Math.sqrt(potentialNewPlayerMass); const effectivePlayerRadiusForPlacement = Math.max(MIN_PLAYER_RADIUS, playerNewRadiusIfEjected); const startDist = effectivePlayerRadiusForPlacement + radiusEjected + 1.5; const ejectStartRawX = player.x + Math.cos(ejectionAngle) * startDist; const ejectStartRawY = player.y + Math.sin(ejectionAngle) * startDist; const ejectStartX = (ejectStartRawX % width + width) % width; const ejectStartY = (ejectStartRawY % height + height) % height; const ejectColor = player.color; const particle = createOrb(ejectStartX, ejectStartY, radiusEjected, ejectVelX, ejectVelY, ejectColor); if (!particle || particle.mass <= 0) { return false; } particle.color = adjustSaturation(particle.originalColor, appSettings.otherOrbSaturation); orbs.push(particle);
+            const oldRadius = player.radius;
             player.mass = potentialNewPlayerMass;
-            player.radius = Math.max(MIN_PLAYER_RADIUS, Math.sqrt(player.mass)); // Radius updated
-
-             // Regenerate Spirals AFTER radius update
-             if (appSettings.playerOrbAppearance === 'spiral') {
-                 player.spirals = generateSpirals(player.radius, appSettings.spiralCount);
-             }
-
+            player.radius = Math.max(MIN_PLAYER_RADIUS, Math.sqrt(player.mass));
              const impulseMagnitude = massToEject * baseEjectionSpeed; if (player.mass > 0) { const thrustX = Math.cos(propulsionAngle) * impulseMagnitude / player.mass; const thrustY = Math.sin(propulsionAngle) * impulseMagnitude / player.mass; player.dx += thrustX; player.dy += thrustY; } return true;
          }
-        function spawnOrbs(count) { if (typeof canvasWidth === 'undefined') { return; } const existingOrbsAndPlayer = player ? [...orbs, player] : [...orbs]; let spawnedCount = 0; for (let i = 0; i < count; i++) { let r, x, y, tooClose, attempts = 0; const maxAttempts = 100; do { r = Math.random() * (MAX_ORB_RADIUS - MIN_ORB_RADIUS) + MIN_ORB_RADIUS; x = Math.random() * canvasWidth; y = Math.random() * canvasHeight; tooClose = false; for (const existing of existingOrbsAndPlayer) { const checkDist = wrappedDistance(x, y, existing.x, existing.y, canvasWidth, canvasHeight); const requiredDist = (existing.radius + r) * 1.1 + (existing.isPlayer ? SAFE_ZONE_RADIUS : 5); if (checkDist < requiredDist) { tooClose = true; break; } } attempts++; } while (tooClose && attempts < maxAttempts); if (!tooClose) { const angle = Math.random() * Math.PI * 2; const speed = Math.random() * INITIAL_ORB_MAX_SPEED; const newOrb = createOrb(x, y, r, Math.cos(angle) * speed, Math.sin(angle) * speed); if (newOrb) { orbs.push(newOrb); existingOrbsAndPlayer.push(newOrb); spawnedCount++; } } } console.log(`Spawned ${spawnedCount} / ${count} orbs.`); }
+        function spawnOrbs(count) { if (typeof canvasWidth === 'undefined' || !canvasWidth) { return; } const existingOrbsAndPlayer = player ? [...orbs, player] : [...orbs]; let spawnedCount = 0; for (let i = 0; i < count; i++) { let r, x, y, tooClose, attempts = 0; const maxAttempts = 100; do { r = Math.random() * (MAX_ORB_RADIUS - MIN_ORB_RADIUS) + MIN_ORB_RADIUS; x = Math.random() * canvasWidth; y = Math.random() * canvasHeight; tooClose = false; for (const existing of existingOrbsAndPlayer) { if (!existing) continue; const checkDist = wrappedDistance(x, y, existing.x, existing.y, canvasWidth, canvasHeight); const requiredDist = (existing.radius + r) * 1.1 + (existing.isPlayer ? SAFE_ZONE_RADIUS : 5); if (checkDist < requiredDist) { tooClose = true; break; } } attempts++; } while (tooClose && attempts < maxAttempts); if (!tooClose) { const angle = Math.random() * Math.PI * 2; const speed = Math.random() * INITIAL_ORB_MAX_SPEED; const newOrb = createOrb(x, y, r, Math.cos(angle) * speed, Math.sin(angle) * speed); if (newOrb) { newOrb.color = adjustSaturation(newOrb.originalColor, appSettings.otherOrbSaturation); orbs.push(newOrb); existingOrbsAndPlayer.push(newOrb); spawnedCount++; } } } console.log(`Spawned ${spawnedCount} / ${count} orbs.`); }
 
-        // Updated Spiral Generation (Phyllotaxis)
-        function generateSpirals(parentRadius, count) {
-            const spirals = [];
-            const phi = Math.PI * (3.0 - Math.sqrt(5.0)); // Golden angle approx 137.5 degrees
-
-            for (let i = 0; i < count; i++) {
-                // Determine spiral size first
-                const spiralRadius = parentRadius * (Math.random() * (appSettings.spiralMaxRadiusFactor - appSettings.spiralMinRadiusFactor) + appSettings.spiralMinRadiusFactor);
-                // Max distance center can be placed from parent center
-                const maxDistForThisSpiral = Math.max(0, parentRadius - spiralRadius);
-
-                // Calculate phyllotaxis position, scaled by maxDistForThisSpiral
-                const theta = i * phi;
-                const r_normalized = Math.sqrt(i / Math.max(1, count-1)); // Normalize radius (0 to 1) - prevent div by zero if count=1
-                const r = r_normalized * maxDistForThisSpiral;
-
-                const x = r * Math.cos(theta);
-                const y = r * Math.sin(theta);
-
-                const baseSpeed = (Math.random() * (appSettings.spiralBaseSpeedMax - appSettings.spiralBaseSpeedMin) + appSettings.spiralBaseSpeedMin) * (Math.random() < 0.5 ? 1 : -1);
-                const turns = Math.floor(Math.random() * (appSettings.spiralTurnsMax - appSettings.spiralTurnsMin + 1)) + appSettings.spiralTurnsMin;
-
-                spirals.push({
-                    x: x, y: y, radius: spiralRadius, angle: Math.random() * Math.PI * 2,
-                    baseSpeed: baseSpeed, speed: baseSpeed, turns: turns
-                });
-            }
-            return spirals;
-        }
-
-
-        // Updated updateSpiralOrb
-        function updateSpiralOrb(orb, dtSeconds, beatIntensity) {
-            if (!orb.spirals) return;
-
-            const decayFactor = appSettings.spiralSpeedDecay;
-            const boostAmount = appSettings.spiralBeatBoost;
-
-            orb.spirals.forEach(spiral => {
-                let currentBoost = 0;
-                if (beatIntensity > 0.1) {
-                     currentBoost = boostAmount * Math.pow(beatIntensity, 2);
-                     spiral.speed += currentBoost * Math.sign(spiral.baseSpeed);
-                }
-                 // Decay speed towards base speed
-                 spiral.speed += (spiral.baseSpeed - spiral.speed) * (1 - decayFactor) * (dtSeconds*60); // Adjust decay for frame rate independence feel
-
-                 spiral.angle = (spiral.angle + spiral.speed * dtSeconds) % (Math.PI * 2);
-                 if (spiral.angle < 0) spiral.angle += (Math.PI * 2);
-            });
-        }
-
-        // Game loop
         function gameLoop(currentTime) { if (!gameLastTimestamp) gameLastTimestamp = currentTime; let deltaTime = currentTime - gameLastTimestamp; gameLastTimestamp = currentTime; deltaTime = Math.min(deltaTime, MAX_ACCUMULATED_TIME_MS * 2); const dtSeconds = deltaTime / 1000.0; if (isInteractionActive && player && !playerAbsorbed && currentTime - lastPropulsionTime > PROPULSION_COOLDOWN) { if (propelPlayer(lastInteractionX, lastInteractionY)) { lastPropulsionTime = currentTime; } }
-            let beatIntensity = 0; if (player && (appSettings.playerOrbAppearance === 'spiral' || (appSettings.playerOrbAppearance !== 'spiral' && appSettings.orbPulseToMusic))) { if (analyser && audioDataArray) { analyser.getByteFrequencyData(audioDataArray); let maxVolume = 0; const lengthToConsider = Math.floor(analyser.frequencyBinCount / 3); if (lengthToConsider > 0) { for (let i = 0; i < lengthToConsider; i++) { if (audioDataArray[i] > maxVolume) { maxVolume = audioDataArray[i]; } } const normalizedMax = maxVolume / 255; const enhancedMax = Math.pow(normalizedMax, 2); beatIntensity = enhancedMax; } } } if (player && appSettings.playerOrbAppearance !== 'spiral' && appSettings.orbPulseFreqEnabled && !appSettings.orbPulseToMusic) { const time = performance.now() / 1000.0; const freq = appSettings.orbPulseFreqHz; const sinePulse = (Math.sin(2 * Math.PI * freq * time) + 1) / 2; beatIntensity = sinePulse; } beatIntensity = Math.max(0, Math.min(1, beatIntensity));
-            gameTimeAccumulator += deltaTime; gameTimeAccumulator = Math.min(gameTimeAccumulator, MAX_ACCUMULATED_TIME_MS); while (gameTimeAccumulator >= FIXED_TIMESTEP_MS) { const fixedDtSeconds = FIXED_TIMESTEP_S; if (player && player.mass > 0 && !playerAbsorbed) { updateOrb(player, fixedDtSeconds); if (appSettings.playerOrbAppearance === 'spiral') { updateSpiralOrb(player, fixedDtSeconds, beatIntensity); } } orbs.forEach(orb => { if (!orbsToRemove.has(orb.id)) { updateOrb(orb, fixedDtSeconds); } }); updateAbsorptions(FIXED_TIMESTEP_MS); gameTimeAccumulator -= FIXED_TIMESTEP_MS; } checkCollisions(); if (orbsToRemove.size > 0) { orbs = orbs.filter(orb => !orbsToRemove.has(orb.id)); activeAbsorptions.forEach((value, key) => { if (orbsToRemove.has(key)) { activeAbsorptions.delete(key); } }); orbsToRemove.clear(); } if (playerAbsorbed) { if (quoteTypingSound && !quoteTypingSound.paused) { quoteTypingSound.pause(); } if (gameAnimationFrameId) { cancelAnimationFrame(gameAnimationFrameId); gameAnimationFrameId = null; } const wasMusicPlaying = bgMusic && !bgMusic.paused && musicStarted; initializeGame(false); if (wasMusicPlaying && bgMusic.paused && !appSettings.musicMuted) { bgMusic.play().catch(e => {}); } return; }
+            let beatIntensity = 0; if (player && !playerAbsorbed) { if (appSettings.orbPulseToMusic && analyser && audioDataArray) { analyser.getByteFrequencyData(audioDataArray); let maxVolume = 0; const lengthToConsider = Math.floor(analyser.frequencyBinCount / 3); if (lengthToConsider > 0) { for (let i = 0; i < lengthToConsider; i++) { if (audioDataArray[i] > maxVolume) { maxVolume = audioDataArray[i]; } } const normalizedMax = maxVolume / 255; const enhancedMax = Math.pow(normalizedMax, 2); beatIntensity = enhancedMax; } } else if (appSettings.orbPulseFreqEnabled && !appSettings.orbPulseToMusic) { const time = performance.now() / 1000.0; const freq = appSettings.orbPulseFreqHz; const sinePulse = (Math.sin(2 * Math.PI * freq * time) + 1) / 2; beatIntensity = sinePulse; } } beatIntensity = Math.max(0, Math.min(1, beatIntensity * appSettings.orbPulseRange));
+            gameTimeAccumulator += deltaTime; gameTimeAccumulator = Math.min(gameTimeAccumulator, MAX_ACCUMULATED_TIME_MS); while (gameTimeAccumulator >= FIXED_TIMESTEP_MS) { const fixedDtSeconds = FIXED_TIMESTEP_S; if (player && player.mass > 0 && !playerAbsorbed) { updateOrb(player, fixedDtSeconds); } orbs.forEach(orb => { if (!orbsToRemove.has(orb.id)) { updateOrb(orb, fixedDtSeconds); } }); updateAbsorptions(FIXED_TIMESTEP_MS); checkCollisions(); gameTimeAccumulator -= FIXED_TIMESTEP_MS; } if (orbsToRemove.size > 0) { orbs = orbs.filter(orb => !orbsToRemove.has(orb.id)); activeAbsorptions.forEach((value, key) => { if (orbsToRemove.has(key)) { activeAbsorptions.delete(key); } }); orbsToRemove.clear(); } if (playerAbsorbed) { if (quoteTypingSound && !quoteTypingSound.paused) { quoteTypingSound.pause(); } if (gameAnimationFrameId) { cancelAnimationFrame(gameAnimationFrameId); gameAnimationFrameId = null; } const wasMusicPlaying = bgMusic && !bgMusic.paused && musicStarted; initializeGame(false); if (wasMusicPlaying && bgMusic.paused && !appSettings.musicMuted) { bgMusic.play().catch(e => {}); } return; }
              if (currentQuote) { if (quoteState === 'fading') { const elapsed = currentTime - currentQuote.fadeStartTime; const fadeProgress = Math.min(1, elapsed / appSettings.quoteFadeDurationMs); if (fadeProgress >= 1) { currentQuote = null; quoteState = 'waiting_for_next'; if (quoteNextQuoteTimeoutId) clearTimeout(quoteNextQuoteTimeoutId); quoteNextQuoteTimeoutId = setTimeout(() => { quoteNextQuoteTimeoutId = null; quoteState = 'idle'; }, appSettings.quoteIntervalMs); } } else if (quoteState === 'paused' && Date.now() - currentQuote.completionTime >= appSettings.quotePauseDurationMs) { currentQuote.fadeStartTime = currentTime; quoteState = 'fading'; } } else if (quoteState === 'idle' && appSettings.quotesEnabled && !quoteNextQuoteTimeoutId && quoteInitialLoadComplete) { quoteNextQuoteTimeoutId = setTimeout(() => { quoteNextQuoteTimeoutId = null; quoteState = 'idle'; quoteStartNew(); }, appSettings.quoteIntervalMs); quoteState = 'waiting_for_next'; }
-             ctx.clearRect(0, 0, canvasWidth, canvasHeight); const drawOffsetX = (player && player.mass > 0 && !playerAbsorbed) ? player.x - canvasWidth / 2 : canvasWidth / 2; const drawOffsetY = (player && player.mass > 0 && !playerAbsorbed) ? player.y - canvasHeight / 2 : canvasHeight / 2; ctx.save(); orbs.forEach(orb => drawOrbWithWrapping(orb, drawOffsetX, drawOffsetY)); if (player && !playerAbsorbed && player.radius >= MIN_ABSORB_COMPLETE_RADIUS) { drawOrbWithWrapping(player, drawOffsetX, drawOffsetY); } ctx.restore();
+             ctx.clearRect(0, 0, canvasWidth, canvasHeight); const drawOffsetX = (player && player.mass > 0 && !playerAbsorbed) ? player.x - canvasWidth / 2 : 0; const drawOffsetY = (player && player.mass > 0 && !playerAbsorbed) ? player.y - canvasHeight / 2 : 0; ctx.save(); orbs.forEach(orb => drawOrbWithWrapping(orb, drawOffsetX, drawOffsetY)); if (player && !playerAbsorbed && player.radius >= MIN_ABSORB_COMPLETE_RADIUS) { drawOrbWithWrapping(player, drawOffsetX, drawOffsetY); } ctx.restore();
             if (currentQuote) { if (quoteState === 'fading') { const elapsed = currentTime - currentQuote.fadeStartTime; const fadeProgress = Math.min(1, elapsed / appSettings.quoteFadeDurationMs); quoteDrawState(currentQuote, 1.0 - fadeProgress); } else if (quoteState === 'typing' || quoteState === 'paused') { quoteDrawState(currentQuote, 1.0); } } else if (quoteState === 'loading') { quoteDisplayStatusMessage("Loading quotes..."); }
              gameAnimationFrameId = requestAnimationFrame(gameLoop);
          }
 
-        function initializeGame(isResize = false) { console.log(`GAME: Init ${isResize ? '(Resize)' : ''}`); if (gameAnimationFrameId) { cancelAnimationFrame(gameAnimationFrameId); gameAnimationFrameId = null; } if (!canvas || !ctx) { return; } const prevWidth = typeof canvasWidth !== 'undefined' ? canvasWidth : window.innerWidth; const prevHeight = typeof canvasHeight !== 'undefined' ? canvasHeight : window.innerHeight; try { canvasWidth = window.innerWidth; canvasHeight = window.innerHeight; canvas.width = canvasWidth; canvas.height = canvasHeight; ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; ctx.textBaseline = 'top'; ctx.lineJoin = 'round'; ctx.globalAlpha = 1.0; ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; } catch (e) { return; } playerAbsorbed = false; if (!isResize || !player) { console.log("GAME: Full reset."); orbs = []; player = null; activeAbsorptions.clear(); orbsToRemove.clear(); player = createOrb(canvasWidth / 2, canvasHeight / 2, 20, 0, 0, appSettings.playerOrbColor); if (!player) { return; } player.isPlayer = true; player.color = appSettings.playerOrbColor; player.spirals = generateSpirals(player.radius, appSettings.spiralCount); spawnOrbs(INITIAL_ORBS); const initialSaturationFactor = appSettings.otherOrbSaturation; orbs.forEach(orb => { if (!orb.isPlayer && orb.originalColor) { orb.color = adjustSaturation(orb.originalColor, initialSaturationFactor); } }); } else { if (player) { player.x = canvasWidth / 2; player.y = canvasHeight / 2; if (!player.spirals || player.spirals.length === 0) { player.spirals = generateSpirals(player.radius, appSettings.spiralCount); } } activeAbsorptions.clear(); orbsToRemove.clear(); } isInteractionActive = false; lastInteractionX = 0; lastInteractionY = 0; lastPropulsionTime = 0; gameLastTimestamp = 0; gameTimeAccumulator = 0; if (player) player.color = appSettings.playerOrbColor; if (gameAnimationFrameId) cancelAnimationFrame(gameAnimationFrameId); gameAnimationFrameId = requestAnimationFrame(gameLoop); }
-        function setupAudioAnalysis() { if (!audioContext) { try { audioContext = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; } } if (audioContext.state === 'suspended') audioContext.resume(); if (audioContext && !sourceNode) { try { sourceNode = audioContext.createMediaElementSource(bgMusic); analyser = audioContext.createAnalyser(); analyser.fftSize = ANALYSER_FFT_SIZE; analyser.smoothingTimeConstant = ANALYSER_SMOOTHING; audioDataArray = new Uint8Array(analyser.frequencyBinCount); sourceNode.connect(analyser); analyser.connect(audioContext.destination); } catch (e) { sourceNode = null; analyser = null; audioDataArray = null; } } }
+        function initializeGame(isResize = false) {
+            console.log(`GAME: Init ${isResize ? '(Resize)' : '(Full Reset)'}`);
+            if (gameAnimationFrameId) { cancelAnimationFrame(gameAnimationFrameId); gameAnimationFrameId = null; }
+            if (!canvas || !ctx) { return; }
+            const prevWidth = canvasWidth; const prevHeight = canvasHeight;
+            try { canvasWidth = window.innerWidth; canvasHeight = window.innerHeight; canvas.width = canvasWidth; canvas.height = canvasHeight; ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; ctx.textBaseline = 'top'; ctx.lineJoin = 'round'; ctx.globalAlpha = 1.0; ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; } catch (e) { return; }
+            playerAbsorbed = false;
+            if (!isResize || !player) {
+                console.log("GAME: Performing full orb reset.");
+                orbs = []; player = null; activeAbsorptions.clear(); orbsToRemove.clear();
+                player = createOrb(canvasWidth / 2, canvasHeight / 2, 20, 0, 0, appSettings.playerOrbColor);
+                if (!player) { return; }
+                player.isPlayer = true;
+                player.color = appSettings.playerOrbColor;
+                player.originalColor = appSettings.playerOrbColor;
+                spawnOrbs(INITIAL_ORBS);
+            } else {
+                console.log("GAME: Handling resize.");
+                player.x = canvasWidth / 2; player.y = canvasHeight / 2;
+                activeAbsorptions.clear(); orbsToRemove.clear();
+            }
+            isInteractionActive = false; lastInteractionX = 0; lastInteractionY = 0; lastPropulsionTime = 0; gameLastTimestamp = 0; gameTimeAccumulator = 0;
+            if (player) player.color = appSettings.playerOrbColor;
+            if (gameAnimationFrameId) cancelAnimationFrame(gameAnimationFrameId);
+            gameAnimationFrameId = requestAnimationFrame(gameLoop);
+            console.log("GAME: Initialization complete, starting loop.");
+        }
+        function setupAudioAnalysis() { if (!audioContext) { try { audioContext = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; } } if (audioContext.state === 'suspended') { audioContext.resume().catch(e => {}); } if (audioContext && audioContext.state === 'running' && !sourceNode && bgMusic) { try { sourceNode = audioContext.createMediaElementSource(bgMusic); analyser = audioContext.createAnalyser(); analyser.fftSize = ANALYSER_FFT_SIZE; analyser.smoothingTimeConstant = ANALYSER_SMOOTHING; audioDataArray = new Uint8Array(analyser.frequencyBinCount); sourceNode.connect(analyser); analyser.connect(audioContext.destination); } catch (e) { sourceNode = null; analyser = null; audioDataArray = null; } } }
         function getCanvasCoordinates(event) { const targetElement = event.target; if (targetElement && targetElement.closest && (targetElement.closest('#settings-popup') || targetElement.closest('#hamburger-menu'))) return null; const rect = canvas.getBoundingClientRect(); let clientX, clientY; if (event.touches && event.touches.length > 0) { clientX = event.touches[0].clientX; clientY = event.touches[0].clientY; } else if (event.changedTouches && event.changedTouches.length > 0) { clientX = event.changedTouches[0].clientX; clientY = event.changedTouches[0].clientY; } else { clientX = event.clientX; clientY = event.clientY; } if (clientX === undefined || clientY === undefined) return null; return { x: clientX - rect.left, y: clientY - rect.top }; }
-        function handleInteractionStart(event) { const coords = getCanvasCoordinates(event); if (!coords) { const targetElement = event.target; if (settingsPopup.classList.contains('visible') && targetElement && !targetElement.closest('#settings-popup') && !targetElement.closest('#hamburger-menu')) { closeSettingsPopup(); } return; } if (!musicStarted && bgMusic) { const playPromise = bgMusic.play(); if (playPromise) { playPromise.then(() => { musicStarted = true; setupAudioAnalysis(); }).catch(e => {}); } else { musicStarted = true; setupAudioAnalysis(); } } else if (musicStarted && audioContext && audioContext.state === 'suspended') { audioContext.resume().catch(e => {}); } if (quoteTypingSound && quoteTypingSound.paused && !appSettings.typingMuted) { quoteTypingSound.play().then(()=>quoteTypingSound.pause()).catch(()=>{}); } if (event.type === 'touchstart') event.preventDefault(); isInteractionActive = true; lastInteractionX = coords.x; lastInteractionY = coords.y; if (player && !playerAbsorbed && Date.now() - lastPropulsionTime > PROPULSION_COOLDOWN) { if (propelPlayer(lastInteractionX, lastInteractionY)) { lastPropulsionTime = Date.now(); } } }
-        function handleInteractionMove(event) { if (!isInteractionActive) return; const coords = getCanvasCoordinates(event); if (!coords) return; if (event.type === 'touchmove') event.preventDefault(); lastInteractionX = coords.x; lastInteractionY = coords.y; }
+        function handleInteractionStart(event) { const coords = getCanvasCoordinates(event); if (!coords) { const targetElement = event.target; if (settingsPopup.classList.contains('visible') && targetElement && !targetElement.closest('#settings-popup') && !targetElement.closest('#hamburger-menu')) { closeSettingsPopup(); } return; } if (!musicStarted && bgMusic) { const playPromise = bgMusic.play(); if (playPromise) { playPromise.then(() => { musicStarted = true; setupAudioAnalysis(); }).catch(e => { setupAudioAnalysis(); }); } else { musicStarted = true; setupAudioAnalysis(); } } else if (musicStarted && audioContext && audioContext.state === 'suspended') { audioContext.resume().catch(e => {}); } if (quoteTypingSound && quoteTypingSound.paused && !appSettings.typingMuted) { quoteTypingSound.play().then(()=>quoteTypingSound.pause()).catch(()=>{}); } if (event.type === 'touchstart') event.preventDefault(); isInteractionActive = true; lastInteractionX = coords.x; lastInteractionY = coords.y; if (player && !playerAbsorbed && Date.now() - lastPropulsionTime > PROPULSION_COOLDOWN) { if (propelPlayer(lastInteractionX, lastInteractionY)) { lastPropulsionTime = Date.now(); } } }
+        function handleInteractionMove(event) { if (!isInteractionActive) return; const coords = getCanvasCoordinates(event); if (!coords) { isInteractionActive = false; return; } if (event.type === 'touchmove') event.preventDefault(); lastInteractionX = coords.x; lastInteractionY = coords.y; }
         function handleInteractionEnd(event) { const targetIsCanvas = event.target === canvas; if (targetIsCanvas && (event.type === 'touchend' || event.type === 'touchcancel') && event.cancelable) { event.preventDefault(); } isInteractionActive = false; }
         canvas.addEventListener('mousedown', handleInteractionStart); canvas.addEventListener('mousemove', handleInteractionMove); window.addEventListener('mouseup', handleInteractionEnd); window.addEventListener('mouseleave', handleInteractionEnd); canvas.addEventListener('touchstart', handleInteractionStart, { passive: false }); canvas.addEventListener('touchmove', handleInteractionMove, { passive: false }); window.addEventListener('touchend', handleInteractionEnd, { passive: false }); window.addEventListener('touchcancel', handleInteractionEnd, { passive: false }); document.addEventListener('click', (event) => { if (settingsPopup.classList.contains('visible') && !settingsPopup.contains(event.target) && event.target !== hamburgerMenu && !hamburgerMenu.contains(event.target)) { closeSettingsPopup(); } }); let resizeTimeout; window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(() => { initializeGame(true); }, 250); });
         const docElement = document.documentElement; function isFullScreen() { return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement); } function toggleFullScreen() { if (!isFullScreen()) { if (docElement.requestFullscreen) docElement.requestFullscreen().catch(err => {}); else if (docElement.webkitRequestFullscreen) docElement.webkitRequestFullscreen().catch(err => {}); else if (docElement.msRequestFullscreen) docElement.msRequestFullscreen().catch(err => {}); } else { if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); else if (document.msExitFullscreen) document.msExitFullscreen(); } } document.addEventListener('fullscreenchange', updateFullscreenSetting); document.addEventListener('webkitfullscreenchange', updateFullscreenSetting); document.addEventListener('mozfullscreenchange', updateFullscreenSetting); document.addEventListener('MSFullscreenChange', updateFullscreenSetting);
         function toggleSettingsPopup() { settingsPopup.classList.toggle('visible'); } function closeSettingsPopup() { settingsPopup.classList.remove('visible'); } function updateFullscreenSetting() { const isCurrentlyFullScreen = isFullScreen(); appSettings.fullscreen = isCurrentlyFullScreen; const fsToggle = document.getElementById('fullscreen-toggle'); if (fsToggle) fsToggle.checked = isCurrentlyFullScreen; }
         function saveSettings() { try { localStorage.setItem('sysomosysSettings', JSON.stringify(appSettings)); } catch (e) {} }
-        function loadSettings() { try { const savedSettings = localStorage.getItem('sysomosysSettings'); if (savedSettings) { const parsed = JSON.parse(savedSettings); delete parsed.quoteInstant; const mergedSettings = { ...defaultSettings, ...parsed }; appSettings = mergedSettings; } else { appSettings = JSON.parse(JSON.stringify(defaultSettings)); } } catch (e) { appSettings = JSON.parse(JSON.stringify(defaultSettings)); } appSettings.quoteTypingSpeedMs = wpmToMs(appSettings.quoteWpm); }
+        function loadSettings() { try { const savedSettings = localStorage.getItem('sysomosysSettings'); if (savedSettings) { const parsed = JSON.parse(savedSettings); if (parsed && typeof parsed === 'object') { delete parsed.playerOrbAppearance; delete parsed.spiralCount; delete parsed.spiralMinRadiusFactor; delete parsed.spiralMaxRadiusFactor; delete parsed.spiralBaseSpeedMin; delete parsed.spiralBaseSpeedMax; delete parsed.spiralTurnsMin; delete parsed.spiralTurnsMax; delete parsed.spiralBeatBoost; delete parsed.spiralSpeedDecay; appSettings = { ...JSON.parse(JSON.stringify(defaultSettings)), ...parsed }; } else { appSettings = JSON.parse(JSON.stringify(defaultSettings)); } } else { appSettings = JSON.parse(JSON.stringify(defaultSettings)); } } catch (e) { appSettings = JSON.parse(JSON.stringify(defaultSettings)); } appSettings.quoteTypingSpeedMs = wpmToMs(appSettings.quoteWpm); }
         function updateUIFromSettings() { document.getElementById('fullscreen-toggle').checked = isFullScreen(); document.getElementById('font-family-select').value = appSettings.fontFamily; document.getElementById('font-size-slider').value = appSettings.fontSize; updateSliderValueDisplay('font-size-slider', 'font-size-value', 'px', 0); document.getElementById('font-color-picker').value = appSettings.fontColor; document.getElementById('font-bold-toggle').checked = appSettings.fontBold; document.getElementById('font-italic-toggle').checked = appSettings.fontItalic; document.getElementById('font-underline-toggle').checked = appSettings.fontUnderline; document.getElementById('font-highlight-toggle').checked = appSettings.fontHighlightEnabled; document.getElementById('font-highlight-color-picker').value = appSettings.fontHighlightColor; document.getElementById('font-highlight-color-picker').disabled = !appSettings.fontHighlightEnabled; document.getElementById('random-font-toggle').checked = appSettings.randomFont; document.getElementById('random-font-color-toggle').checked = appSettings.randomFontColor; document.getElementById('quotes-toggle').checked = appSettings.quotesEnabled; document.getElementById('quote-duration-slider').value = appSettings.quotePauseDurationMs / 1000; updateSliderValueDisplay('quote-duration-slider', 'quote-duration-value', 's', 0); document.getElementById('quote-fade-slider').value = appSettings.quoteFadeDurationMs / 1000; updateSliderValueDisplay('quote-fade-slider', 'quote-fade-value', 's', 1); document.getElementById('quote-interval-slider').value = appSettings.quoteIntervalMs / 1000; updateSliderValueDisplay('quote-interval-slider', 'quote-interval-value', 's', 0); document.getElementById('quote-wpm-slider').value = appSettings.quoteWpm; updateSliderValueDisplay('quote-wpm-slider', 'quote-wpm-value', '', 0);
-            const appearanceValue = appSettings.playerOrbAppearance || 'solid'; const radioToCheck = document.querySelector(`input[name="orb-appearance"][value="${appearanceValue}"]`); if (radioToCheck) { radioToCheck.checked = true; } else { document.getElementById('orb-appearance-solid').checked = true; appSettings.playerOrbAppearance = 'solid'; }
             try { const rgba = parseRGBA(appSettings.playerOrbColor); if (rgba) { document.getElementById('orb-color-picker').value = `#${rgba.r.toString(16).padStart(2,'0')}${rgba.g.toString(16).padStart(2,'0')}${rgba.b.toString(16).padStart(2,'0')}`; } else { document.getElementById('orb-color-picker').value = '#ffffff';} } catch(e){ document.getElementById('orb-color-picker').value = '#ffffff';} document.getElementById('orb-pulse-range-slider').value = appSettings.orbPulseRange * 100; updateSliderValueDisplay('orb-pulse-range-slider', 'orb-pulse-range-value', '%', 0); document.getElementById('orb-pulse-music-toggle').checked = appSettings.orbPulseToMusic; document.getElementById('orb-pulse-freq-toggle').checked = appSettings.orbPulseFreqEnabled; document.getElementById('orb-pulse-freq-toggle').disabled = appSettings.orbPulseToMusic; document.getElementById('orb-pulse-freq-slider').value = appSettings.orbPulseFreqHz; updateSliderValueDisplay('orb-pulse-freq-slider', 'orb-pulse-freq-value', 'Hz', 1); document.getElementById('orb-pulse-freq-slider').disabled = appSettings.orbPulseToMusic || !appSettings.orbPulseFreqEnabled; document.getElementById('orb-saturation-slider').value = appSettings.otherOrbSaturation * 100; updateSliderValueDisplay('orb-saturation-slider', 'orb-saturation-value', '%', 0); document.getElementById('music-volume-slider').value = appSettings.musicVolume * 100; updateSliderValueDisplay('music-volume-slider', 'music-volume-value', '%', 0); document.getElementById('music-mute-toggle').checked = appSettings.musicMuted; document.getElementById('music-volume-slider').disabled = appSettings.musicMuted; document.getElementById('typing-volume-slider').value = appSettings.typingVolume * 100; updateSliderValueDisplay('typing-volume-slider', 'typing-volume-value', '%', 0); document.getElementById('typing-mute-toggle').checked = appSettings.typingMuted; document.getElementById('typing-volume-slider').disabled = appSettings.typingMuted; bgMusic.volume = appSettings.musicVolume; bgMusic.muted = appSettings.musicMuted; quoteTypingSound.volume = appSettings.typingVolume; quoteTypingSound.muted = appSettings.typingMuted; ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; if(player) player.color = appSettings.playerOrbColor; }
-        function handleSliderTextInput(inputElement, sliderElement, settingKey, unit = '', decimals = 0, isMultiplier = false) { let rawValue = inputElement.value.replace(unit, ''); let parsedValue = parseFloat(rawValue); if (!isNaN(parsedValue)) { const minValue = parseFloat(sliderElement.min); const maxValue = parseFloat(sliderElement.max); let clampedValue = Math.max(minValue, Math.min(maxValue, parsedValue)); let settingValue; if (unit === 's') { settingValue = clampedValue * 1000; } else if (isMultiplier) { settingValue = clampedValue / 100; } else { settingValue = clampedValue; } appSettings[settingKey] = settingValue; sliderElement.value = clampedValue; sliderElement.dispatchEvent(new Event('input')); inputElement.value = clampedValue.toFixed(decimals) + unit; if (settingKey === 'quoteWpm') { appSettings.quoteTypingSpeedMs = wpmToMs(settingValue); } else if (settingKey === 'musicVolume') { bgMusic.volume = settingValue; if (!appSettings.musicMuted && settingValue > 0) { document.getElementById('music-mute-toggle').checked = false; bgMusic.muted = false; appSettings.musicMuted = false; document.getElementById('music-volume-slider').disabled = false; } else if (settingValue === 0 && !appSettings.musicMuted) { document.getElementById('music-mute-toggle').checked = true; bgMusic.muted = true; appSettings.musicMuted = true; document.getElementById('music-volume-slider').disabled = true; } } else if (settingKey === 'typingVolume') { quoteTypingSound.volume = settingValue; if (!appSettings.typingMuted && settingValue > 0) { document.getElementById('typing-mute-toggle').checked = false; quoteTypingSound.muted = false; appSettings.typingMuted = false; document.getElementById('typing-volume-slider').disabled = false; } else if (settingValue === 0 && !appSettings.typingMuted) { document.getElementById('typing-mute-toggle').checked = true; quoteTypingSound.muted = true; appSettings.typingMuted = true; document.getElementById('typing-volume-slider').disabled = true; } } else if (settingKey === 'fontSize') { ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; updateCurrentQuoteFormatting(); } else if (settingKey === 'otherOrbSaturation') { const newSaturationFactor = settingValue; appSettings.otherOrbSaturation = newSaturationFactor; orbs.forEach(orb => { if (!orb.isPlayer && orb.originalColor) { orb.color = adjustSaturation(orb.originalColor, newSaturationFactor); } }); } saveSettings(); } else { updateSliderValueDisplay(sliderElement.id, inputElement.id, unit, decimals); } }
+        function handleSliderTextInput(inputElement, sliderElement, settingKey, unit = '', decimals = 0, isMultiplier = false) { let rawValue = inputElement.value.replace(unit, '').trim(); let parsedValue = parseFloat(rawValue); if (!isNaN(parsedValue)) { const minValue = parseFloat(sliderElement.min); const maxValue = parseFloat(sliderElement.max); let clampedValue = Math.max(minValue, Math.min(maxValue, parsedValue)); let settingValue; if (unit === 's') { settingValue = clampedValue * 1000; } else if (isMultiplier) { settingValue = clampedValue / 100; } else { settingValue = clampedValue; } appSettings[settingKey] = settingValue; sliderElement.value = clampedValue; sliderElement.dispatchEvent(new Event('input')); inputElement.value = clampedValue.toFixed(decimals) + unit; if (settingKey === 'quoteWpm') { appSettings.quoteTypingSpeedMs = wpmToMs(settingValue); } else if (settingKey === 'musicVolume') { bgMusic.volume = settingValue; if (!appSettings.musicMuted && settingValue > 0) { document.getElementById('music-mute-toggle').checked = false; bgMusic.muted = false; appSettings.musicMuted = false; document.getElementById('music-volume-slider').disabled = false; } else if (settingValue === 0 && !appSettings.musicMuted) { document.getElementById('music-mute-toggle').checked = true; bgMusic.muted = true; appSettings.musicMuted = true; document.getElementById('music-volume-slider').disabled = true; } } else if (settingKey === 'typingVolume') { quoteTypingSound.volume = settingValue; if (!appSettings.typingMuted && settingValue > 0) { document.getElementById('typing-mute-toggle').checked = false; quoteTypingSound.muted = false; appSettings.typingMuted = false; document.getElementById('typing-volume-slider').disabled = false; } else if (settingValue === 0 && !appSettings.typingMuted) { document.getElementById('typing-mute-toggle').checked = true; quoteTypingSound.muted = true; appSettings.typingMuted = true; document.getElementById('typing-volume-slider').disabled = true; } } else if (settingKey === 'fontSize') { ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; updateCurrentQuoteFormatting(); } else if (settingKey === 'otherOrbSaturation') { const newSaturationFactor = settingValue; appSettings.otherOrbSaturation = newSaturationFactor; orbs.forEach(orb => { if (!orb.isPlayer && orb.originalColor) { orb.color = adjustSaturation(orb.originalColor, newSaturationFactor); } }); } saveSettings(); } else { updateSliderValueDisplay(sliderElement.id, inputElement.id, unit, decimals); } }
         function updateCurrentQuoteFormatting() { if (!currentQuote || quoteState === 'fading' || quoteState === 'loading' || quoteState === 'disabled' || quoteState === 'error') { return; } if (!currentQuote.originalQuote || !currentQuote.originalAuthor) { return; } ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; const reFormatted = quoteFormatText(currentQuote.originalQuote, currentQuote.originalAuthor); if (!reFormatted || reFormatted.quoteLines.length === 0) { ctx.font = getFontString(); return; } currentQuote.quoteLines = reFormatted.quoteLines; currentQuote.authorLine = reFormatted.authorLine; currentQuote.fullText = reFormatted.fullText; currentQuote.maxQuoteLineWidth = reFormatted.maxQuoteLineWidth; currentQuote.authorLineWidth = reFormatted.authorLineWidth; currentQuote.totalQuoteLines = reFormatted.totalQuoteLines; currentQuote.appliedFontFamily = reFormatted.appliedFontFamily; currentQuote.appliedFontColor = reFormatted.appliedFontColor; }
 
         function setupSettingsListeners() {
             document.getElementById('fullscreen-toggle').addEventListener('change', toggleFullScreen);
             document.getElementById('font-family-select').addEventListener('change', (e) => { appSettings.fontFamily = e.target.value; ctx.font = getFontString(); updateCurrentQuoteFormatting(); saveSettings(); });
-            document.getElementById('font-size-slider').addEventListener('input', (e) => { appSettings.fontSize = parseInt(e.target.value, 10); updateSliderValueDisplay('font-size-slider', 'font-size-value', 'px', 0); ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; updateCurrentQuoteFormatting(); saveSettings(); });
+            document.getElementById('font-size-slider').addEventListener('input', (e) => { appSettings.fontSize = parseInt(e.target.value, 10); updateSliderValueDisplay('font-size-slider', 'font-size-value', 'px', 0); ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; updateCurrentQuoteFormatting(); });
             document.getElementById('font-color-picker').addEventListener('input', (e) => { appSettings.fontColor = e.target.value; updateCurrentQuoteFormatting(); saveSettings(); });
             document.getElementById('font-bold-toggle').addEventListener('change', (e) => { appSettings.fontBold = e.target.checked; ctx.font = getFontString(); updateCurrentQuoteFormatting(); saveSettings(); });
             document.getElementById('font-italic-toggle').addEventListener('change', (e) => { appSettings.fontItalic = e.target.checked; ctx.font = getFontString(); updateCurrentQuoteFormatting(); saveSettings(); });
@@ -639,21 +441,24 @@
             document.getElementById('random-font-toggle').addEventListener('change', (e) => { appSettings.randomFont = e.target.checked; updateCurrentQuoteFormatting(); saveSettings(); });
             document.getElementById('random-font-color-toggle').addEventListener('change', (e) => { appSettings.randomFontColor = e.target.checked; updateCurrentQuoteFormatting(); saveSettings(); });
             document.getElementById('quotes-toggle').addEventListener('change', (e) => { const enabled = e.target.checked; appSettings.quotesEnabled = enabled; saveSettings(); if (enabled) { if (quoteState === 'disabled') { quoteState = 'idle'; if (quoteNextQuoteTimeoutId) { clearTimeout(quoteNextQuoteTimeoutId); quoteNextQuoteTimeoutId = null; } } } else { quoteState = 'disabled'; if (!quoteTypingSound.paused) { quoteTypingSound.pause(); quoteTypingSound.currentTime = 0; } if (quoteNextQuoteTimeoutId) { clearTimeout(quoteNextQuoteTimeoutId); quoteNextQuoteTimeoutId = null; } if (currentQuote) { currentQuote = null; } } });
-            document.getElementById('quote-duration-slider').addEventListener('input', (e) => { appSettings.quotePauseDurationMs = parseInt(e.target.value, 10) * 1000; updateSliderValueDisplay('quote-duration-slider', 'quote-duration-value', 's', 0); saveSettings(); });
-            document.getElementById('quote-fade-slider').addEventListener('input', (e) => { appSettings.quoteFadeDurationMs = parseFloat(e.target.value) * 1000; updateSliderValueDisplay('quote-fade-slider', 'quote-fade-value', 's', 1); saveSettings(); });
-            document.getElementById('quote-interval-slider').addEventListener('input', (e) => { appSettings.quoteIntervalMs = parseInt(e.target.value, 10) * 1000; updateSliderValueDisplay('quote-interval-slider', 'quote-interval-value', 's', 0); saveSettings(); });
-            document.getElementById('quote-wpm-slider').addEventListener('input', (e) => { appSettings.quoteWpm = parseInt(e.target.value, 10); appSettings.quoteTypingSpeedMs = wpmToMs(appSettings.quoteWpm); updateSliderValueDisplay('quote-wpm-slider', 'quote-wpm-value', '', 0); saveSettings(); });
-            document.querySelectorAll('input[name="orb-appearance"]').forEach(radio => { radio.addEventListener('change', (e) => { if (e.target.checked) { appSettings.playerOrbAppearance = e.target.value; if (appSettings.playerOrbAppearance === 'spiral' && player && !player.spirals) { player.spirals = generateSpirals(player.radius, appSettings.spiralCount); } saveSettings(); } }); });
-            document.getElementById('orb-color-picker').addEventListener('input', (e) => { const hex = e.target.value; const r = parseInt(hex.slice(1, 3), 16); const g = parseInt(hex.slice(3, 5), 16); const b = parseInt(hex.slice(5, 7), 16); const currentAlpha = parseRGBA(appSettings.playerOrbColor)?.a || 0.9; appSettings.playerOrbColor = `rgba(${r}, ${g}, ${b}, ${currentAlpha})`; if (player) player.color = appSettings.playerOrbColor; saveSettings(); });
-            document.getElementById('orb-pulse-range-slider').addEventListener('input', (e) => { appSettings.orbPulseRange = parseInt(e.target.value, 10) / 100; updateSliderValueDisplay('orb-pulse-range-slider', 'orb-pulse-range-value', '%', 0); saveSettings(); });
+            document.getElementById('quote-duration-slider').addEventListener('input', (e) => { appSettings.quotePauseDurationMs = parseInt(e.target.value, 10) * 1000; updateSliderValueDisplay('quote-duration-slider', 'quote-duration-value', 's', 0); });
+            document.getElementById('quote-fade-slider').addEventListener('input', (e) => { appSettings.quoteFadeDurationMs = parseFloat(e.target.value) * 1000; updateSliderValueDisplay('quote-fade-slider', 'quote-fade-value', 's', 1); });
+            document.getElementById('quote-interval-slider').addEventListener('input', (e) => { appSettings.quoteIntervalMs = parseInt(e.target.value, 10) * 1000; updateSliderValueDisplay('quote-interval-slider', 'quote-interval-value', 's', 0); });
+            document.getElementById('quote-wpm-slider').addEventListener('input', (e) => { appSettings.quoteWpm = parseInt(e.target.value, 10); appSettings.quoteTypingSpeedMs = wpmToMs(appSettings.quoteWpm); updateSliderValueDisplay('quote-wpm-slider', 'quote-wpm-value', '', 0); });
+            document.getElementById('orb-color-picker').addEventListener('input', (e) => { const hex = e.target.value; const r = parseInt(hex.slice(1, 3), 16); const g = parseInt(hex.slice(3, 5), 16); const b = parseInt(hex.slice(5, 7), 16); const currentAlpha = parseRGBA(appSettings.playerOrbColor)?.a || defaultSettings.playerOrbColor.match(/[\d.]+\)$/)?.[0]?.slice(0, -1) || 0.9; appSettings.playerOrbColor = `rgba(${r}, ${g}, ${b}, ${currentAlpha})`; if (player) { player.color = appSettings.playerOrbColor; player.originalColor = appSettings.playerOrbColor; } saveSettings(); });
+            document.getElementById('orb-pulse-range-slider').addEventListener('input', (e) => { appSettings.orbPulseRange = parseInt(e.target.value, 10) / 100; updateSliderValueDisplay('orb-pulse-range-slider', 'orb-pulse-range-value', '%', 0); });
             document.getElementById('orb-pulse-music-toggle').addEventListener('change', (e) => { appSettings.orbPulseToMusic = e.target.checked; document.getElementById('orb-pulse-freq-toggle').disabled = appSettings.orbPulseToMusic; document.getElementById('orb-pulse-freq-slider').disabled = appSettings.orbPulseToMusic || !appSettings.orbPulseFreqEnabled; saveSettings(); });
             document.getElementById('orb-pulse-freq-toggle').addEventListener('change', (e) => { appSettings.orbPulseFreqEnabled = e.target.checked; document.getElementById('orb-pulse-freq-slider').disabled = appSettings.orbPulseToMusic || !appSettings.orbPulseFreqEnabled; saveSettings(); });
-            document.getElementById('orb-pulse-freq-slider').addEventListener('input', (e) => { appSettings.orbPulseFreqHz = parseFloat(e.target.value); updateSliderValueDisplay('orb-pulse-freq-slider', 'orb-pulse-freq-value', 'Hz', 1); saveSettings(); });
-            document.getElementById('orb-saturation-slider').addEventListener('input', (e) => { const newSaturationFactor = parseInt(e.target.value, 10) / 100; appSettings.otherOrbSaturation = newSaturationFactor; orbs.forEach(orb => { if (!orb.isPlayer && orb.originalColor) { orb.color = adjustSaturation(orb.originalColor, newSaturationFactor); } }); updateSliderValueDisplay('orb-saturation-slider', 'orb-saturation-value', '%', 0); saveSettings(); });
-            document.getElementById('music-volume-slider').addEventListener('input', (e) => { appSettings.musicVolume = parseInt(e.target.value, 10) / 100; bgMusic.volume = appSettings.musicVolume; updateSliderValueDisplay('music-volume-slider', 'music-volume-value', '%', 0); if (!appSettings.musicMuted && appSettings.musicVolume > 0) { document.getElementById('music-mute-toggle').checked = false; bgMusic.muted = false; appSettings.musicMuted = false; document.getElementById('music-volume-slider').disabled = false; } else if (appSettings.musicVolume === 0 && !appSettings.musicMuted) { document.getElementById('music-mute-toggle').checked = true; bgMusic.muted = true; appSettings.musicMuted = true; document.getElementById('music-volume-slider').disabled = true; } saveSettings(); });
+            document.getElementById('orb-pulse-freq-slider').addEventListener('input', (e) => { appSettings.orbPulseFreqHz = parseFloat(e.target.value); updateSliderValueDisplay('orb-pulse-freq-slider', 'orb-pulse-freq-value', 'Hz', 1); });
+            document.getElementById('orb-saturation-slider').addEventListener('input', (e) => { const newSaturationFactor = parseInt(e.target.value, 10) / 100; appSettings.otherOrbSaturation = newSaturationFactor; updateSliderValueDisplay('orb-saturation-slider', 'orb-saturation-value', '%', 0); orbs.forEach(orb => { if (!orb.isPlayer && orb.originalColor) { orb.color = adjustSaturation(orb.originalColor, newSaturationFactor); } }); });
+            document.getElementById('music-volume-slider').addEventListener('input', (e) => { appSettings.musicVolume = parseInt(e.target.value, 10) / 100; bgMusic.volume = appSettings.musicVolume; updateSliderValueDisplay('music-volume-slider', 'music-volume-value', '%', 0); if (!appSettings.musicMuted && appSettings.musicVolume > 0) { document.getElementById('music-mute-toggle').checked = false; bgMusic.muted = false; appSettings.musicMuted = false; document.getElementById('music-volume-slider').disabled = false; } else if (appSettings.musicVolume === 0 && !appSettings.musicMuted) { document.getElementById('music-mute-toggle').checked = true; bgMusic.muted = true; appSettings.musicMuted = true; document.getElementById('music-volume-slider').disabled = true; } });
             document.getElementById('music-mute-toggle').addEventListener('change', (e) => { appSettings.musicMuted = e.target.checked; bgMusic.muted = appSettings.musicMuted; document.getElementById('music-volume-slider').disabled = appSettings.musicMuted; saveSettings(); });
-            document.getElementById('typing-volume-slider').addEventListener('input', (e) => { appSettings.typingVolume = parseInt(e.target.value, 10) / 100; quoteTypingSound.volume = appSettings.typingVolume; updateSliderValueDisplay('typing-volume-slider', 'typing-volume-value', '%', 0); if (!appSettings.typingMuted && appSettings.typingVolume > 0) { document.getElementById('typing-mute-toggle').checked = false; quoteTypingSound.muted = false; appSettings.typingMuted = false; document.getElementById('typing-volume-slider').disabled = false; } else if (appSettings.typingVolume === 0 && !appSettings.typingMuted) { document.getElementById('typing-mute-toggle').checked = true; quoteTypingSound.muted = true; appSettings.typingMuted = true; document.getElementById('typing-volume-slider').disabled = true; } saveSettings(); });
+            document.getElementById('typing-volume-slider').addEventListener('input', (e) => { appSettings.typingVolume = parseInt(e.target.value, 10) / 100; quoteTypingSound.volume = appSettings.typingVolume; updateSliderValueDisplay('typing-volume-slider', 'typing-volume-value', '%', 0); if (!appSettings.typingMuted && appSettings.typingVolume > 0) { document.getElementById('typing-mute-toggle').checked = false; quoteTypingSound.muted = false; appSettings.typingMuted = false; document.getElementById('typing-volume-slider').disabled = false; } else if (appSettings.typingVolume === 0 && !appSettings.typingMuted) { document.getElementById('typing-mute-toggle').checked = true; quoteTypingSound.muted = true; appSettings.typingMuted = true; document.getElementById('typing-volume-slider').disabled = true; } });
             document.getElementById('typing-mute-toggle').addEventListener('change', (e) => { appSettings.typingMuted = e.target.checked; quoteTypingSound.muted = appSettings.typingMuted; document.getElementById('typing-volume-slider').disabled = appSettings.typingMuted; saveSettings(); });
+
+            ['font-size-slider', 'quote-duration-slider', 'quote-fade-slider', 'quote-interval-slider', 'quote-wpm-slider', 'orb-pulse-range-slider', 'orb-pulse-freq-slider', 'orb-saturation-slider', 'music-volume-slider', 'typing-volume-slider']
+                 .forEach(id => { const slider = document.getElementById(id); if (slider) slider.addEventListener('change', saveSettings); });
+
             document.getElementById('font-size-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('font-size-slider'), 'fontSize', 'px', 0, false));
             document.getElementById('quote-duration-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('quote-duration-slider'), 'quotePauseDurationMs', 's', 0, false));
             document.getElementById('quote-fade-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('quote-fade-slider'), 'quoteFadeDurationMs', 's', 1, false));
@@ -664,15 +469,39 @@
             document.getElementById('orb-saturation-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('orb-saturation-slider'), 'otherOrbSaturation', '%', 0, true));
             document.getElementById('music-volume-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('music-volume-slider'), 'musicVolume', '%', 0, true));
             document.getElementById('typing-volume-value').addEventListener('change', (e) => handleSliderTextInput(e.target, document.getElementById('typing-volume-slider'), 'typingVolume', '%', 0, true));
-            document.getElementById('reset-settings-button').addEventListener('click', () => { if (confirm("Reset all settings to defaults?")) { appSettings = JSON.parse(JSON.stringify(defaultSettings)); appSettings.quoteTypingSpeedMs = wpmToMs(appSettings.quoteWpm); saveSettings(); updateUIFromSettings(); ctx.font = getFontString(); quoteLineHeight = appSettings.fontSize * 1.4; if(player) { player.color = appSettings.playerOrbColor; player.spirals = generateSpirals(player.radius, appSettings.spiralCount); } updateCurrentQuoteFormatting(); const defaultSaturation = defaultSettings.otherOrbSaturation; orbs.forEach(orb => { if (!orb.isPlayer && orb.originalColor) { orb.color = adjustSaturation(orb.originalColor, defaultSaturation); } }); console.log("Settings reset to default."); } });
-            document.getElementById('reset-game-button').addEventListener('click', () => { initializeGame(false); closeSettingsPopup(); });
-            console.log("Settings listeners attached.");
+
+            document.getElementById('reset-settings-button').addEventListener('click', () => {
+                if (confirm("Reset all settings to defaults? This will reload the orbs.")) {
+                    localStorage.removeItem('sysomosysSettings');
+                    appSettings = JSON.parse(JSON.stringify(defaultSettings));
+                    appSettings.quoteTypingSpeedMs = wpmToMs(appSettings.quoteWpm);
+                    updateUIFromSettings();
+                    ctx.font = getFontString();
+                    quoteLineHeight = appSettings.fontSize * 1.4;
+                    if(player) {
+                        player.color = appSettings.playerOrbColor;
+                        player.originalColor = appSettings.playerOrbColor;
+                    }
+                    const defaultSaturation = defaultSettings.otherOrbSaturation;
+                    orbs.forEach(orb => {
+                        if (!orb.isPlayer && orb.originalColor) {
+                            orb.color = adjustSaturation(orb.originalColor, defaultSaturation);
+                        }
+                    });
+                    updateCurrentQuoteFormatting();
+                } // <<< *** ADDED MISSING BRACE HERE ***
+            });
+            document.getElementById('reset-game-button').addEventListener('click', () => {
+                if (confirm("Reset orb positions and sizes?")) {
+                    initializeGame(false);
+                    closeSettingsPopup();
+                }
+            });
         }
 
         // --- INITIALIZATION ---
-        if (hamburgerMenu) { hamburgerMenu.addEventListener('click', toggleSettingsPopup); hamburgerMenu.addEventListener('touchstart', (e) => { e.preventDefault(); toggleSettingsPopup(); }, { passive: false }); } else { console.error("Hamburger menu element not found!"); }
+        if (hamburgerMenu) { hamburgerMenu.addEventListener('click', toggleSettingsPopup); hamburgerMenu.addEventListener('touchstart', (e) => { e.preventDefault(); toggleSettingsPopup(); }, { passive: false }); }
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOMContentLoaded.");
             loadSettings();
             setupSettingsListeners();
             updateUIFromSettings();
